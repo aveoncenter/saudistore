@@ -171,7 +171,9 @@
 .ws-field__label small { display: block; font-size: 0.75rem; font-weight: 700; color: #cbd0ee; }
 .ws-req { color: #ef4444; margin-inline-start: 2px; }
 .ws-opts table.variations select,
-.ws-field input[type="email"] {
+.ws-field input[type="email"],
+.ws-field input[type="password"],
+.ws-field input[type="text"] {
 	box-sizing: border-box;
 	width: 100%;
 	height: auto !important;
@@ -185,14 +187,39 @@
 	font: inherit;
 	font-size: 0.95rem;
 }
-.ws-field input[type="email"] { border-color: #a21caf; background-color: #0a0b1c !important; text-align: left; }
+.ws-field input[type="email"],
+.ws-field input[type="password"],
+.ws-field input[type="text"] { border-color: #a21caf; background-color: #0a0b1c !important; text-align: left; }
 .ws-field input::placeholder { color: #7a80a8; }
 .ws-opts table.variations select:focus,
 .ws-field input:focus { outline: none; border-color: #d946ef; box-shadow: 0 0 0 3px rgba(217, 70, 239, 0.2); }
 .ws-opts .reset_variations { display: inline-block; margin-top: 0.4rem; font-size: 0.8rem; color: var(--wp--preset--color--muted); }
 .ws-fields { display: grid; gap: 1.5rem; }
 .ws-opts table.variations + .ws-fields { margin-top: 1.5rem; }
-.ws-field[hidden] { display: none !important; }
+.ws-field[hidden],
+.ws-field__note[hidden] { display: none !important; }
+.ws-pass { position: relative; }
+.ws-field .ws-pass input[type] { padding-left: 2.75rem !important; }
+.ws-pass__toggle {
+	position: absolute;
+	top: 50%;
+	left: 0.5rem;
+	display: grid;
+	place-items: center;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 6px;
+	background: transparent;
+	color: #7a80a8;
+	cursor: pointer;
+	transform: translateY(-50%);
+}
+.ws-pass__toggle:hover,
+.ws-pass__toggle.is-on { color: #fff; }
+.ws-pass__toggle svg { width: 20px; height: 20px; }
+.ws-field__note { margin: -0.75rem 0 0; color: #8c92bb; font-size: 0.8rem; }
 .ws-field--terms .ws-field__label { margin-bottom: 0.75rem; }
 
 .ws-check {

@@ -18,6 +18,17 @@
 		}
 	});
 
+	/* Show / hide password. */
+	document.addEventListener('click', function (e) {
+		var t = e.target.closest('[data-ws-pass]');
+		if (!t) return;
+		var input = t.parentNode.querySelector('input');
+		var show = input.type === 'password';
+		input.type = show ? 'text' : 'password';
+		t.classList.toggle('is-on', show);
+		t.setAttribute('aria-label', show ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور');
+	});
+
 	/* Carousels. */
 	document.querySelectorAll('[data-ws-carousel]').forEach(function (c) {
 		var track = c.querySelector('.ws-carousel__track');
