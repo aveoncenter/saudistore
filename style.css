@@ -3,7 +3,7 @@ Theme Name: Saudistore
 Theme URI: https://github.com/aveoncenter/saudistore
 Author: aveoncenter
 Description: Dark, Arabic-first (RTL) WooCommerce block theme for a digital subscriptions store.
-Version: 0.2.9
+Version: 0.2.10
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -82,7 +82,7 @@ body { -webkit-font-smoothing: antialiased; }
  * overlays keep the viewport as their containing block. */
 .ws-header-slot { margin-block: 0; }
 .ws-search-toggle {
-	display: none;
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	width: 44px;
@@ -90,10 +90,12 @@ body { -webkit-font-smoothing: antialiased; }
 	padding: 8px;
 	border: 0;
 	background: transparent;
-	color: #fff;
+	color: #838996;
 	cursor: pointer;
 }
 .ws-search-toggle svg { width: 26px; height: 26px; }
+.ws-search-toggle:hover,
+.ws-search-toggle[aria-expanded="true"] { color: #d5d9e3; }
 .ws-search-toggle:focus-visible { outline: 2px solid #a78bfa; outline-offset: 3px; border-radius: 8px; }
 .ws-header .wp-block-navigation__responsive-container-open,
 .ws-header .wc-block-customer-account__link,
@@ -145,9 +147,20 @@ body { -webkit-font-smoothing: antialiased; }
 	object-fit: contain;
 }
 .ws-header.is-floating .ws-logo-text { font-size: 1.25rem; }
-.ws-header.is-floating .ws-search-toggle { display: inline-flex; }
-.ws-header.is-floating .ws-search { display: none; }
-.ws-header.is-floating.is-search-open .ws-search { display: block; margin-bottom: 4px; }
+/* Search is icon-only at the top and while scrolling. Without JS the original
+ * form stays available; once enhanced it becomes an anchored popover. */
+.ws-header.is-search-ready .ws-search {
+	display: none;
+	position: absolute;
+	top: calc(100% + 12px);
+	inset-inline-start: max(12px, calc((100% - 1280px) / 2));
+	z-index: 25;
+	width: min(640px, calc(100% - 24px));
+	margin: 0 !important;
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+	border-radius: 14px;
+}
+.ws-header.is-search-ready.is-search-open .ws-search { display: block; }
 .ws-header.is-measuring { animation: none !important; }
 html { scroll-padding-top: var(--ws-gallery-top, 72px); }
 @keyframes ws-header-arrive {
