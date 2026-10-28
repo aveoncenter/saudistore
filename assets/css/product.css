@@ -497,3 +497,6 @@
 @media (prefers-reduced-motion: reduce) {
 	.ws-card, .ws-card__img img { transition: none; }
 }
+.ws-reveal { animation: ws-reveal 0.25s ease-out; }
+@keyframes ws-reveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ws-reveal { animation: none; } }
