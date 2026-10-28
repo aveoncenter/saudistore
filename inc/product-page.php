@@ -77,7 +77,12 @@ function wordsite_format_pct( $pct ) {
  * @return bool
  */
 function wordsite_needs_account( $product_id ) {
-	return 'yes' === get_post_meta( $product_id, '_ws_needs_account', true );
+	$flag = get_post_meta( $product_id, '_ws_needs_account', true );
+	if ( '' === $flag ) {
+		// Never configured: on by default (filter to change).
+		return (bool) apply_filters( 'wordsite_account_fields_default', true, $product_id );
+	}
+	return 'yes' === $flag;
 }
 
 /**
@@ -87,7 +92,11 @@ function wordsite_needs_account( $product_id ) {
  * @return bool
  */
 function wordsite_needs_password( $product_id ) {
-	return wordsite_needs_account( $product_id ) && 'yes' === get_post_meta( $product_id, '_ws_needs_password', true );
+	if ( ! wordsite_needs_account( $product_id ) ) {
+		return false;
+	}
+	// Passwords are sensitive: only when explicitly enabled on the product.
+	return 'yes' === get_post_meta( $product_id, '_ws_needs_password', true );
 }
 
 /**
@@ -132,6 +141,10 @@ function wordsite_decrypt( $data ) {
  * @return string
  */
 function wordsite_terms_text( $product_id ) {
+	if ( ! metadata_exists( 'post', $product_id, '_ws_terms' ) ) {
+		// Never configured: sensible default (filter to change, '' to disable).
+		return trim( (string) apply_filters( 'wordsite_default_terms', 'وقت الشراء ما يكون فيه اشتراك فعال بالحساب', $product_id ) );
+	}
 	return trim( (string) get_post_meta( $product_id, '_ws_terms', true ) );
 }
 
@@ -153,7 +166,35 @@ function wordsite_has_fields( $product_id ) {
  */
 function wordsite_account_label( $product_id ) {
 	$name = trim( (string) get_post_meta( $product_id, '_ws_account_name', true ) );
+	if ( '' === $name ) {
+		$name = wordsite_guess_service( get_the_title( $product_id ) );
+	}
 	return $name ? 'ايميل ' . $name : 'ايميل الحساب';
+}
+
+/**
+ * Guess the service name from the product title (used when "اسم الخدمة" is empty).
+ *
+ * @param string $title Product title.
+ * @return string
+ */
+function wordsite_guess_service( $title ) {
+	$map = array(
+		'/linked\s*in|لينكد|لنكد/iu' => 'لنكد إن',
+		'/netflix|نتفلكس|نتفليكس/iu'  => 'نتفلكس',
+		'/chat\s*gpt|شات\s*جي/iu'   => 'ChatGPT',
+		'/canva|كانفا/iu'             => 'كانفا',
+		'/spotify|سبوتيفاي/iu'        => 'سبوتيفاي',
+		'/shahid|شاهد/iu'             => 'شاهد',
+		'/youtube|يوتيوب/iu'          => 'يوتيوب',
+		'/adobe|أدوبي|ادوبي/iu'       => 'أدوبي',
+	);
+	foreach ( $map as $re => $name ) {
+		if ( preg_match( $re, (string) $title ) ) {
+			return $name;
+		}
+	}
+	return '';
 }
 
 /**
@@ -888,6 +929,7 @@ function wordsite_product_settings_fields() {
 	woocommerce_wp_textarea_input(
 		array(
 			'id'          => '_ws_terms',
+			'value'       => wordsite_terms_text( get_the_ID() ),
 			'label'       => 'نص الشروط',
 			'placeholder' => 'وقت الشراء ما يكون فيه اشتراك فعال بالحساب',
 			'desc_tip'    => true,
@@ -897,6 +939,7 @@ function wordsite_product_settings_fields() {
 	woocommerce_wp_checkbox(
 		array(
 			'id'          => '_ws_needs_account',
+			'value'       => wordsite_needs_account( get_the_ID() ) ? 'yes' : 'no',
 			'label'       => 'اطلب إيميل الحساب',
 			'description' => 'يطلب من العميل إيميل الحساب الذي سيُفعّل عليه الاشتراك.',
 		)
@@ -904,6 +947,7 @@ function wordsite_product_settings_fields() {
 	woocommerce_wp_checkbox(
 		array(
 			'id'          => '_ws_needs_password',
+			'value'       => wordsite_needs_password( get_the_ID() ) ? 'yes' : 'no',
 			'label'       => 'اطلب كلمة المرور أيضاً',
 			'description' => 'تُحفظ مشفّرة، تظهر لك فقط في صفحة الطلب، وتُحذف تلقائياً عند اكتمال الطلب.',
 		)
