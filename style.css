@@ -3,7 +3,7 @@ Theme Name: Saudistore
 Theme URI: https://github.com/aveoncenter/saudistore
 Author: aveoncenter
 Description: Dark, Arabic-first (RTL) WooCommerce block theme for a digital subscriptions store.
-Version: 0.2.5
+Version: 0.2.6
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -76,6 +76,95 @@ body { -webkit-font-smoothing: antialiased; }
 }
 .ws-header__end { justify-content: flex-end; gap: 1rem; color: #fff; }
 .ws-header__brand:has(.wp-block-site-logo img) .wp-block-site-title { display: none; }
+
+/* Scroll header: reserve its original space, float only the compact navigation.
+ * Blur lives on a pseudo-element, never the header itself, so fixed menu/cart
+ * overlays keep the viewport as their containing block. */
+.ws-header-slot { margin-block: 0; }
+.ws-search-toggle {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 8px;
+	border: 0;
+	background: transparent;
+	color: #fff;
+	cursor: pointer;
+}
+.ws-search-toggle svg { width: 26px; height: 26px; }
+.ws-search-toggle:focus-visible { outline: 2px solid #a78bfa; outline-offset: 3px; border-radius: 8px; }
+.ws-header .wp-block-navigation__responsive-container-open,
+.ws-header .wc-block-customer-account__link,
+.ws-header .wc-block-mini-cart__button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	box-sizing: border-box;
+}
+.ws-header.is-floating {
+	position: fixed;
+	inset-inline: clamp(12px, 3vw, 56px);
+	top: calc(var(--ws-admin-offset, 0px) + 12px);
+	z-index: 1000;
+	width: auto;
+	max-width: none;
+	margin: 0 !important;
+	padding-block: 12px !important;
+	padding-inline: clamp(12px, 2vw, 32px);
+	background: transparent !important;
+	border: 1px solid rgba(190, 198, 255, 0.18);
+	border-radius: 14px;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
+	animation: ws-header-arrive 280ms ease-out both;
+}
+.ws-header.is-floating::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: inherit;
+	background: rgba(7, 8, 29, 0.96);
+	pointer-events: none;
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	.ws-header.is-floating::before {
+		background: rgba(7, 8, 29, 0.8);
+		-webkit-backdrop-filter: blur(18px) saturate(135%);
+		backdrop-filter: blur(18px) saturate(135%);
+	}
+}
+.ws-header.is-floating .ws-header__row { min-height: 52px; }
+.ws-header.is-floating .ws-header__brand .wp-block-site-logo img {
+	width: auto;
+	max-width: 110px;
+	max-height: 52px;
+	object-fit: contain;
+}
+.ws-header.is-floating .ws-logo-text { font-size: 1.25rem; }
+.ws-header.is-floating .ws-search-toggle { display: inline-flex; }
+.ws-header.is-floating .ws-search { display: none; }
+.ws-header.is-floating.is-search-open .ws-search { display: block; margin-bottom: 4px; }
+.ws-header.is-measuring { animation: none !important; }
+html { scroll-padding-top: var(--ws-gallery-top, 72px); }
+@keyframes ws-header-arrive {
+	from { top: var(--ws-admin-offset, 0px); }
+	to { top: calc(var(--ws-admin-offset, 0px) + 12px); }
+}
+@media (max-width: 781px) {
+	.ws-header.is-floating { inset-inline: 10px; padding: 8px 10px !important; border-radius: 12px; }
+	.ws-header.is-floating .ws-header__row { gap: 8px; min-height: 44px; }
+	.ws-header.is-floating .ws-header__brand .wp-block-site-logo img { max-width: 82px; max-height: 44px; }
+	.ws-header.is-floating .ws-logo-text { font-size: 1rem !important; }
+	.ws-header.is-floating .ws-header__start { gap: 0; }
+	.ws-header.is-floating .ws-header__end { gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.ws-header.is-floating { animation: none; }
+}
 
 .ws-logo-text { margin: 0; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; }
 .ws-logo-text a {

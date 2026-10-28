@@ -16,7 +16,7 @@
 .ws-product__media {
 	align-self: flex-start;
 	position: sticky;
-	top: calc(1.5rem + var(--wp-admin--admin-bar--height, 0px));
+	top: var(--ws-gallery-top, calc(1.5rem + var(--wp-admin--admin-bar--height, 0px)));
 }
 .ws-product__media .wp-block-woocommerce-product-image-gallery { max-width: 440px; margin-inline: auto; }
 .ws-product__media .woocommerce-product-gallery__image { position: relative; overflow: hidden; }
