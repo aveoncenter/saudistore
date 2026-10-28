@@ -52,7 +52,7 @@ $cat = is_wp_error( $cat ) ? (int) $cat->get_error_data() : (int) $cat['term_id'
 // so updating the theme never guesses or changes categories on a live store.
 wordsite_ensure_store_categories();
 $store_category_ids = get_option( 'wordsite_store_category_ids', array() );
-$demo_category_keys = array( 'ai-subscriptions', 'ai-subscriptions', 'ai-subscriptions', 'editing-design', 'streaming-subscriptions', '' );
+$demo_category_keys = array( 'ai-subscriptions', 'ai-subscriptions', 'ai-subscriptions', 'editing-design', 'streaming-subscriptions', '', 'streaming-subscriptions', 'streaming-subscriptions' );
 
 $simple = array(
 	array( 'اشتراك مانوس برو Manus Pro لمدة سنة', 750, 320, 'MANUS', array( 30, 30, 40 ), array( 90, 90, 110 ) ),
@@ -61,6 +61,8 @@ $simple = array(
 	array( 'كانفا برو Canva Pro لمدة سنة', 200, 45, 'CANVA', array( 0, 196, 204 ), array( 125, 42, 232 ) ),
 	array( 'نتفلكس بريميوم Netflix لمدة شهر', 70, 35, 'NETFLIX', array( 229, 9, 20 ), array( 20, 20, 20 ) ),
 	array( 'سبوتيفاي بريميوم Spotify لمدة 3 شهور', 60, 30, 'SPOTIFY', array( 30, 215, 96 ), array( 18, 18, 18 ) ),
+	array( 'نتفلكس بريميوم Netflix لمدة 3 شهور', 210, 89, 'NETFLIX', array( 229, 9, 20 ), array( 20, 20, 20 ) ),
+	array( 'شاهد VIP Shahid لمدة شهر', 45, 29, 'SHAHID', array( 20, 170, 140 ), array( 10, 40, 60 ) ),
 );
 foreach ( $simple as $i => $d ) {
 	$p = new WC_Product_Simple();
