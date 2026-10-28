@@ -48,6 +48,12 @@ function ws_demo_image( $label, $c1, $c2, $slug ) {
 $cat = wp_insert_term( 'الإشتراكات', 'product_cat' );
 $cat = is_wp_error( $cat ) ? (int) $cat->get_error_data() : (int) $cat['term_id'];
 
+// The theme creates the five navigation categories; demo assignments stay here
+// so updating the theme never guesses or changes categories on a live store.
+wordsite_ensure_store_categories();
+$store_category_ids = get_option( 'wordsite_store_category_ids', array() );
+$demo_category_keys = array( 'ai-subscriptions', 'ai-subscriptions', 'ai-subscriptions', 'editing-design', 'streaming-subscriptions', '' );
+
 $simple = array(
 	array( 'اشتراك مانوس برو Manus Pro لمدة سنة', 750, 320, 'MANUS', array( 30, 30, 40 ), array( 90, 90, 110 ) ),
 	array( 'اشتراك جيميناي برو Gemini Pro لمدة سنة', 100, 70, 'GEMINI', array( 66, 133, 244 ), array( 155, 81, 224 ) ),
@@ -61,7 +67,8 @@ foreach ( $simple as $i => $d ) {
 	$p->set_name( $d[0] );
 	$p->set_regular_price( $d[1] );
 	$p->set_sale_price( $d[2] );
-	$p->set_category_ids( array( $cat ) );
+	$category_key = $demo_category_keys[ $i ];
+	$p->set_category_ids( array_filter( array( $cat, $store_category_ids[ $category_key ] ?? 0 ) ) );
 	$p->set_image_id( ws_demo_image( $d[3], $d[4], $d[5], 'demo-' . $i ) );
 	$p->set_short_description( 'تفعيل فوري ورسمي مع ضمان كامل طوال مدة الاشتراك.' );
 	$p->save();
@@ -78,7 +85,7 @@ $v = new WC_Product_Variable();
 $v->set_name( 'لينكد إن بريميوم - اشتراك سنوي على حسابك' );
 $v->set_slug( 'linkedin-premium' );
 $v->set_attributes( array( $attr ) );
-$v->set_category_ids( array( $cat ) );
+$v->set_category_ids( array_filter( array( $cat, $store_category_ids['linkedin-subscriptions'] ?? 0 ) ) );
 $v->set_image_id( ws_demo_image( 'LinkedIn', array( 10, 102, 194 ), array( 40, 20, 90 ), 'demo-linkedin' ) );
 $v->set_short_description( 'مكانك الأول لتفعيل اشتراك لينكد إن بريميوم لمدة سنة كاملة على حسابك الشخصي مع ضمان كامل طوال مدة الاشتراك.' );
 $v->set_description( '<p>تفاصيل كاملة عن الاشتراك وطريقة التفعيل.</p>' );

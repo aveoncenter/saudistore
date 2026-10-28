@@ -28,6 +28,7 @@ function wordsite_enqueue_assets() {
 	wp_enqueue_style( 'wordsite-riyal', get_theme_file_uri( 'assets/fonts/riyal.css' ), array(), $ver );
 	wp_enqueue_style( 'wordsite-fonts', get_theme_file_uri( 'assets/fonts/cairo.css' ), array( 'wordsite-riyal' ), $ver );
 	wp_enqueue_style( 'wordsite-style', get_stylesheet_uri(), array( 'wordsite-fonts' ), $ver );
+	wp_enqueue_style( 'wordsite-menu', get_theme_file_uri( 'assets/css/menu.css' ), array( 'wordsite-style' ), $ver );
 	wp_enqueue_script( 'wordsite-header', get_theme_file_uri( 'assets/js/header.js' ), array(), $ver, true );
 }
 add_action( 'wp_enqueue_scripts', 'wordsite_enqueue_assets' );
@@ -119,6 +120,8 @@ function wordsite_whatsapp_button() {
 	);
 }
 add_action( 'wp_footer', 'wordsite_whatsapp_button' );
+
+require_once get_theme_file_path( 'inc/store-menu.php' );
 
 /**
  * Product page (needs WooCommerce).

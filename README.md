@@ -25,6 +25,23 @@ Package choice ("نوع الباقة") = a WooCommerce **variable product** with
 "منتجات قد تعجبك" uses the product's **Upsells** (Linked Products tab), otherwise best sellers.
 Tip: WooCommerce → Settings → General → **Number of decimals = 0** for prices like 299.
 
+## Category menu (v0.2.7)
+
+The header's ☰ menu shows five product-category cards above the regular navigation links.
+The theme creates these WooCommerce categories once, including when an already active theme is updated.
+Matching category names/slugs are reused; existing products are never reassigned.
+
+- اشتراكات الذكاء الاصطناعي
+- سناب بلس وتويتر بريميوم الرسمي
+- اشتراكات برامج الأفلام والمسلسلات
+- تطبيقات المونتاج والتصاميم
+- اشتراكات لينكد إن LinkedIn
+
+Manage categories under **Products → Categories**, and assign products from each product's **Product categories** panel.
+Category IDs are retained so renaming a category or its slug does not break the menu.
+The demo assigns AI, Canva, Netflix, and LinkedIn products to the corresponding categories; Snapchat/X is empty until products are added.
+The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button.
+
 ## Online preview (WordPress Playground)
 
 Open a fresh demo site (theme + WooCommerce + demo products) straight from this repo — nothing to install:
