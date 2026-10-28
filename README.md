@@ -44,6 +44,20 @@ The demo assigns AI, Canva, Netflix, and LinkedIn products to the corresponding 
 The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button; clicking the dimmed desktop backdrop also closes the drawer.
 The supplied screenshot thumbnails are bundled losslessly at their original 75×75 size. Upload an image under **Products → Categories → Edit → Thumbnail** to override a category's bundled image.
 
+## Live product search (v0.2.11)
+
+The header search suggests names from words beginning with the typed text in published, in-stock, searchable product titles (minimum two characters).
+For example, `net` can suggest Netflix and Netlify **only if matching available products actually exist**.
+Suggestions are grouped by name, not individual plans. A name opens all matching available products, even when there is only one result.
+Stock is checked on every suggestion request; sold-out, backordered, draft, password-protected, and search-hidden products are excluded.
+
+The results page uses the existing product cards, quick view, and pagination, followed by available products from the matching categories.
+The five configured categories take priority over a broad parent category; matching search products are not repeated in recommendations.
+No customer-view tracking is implied or required.
+
+Keep service spellings in product titles and assign the correct **Product categories** to support matching and recommendations.
+The demo includes two Netflix plans plus Shahid in the movies/series category to demonstrate the flow.
+
 ## Online preview (WordPress Playground)
 
 Open a fresh demo site (theme + WooCommerce + demo products) straight from this repo — nothing to install:
