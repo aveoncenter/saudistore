@@ -134,8 +134,29 @@
 /* Excerpt */
 .ws-excerpt { margin-block-start: 2rem !important; color: #d6d9ee; }
 .ws-excerpt__text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ws-excerpt__text.is-expanded { display: block; -webkit-line-clamp: unset; overflow: visible; }
 .ws-excerpt__text p { margin: 0; }
-.ws-readmore { display: inline-block; margin-top: 0.4rem; color: #d946ef; }
+.ws-readmore {
+	display: inline-block;
+	margin-top: 0.4rem;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: #d946ef;
+	font: inherit;
+	cursor: pointer;
+}
+.ws-readmore:hover { color: #e879f9; background: transparent; text-decoration: underline; }
+.ws-readmore:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.ws-excerpt__full[hidden] { display: none !important; }
+.ws-excerpt__full { margin-block-start: 1rem; overflow-wrap: anywhere; }
+.ws-excerpt__full > :first-child { margin-block-start: 0; }
+.ws-excerpt__full > :last-child { margin-block-end: 0; }
+.ws-excerpt__full img,
+.ws-excerpt__full video,
+.ws-excerpt__full iframe { max-width: 100%; }
+.ws-excerpt__full img { height: auto; }
 
 /* ---------- Add to cart form ---------- */
 .ws-product__summary form.cart {
