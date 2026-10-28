@@ -81,6 +81,51 @@ function wordsite_needs_account( $product_id ) {
 }
 
 /**
+ * Also ask for the account password?
+ *
+ * @param int $product_id Product ID.
+ * @return bool
+ */
+function wordsite_needs_password( $product_id ) {
+	return wordsite_needs_account( $product_id ) && 'yes' === get_post_meta( $product_id, '_ws_needs_password', true );
+}
+
+/**
+ * Encrypt a secret with the site's auth salt (AES-256-CBC).
+ *
+ * @param string $plain Plain text.
+ * @return string
+ */
+function wordsite_encrypt( $plain ) {
+	if ( '' === $plain || ! function_exists( 'openssl_encrypt' ) ) {
+		return '';
+	}
+	$key = hash( 'sha256', wp_salt( 'auth' ), true );
+	$iv  = random_bytes( 16 );
+	$enc = openssl_encrypt( $plain, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv );
+	return false === $enc ? '' : 'v1:' . base64_encode( $iv . $enc ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+}
+
+/**
+ * Decrypt a secret made by wordsite_encrypt().
+ *
+ * @param string $data Encrypted.
+ * @return string
+ */
+function wordsite_decrypt( $data ) {
+	if ( 0 !== strpos( (string) $data, 'v1:' ) || ! function_exists( 'openssl_decrypt' ) ) {
+		return '';
+	}
+	$raw = base64_decode( substr( $data, 3 ), true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+	if ( false === $raw || strlen( $raw ) < 17 ) {
+		return '';
+	}
+	$key   = hash( 'sha256', wp_salt( 'auth' ), true );
+	$plain = openssl_decrypt( substr( $raw, 16 ), 'aes-256-cbc', $key, OPENSSL_RAW_DATA, substr( $raw, 0, 16 ) );
+	return false === $plain ? '' : $plain;
+}
+
+/**
  * Terms text the customer must accept ('' = none).
  *
  * @param int $product_id Product ID.
@@ -126,6 +171,7 @@ function wordsite_icon( $name ) {
 		'cart'     => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 10.2a1 1 0 001 .8h9.2a1 1 0 001-.8L20 7H6.2"/><circle cx="9" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/><path d="M11 10h5M13.5 7.5v5"/></svg>',
 		'wallet'   => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M4 7h14a2 2 0 012 2v9a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><path d="M4 7l11-3v3M20 11h-4a2 2 0 000 4h4"/></svg>',
 		'chevron'  => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+		'eye'      => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
 		'close'    => '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
 		'whatsapp' => '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>',
 	);
@@ -535,6 +581,15 @@ function wordsite_purchase_fields( $product ) {
 			esc_html( wordsite_account_label( $id ) ),
 			$variable ? ' disabled' : ''
 		);
+		if ( wordsite_needs_password( $id ) ) {
+			$out .= sprintf(
+				'<div class="ws-field ws-field--account"%1$s><label class="ws-field__label" for="ws_account_password">كلمة المرور<span class="ws-req">*</span><small>Password</small></label><div class="ws-pass"><input type="password" id="ws_account_password" name="ws_account_password" placeholder="Password" autocomplete="new-password" dir="ltr" required%2$s><button type="button" class="ws-pass__toggle" data-ws-pass aria-label="إظهار كلمة المرور">%3$s</button></div></div><p class="ws-field__note ws-field--account"%1$s>%4$s</p>',
+				$variable ? ' hidden' : '',
+				$variable ? ' disabled' : '',
+				wordsite_icon( 'eye' ),
+				esc_html( 'بياناتك مشفّرة ولا يراها إلا فريق التفعيل، وتُحذف تلقائياً بعد إتمام الطلب.' )
+			);
+		}
 	}
 	return $out . '</div>';
 }
@@ -668,6 +723,16 @@ function wordsite_validate_fields( $passed, $product_id ) {
 			wc_add_notice( 'يرجى إدخال ' . wordsite_account_label( $product_id ) . ' بشكل صحيح.', 'error' );
 			$passed = false;
 		}
+		if ( wordsite_needs_password( $product_id ) ) {
+			$pass = isset( $_POST['ws_account_password'] ) ? (string) wp_unslash( $_POST['ws_account_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( '' === trim( $pass ) ) {
+				wc_add_notice( 'يرجى إدخال كلمة مرور الحساب.', 'error' );
+				$passed = false;
+			} elseif ( ! function_exists( 'openssl_encrypt' ) ) {
+				wc_add_notice( 'تعذّر حفظ البيانات بشكل آمن، يرجى التواصل معنا عبر واتساب.', 'error' );
+				$passed = false;
+			}
+		}
 	}
 	// phpcs:enable
 	return $passed;
@@ -688,6 +753,11 @@ function wordsite_cart_item_data( $data, $product_id ) {
 			'label' => wordsite_account_label( $product_id ),
 			'email' => sanitize_email( wp_unslash( $_POST['ws_account_email'] ) ),
 		);
+		if ( wordsite_needs_password( $product_id ) && isset( $_POST['ws_account_password'] ) ) {
+			// Stored encrypted only; never shown on the storefront or in customer e-mails.
+			$data['ws_account']['password'] = wordsite_encrypt( (string) wp_unslash( $_POST['ws_account_password'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$data['ws_unique']              = wp_generate_uuid4();
+		}
 	}
 	if ( wordsite_terms_text( $product_id ) && ! empty( $_POST['ws_terms'] ) ) {
 		$data['ws_terms'] = 1;
@@ -725,12 +795,76 @@ add_filter( 'woocommerce_get_item_data', 'wordsite_cart_item_display', 10, 2 );
 function wordsite_order_item_meta( $item, $key, $values ) {
 	if ( ! empty( $values['ws_account'] ) ) {
 		$item->add_meta_data( $values['ws_account']['label'], $values['ws_account']['email'], true );
+		if ( ! empty( $values['ws_account']['password'] ) ) {
+			$item->add_meta_data( '_ws_account_password', $values['ws_account']['password'], true );
+		}
 	}
 	if ( ! empty( $values['ws_terms'] ) ) {
 		$item->add_meta_data( 'وافق على الشروط', 'نعم', true );
 	}
 }
 add_action( 'woocommerce_checkout_create_order_line_item', 'wordsite_order_item_meta', 10, 3 );
+
+/**
+ * Show the decrypted password to shop managers on the order screen only.
+ *
+ * @param int                   $item_id Item ID.
+ * @param WC_Order_Item_Product $item    Item.
+ */
+function wordsite_admin_item_password( $item_id, $item ) {
+	if ( ! is_admin() || ! current_user_can( 'edit_shop_orders' ) || ! is_callable( array( $item, 'get_meta' ) ) ) {
+		return;
+	}
+	$enc = $item->get_meta( '_ws_account_password' );
+	if ( ! $enc ) {
+		return;
+	}
+	$pass = wordsite_decrypt( $enc );
+	printf(
+		'<div class="ws-admin-pass" style="margin-top:6px"><strong>كلمة مرور الحساب:</strong> <code style="user-select:all">%s</code><br><small style="color:#787c82">تُحذف تلقائياً عند تغيير حالة الطلب إلى مكتمل أو ملغي أو مسترد أو فاشل.</small></div>',
+		esc_html( '' !== $pass ? $pass : '—' )
+	);
+}
+add_action( 'woocommerce_after_order_itemmeta', 'wordsite_admin_item_password', 10, 2 );
+
+/**
+ * Delete stored passwords once the order is finished.
+ *
+ * @param int $order_id Order ID.
+ */
+function wordsite_purge_order_passwords( $order_id ) {
+	$order = wc_get_order( $order_id );
+	if ( ! $order ) {
+		return;
+	}
+	$purged = false;
+	foreach ( $order->get_items() as $item ) {
+		if ( $item->get_meta( '_ws_account_password' ) ) {
+			$item->delete_meta_data( '_ws_account_password' );
+			$item->save();
+			$purged = true;
+		}
+	}
+	if ( $purged ) {
+		$order->add_order_note( 'تم حذف كلمة مرور حساب العميل تلقائياً.' );
+	}
+}
+foreach ( array( 'completed', 'cancelled', 'refunded', 'failed' ) as $wordsite_status ) {
+	add_action( 'woocommerce_order_status_' . $wordsite_status, 'wordsite_purge_order_passwords' );
+}
+unset( $wordsite_status );
+
+/**
+ * Keep the password out of every generic meta display.
+ *
+ * @param array $keys Hidden keys.
+ * @return array
+ */
+function wordsite_hide_password_meta( $keys ) {
+	$keys[] = '_ws_account_password';
+	return $keys;
+}
+add_filter( 'woocommerce_hidden_order_itemmeta', 'wordsite_hide_password_meta' );
 
 /* -------------------------------------------------------------------------
  * Product edit screen settings (Product data → General)
@@ -767,6 +901,13 @@ function wordsite_product_settings_fields() {
 			'description' => 'يطلب من العميل إيميل الحساب الذي سيُفعّل عليه الاشتراك.',
 		)
 	);
+	woocommerce_wp_checkbox(
+		array(
+			'id'          => '_ws_needs_password',
+			'label'       => 'اطلب كلمة المرور أيضاً',
+			'description' => 'تُحفظ مشفّرة، تظهر لك فقط في صفحة الطلب، وتُحذف تلقائياً عند اكتمال الطلب.',
+		)
+	);
 	woocommerce_wp_text_input(
 		array(
 			'id'          => '_ws_account_name',
@@ -791,6 +932,7 @@ function wordsite_save_product_settings( $product ) {
 	$product->update_meta_data( '_ws_sold_display', '' === $sold ? '' : (string) absint( $sold ) );
 	$product->update_meta_data( '_ws_terms', isset( $_POST['_ws_terms'] ) ? sanitize_textarea_field( wp_unslash( $_POST['_ws_terms'] ) ) : '' );
 	$product->update_meta_data( '_ws_needs_account', isset( $_POST['_ws_needs_account'] ) ? 'yes' : 'no' );
+	$product->update_meta_data( '_ws_needs_password', isset( $_POST['_ws_needs_password'] ) ? 'yes' : 'no' );
 	$product->update_meta_data( '_ws_account_name', isset( $_POST['_ws_account_name'] ) ? sanitize_text_field( wp_unslash( $_POST['_ws_account_name'] ) ) : '' );
 	// phpcs:enable
 }
