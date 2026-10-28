@@ -117,3 +117,96 @@ function wordsite_whatsapp_button() {
 	);
 }
 add_action( 'wp_footer', 'wordsite_whatsapp_button' );
+
+/**
+ * Enqueue LinkedIn product page script.
+ */
+function wordsite_linkedin_product_script() {
+	if ( is_product() ) {
+		$ver = wp_get_theme()->get( 'Version' );
+		wp_enqueue_script(
+			'wordsite-linkedin-product',
+			get_theme_file_uri( 'assets/linkedin-product.js' ),
+			array(),
+			$ver,
+			true
+		);
+	}
+}
+add_action( 'wp_enqueue_scripts', 'wordsite_linkedin_product_script' );
+
+/**
+ * Save LinkedIn custom data to cart item.
+ */
+function wordsite_add_linkedin_data_to_cart( $cart_item_data, $product_id, $variation_id ) {
+	if ( isset( $_POST['linkedin_plan'] ) ) {
+		$cart_item_data['linkedin_plan']      = sanitize_text_field( wp_unslash( $_POST['linkedin_plan'] ) );
+		$cart_item_data['linkedin_plan_text'] = sanitize_text_field( wp_unslash( $_POST['linkedin_plan_text'] ) );
+		$cart_item_data['linkedin_email']     = sanitize_email( wp_unslash( $_POST['linkedin_email'] ) );
+		$cart_item_data['linkedin_password']  = sanitize_text_field( wp_unslash( $_POST['linkedin_password'] ) );
+	}
+	return $cart_item_data;
+}
+add_filter( 'woocommerce_add_cart_item_data', 'wordsite_add_linkedin_data_to_cart', 10, 3 );
+
+/**
+ * Display LinkedIn data in cart.
+ */
+function wordsite_display_linkedin_data_in_cart( $item_data, $cart_item ) {
+	if ( isset( $cart_item['linkedin_plan_text'] ) ) {
+		$item_data[] = array(
+			'name'  => __( 'نوع الباقة', 'wordsite' ),
+			'value' => esc_html( $cart_item['linkedin_plan_text'] ),
+		);
+	}
+	if ( isset( $cart_item['linkedin_email'] ) ) {
+		$item_data[] = array(
+			'name'  => __( 'ايميل لينكد ان', 'wordsite' ),
+			'value' => esc_html( $cart_item['linkedin_email'] ),
+		);
+	}
+	return $item_data;
+}
+add_filter( 'woocommerce_get_item_data', 'wordsite_display_linkedin_data_in_cart', 10, 2 );
+
+/**
+ * Save LinkedIn data to order meta.
+ */
+function wordsite_save_linkedin_data_to_order( $item, $cart_item_key, $values, $order ) {
+	if ( isset( $values['linkedin_plan'] ) ) {
+		$item->add_meta_data( __( 'نوع الباقة', 'wordsite' ), $values['linkedin_plan_text'] );
+	}
+	if ( isset( $values['linkedin_email'] ) ) {
+		$item->add_meta_data( __( 'ايميل لينكد ان', 'wordsite' ), $values['linkedin_email'] );
+	}
+	if ( isset( $values['linkedin_password'] ) ) {
+		$item->add_meta_data( __( 'كلمة المرور', 'wordsite' ), $values['linkedin_password'] );
+	}
+}
+add_action( 'woocommerce_checkout_create_order_line_item', 'wordsite_save_linkedin_data_to_order', 10, 4 );
+
+/**
+ * Update product price based on selected plan.
+ */
+function wordsite_update_cart_item_price( $cart ) {
+	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+		return;
+	}
+
+	foreach ( $cart->get_cart() as $cart_item ) {
+		if ( isset( $cart_item['linkedin_plan'] ) ) {
+			$plan_prices = array(
+				'career'    => 239,
+				'business'  => 299,
+				'sales'     => 450,
+				'recruiter' => 550,
+			);
+
+			$plan = $cart_item['linkedin_plan'];
+			if ( isset( $plan_prices[ $plan ] ) ) {
+				$cart_item['data']->set_price( $plan_prices[ $plan ] );
+			}
+		}
+	}
+}
+add_action( 'woocommerce_before_calculate_totals', 'wordsite_update_cart_item_price' );

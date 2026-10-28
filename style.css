@@ -99,6 +99,239 @@ body { -webkit-font-smoothing: antialiased; }
 }
 .ws-nav .wp-block-navigation-item__content:hover { color: var(--wp--preset--color--secondary); text-decoration: none; }
 
+/* ---------- LinkedIn Product Page Custom Styles ---------- */
+.saudi-product-page {
+	direction: rtl;
+}
+
+.product-description-wrapper {
+	margin-bottom: 24px;
+}
+
+.product-short-description .wp-block-post-excerpt__more-link {
+	color: #a855f7;
+	font-weight: 600;
+	cursor: pointer;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.product-short-description .wp-block-post-excerpt__more-link:hover {
+	color: #c084fc;
+	text-decoration: underline;
+}
+
+.product-full-description {
+	animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Plan Selector Styling */
+.linkedin-plan-selector select:focus,
+.linkedin-credentials input:focus {
+	outline: none;
+	border-color: #a855f7;
+	box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+.condition-checkbox-wrapper {
+	transition: all 0.3s ease;
+}
+
+.condition-checkbox-wrapper:hover {
+	border-color: #a855f7 !important;
+}
+
+.linkedin-credentials {
+	animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		max-height: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		max-height: 500px;
+		transform: translateY(0);
+	}
+}
+
+/* Price Display Animation */
+.selected-plan-price {
+	animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* Customer Reviews Section */
+.customer-reviews-section {
+	background: rgba(15, 23, 42, 0.5);
+	padding: var(--wp--preset--spacing--60);
+	border-radius: 16px;
+	border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.reviews-summary {
+	display: grid;
+	gap: 24px;
+}
+
+/* Related Products Section */
+.related-products-section {
+	padding: var(--wp--preset--spacing--50) 0;
+}
+
+/* WhatsApp Contact Section */
+.whatsapp-contact {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 16px;
+	background: rgba(37, 211, 102, 0.1);
+	border: 2px solid #25d366;
+	border-radius: 8px;
+	margin-bottom: 24px;
+	color: #25d366;
+	text-decoration: none;
+	transition: all 0.3s ease;
+}
+
+.whatsapp-contact:hover {
+	background: rgba(37, 211, 102, 0.2);
+	transform: translateX(-5px);
+}
+
+.whatsapp-contact svg {
+	width: 24px;
+	height: 24px;
+	flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.wp-block-columns {
+		flex-direction: column;
+	}
+
+	.wp-block-column {
+		flex-basis: 100% !important;
+	}
+
+	.linkedin-plan-selector select,
+	.linkedin-credentials input {
+		font-size: 16px; /* Prevents zoom on iOS */
+	}
+
+	.customer-reviews-section,
+	.related-products-section {
+		padding: var(--wp--preset--spacing--40);
+	}
+}
+
+/* WooCommerce Overrides for LinkedIn Product */
+.saudi-product-page .woocommerce-product-rating {
+	margin-bottom: 16px;
+}
+
+.saudi-product-page .star-rating {
+	color: #fbbf24;
+}
+
+.saudi-product-page .woocommerce-Price-amount {
+	font-size: 28px;
+	font-weight: 700;
+	color: #a855f7;
+}
+
+.saudi-product-page .single_add_to_cart_button {
+	width: 100%;
+	background: #a855f7 !important;
+	color: #fff !important;
+	padding: 16px 32px;
+	border-radius: 8px;
+	font-size: 18px;
+	font-weight: 700;
+	border: none;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.saudi-product-page .single_add_to_cart_button:hover {
+	background: #9333ea !important;
+	transform: translateY(-2px);
+	box-shadow: 0 8px 16px rgba(168, 85, 247, 0.3);
+}
+
+.saudi-product-page .single_add_to_cart_button:active {
+	transform: translateY(0);
+}
+
+/* Product Image Gallery */
+.saudi-product-page .woocommerce-product-gallery {
+	margin-bottom: 0;
+}
+
+.saudi-product-page .woocommerce-product-gallery__image img {
+	border-radius: 16px;
+	border: 2px solid rgba(168, 85, 247, 0.2);
+}
+
+/* Add to Cart Success */
+.woocommerce-message {
+	background: rgba(16, 185, 129, 0.1);
+	border-right: 4px solid #10b981;
+	color: #10b981;
+	padding: 16px;
+	border-radius: 8px;
+	margin-bottom: 24px;
+}
+
+/* Loading State */
+.single_add_to_cart_button.loading {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.single_add_to_cart_button.loading::after {
+	content: "";
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-right: 8px;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
 .ws-header__end svg { width: 26px; height: 26px; }
 .ws-header__end a,
 .ws-header__end button { color: #fff; }

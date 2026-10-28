@@ -1,0 +1,239 @@
+<!-- wp:template-part {"slug":"header","area":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|60"},"margin":{"top":"0"}}},"layout":{"type":"constrained","contentSize":"1200px"}} -->
+<main class="wp-block-group saudi-product-page" style="margin-top:0;padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--60)">
+
+	<!-- wp:columns {"style":{"spacing":{"blockGap":{"left":"32px"}}}} -->
+	<div class="wp-block-columns saudi-product-columns">
+
+		<!-- wp:column {"width":"55%","className":"product-info-column"} -->
+		<div class="wp-block-column product-info-column" style="flex-basis:55%">
+
+			<!-- Product Title -->
+			<!-- wp:post-title {"level":1,"style":{"typography":{"fontSize":"28px","fontWeight":"700"},"spacing":{"margin":{"bottom":"16px"}}}} /-->
+
+			<!-- Rating and Sales Count -->
+			<div class="product-meta-row" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+				<div style="display:flex;align-items:center;gap:8px;">
+					<!-- wp:woocommerce/product-rating {"style":{"typography":{"fontSize":"14px"}}} /-->
+				</div>
+				<div class="sales-count" style="display:flex;align-items:center;gap:8px;color:#a855f7;">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+					</svg>
+					<span style="font-size:14px;">تم بيعه أكثر من <strong>634 مرة</strong></span>
+				</div>
+			</div>
+
+			<!-- Price Display -->
+			<div class="product-price-display" style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+				<span class="discount-badge" style="background:#a855f7;color:#fff;padding:6px 16px;border-radius:6px;font-size:14px;font-weight:700;">- 68.85 %</span>
+				<div style="display:flex;align-items:center;gap:12px;">
+					<span class="old-price-display" style="text-decoration:line-through;color:#6b7280;font-size:18px;">960 ﷼</span>
+					<!-- wp:woocommerce/product-price {"fontSize":"x-large","style":{"typography":{"fontSize":"32px","fontWeight":"700"},"elements":{"link":{"color":{"text":"var:preset|color|secondary"}}}}} /-->
+				</div>
+			</div>
+
+			<!-- WhatsApp Contact Card -->
+			<a href="/?whatsapp" class="whatsapp-card" style="display:flex;align-items:center;justify-content:center;gap:12px;background:rgba(15,23,42,0.6);border:2px solid rgba(37,211,102,0.3);border-radius:12px;padding:16px;margin-bottom:24px;text-decoration:none;color:#25d366;transition:all 0.3s ease;">
+				<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+					<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+				</svg>
+				<span style="font-weight:600;">حاب نستفسر عن المنتج؟ تواصل معنا</span>
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right:auto;">
+					<path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+				</svg>
+			</a>
+
+			<!-- Description Card -->
+			<div class="description-card" style="background:rgba(15,23,42,0.6);border:1px solid rgba(55,65,81,0.5);border-radius:12px;padding:20px;margin-bottom:24px;">
+				<p style="color:#9ca3af;font-size:15px;line-height:1.8;margin:0;">
+					حصر أكاديمي ، هو مكانك الأول لتشحن وتفعيل اشتراك لينكد ان بريميوم لمدة سنة
+				</p>
+				<button class="read-more-btn" style="background:transparent;border:none;color:#a855f7;font-weight:600;margin-top:12px;cursor:pointer;font-size:15px;padding:0;">
+					اقرأ المزيد
+				</button>
+				<div class="full-description" style="display:none;margin-top:12px;">
+					<!-- wp:post-content /-->
+				</div>
+			</div>
+
+			<!-- Plan Selection Card -->
+			<div class="plan-card" style="background:rgba(15,23,42,0.6);border:1px solid rgba(55,65,81,0.5);border-radius:12px;padding:20px;margin-bottom:24px;">
+				<div class="plan-selector-wrapper" style="position:relative;width:100%;margin-bottom:20px;">
+						<label style="display:block;margin-bottom:12px;font-weight:600;font-size:15px;text-align:right;">
+							نوع الباقة: <span style="color:#dc2626;">*</span>
+						</label>
+						<div class="plan-selector-custom" style="width:100%;padding:14px 40px 14px 16px;border:2px solid #374151;border-radius:8px;background:#1f2937;color:#fff;font-size:15px;cursor:pointer;text-align:right;">
+							اختر
+						</div>
+						<select id="linkedin-plan-type" class="plan-selector-dropdown" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;z-index:10;cursor:pointer;margin:0;padding:0;border:none;background:transparent;">
+							<option value="">اختر</option>
+							<option value="career" data-price="239">Career - بريميوم "الأساسية"</option>
+							<option value="business" data-price="299">Business - بريميوم "التجاري"</option>
+							<option value="sales" data-price="450">Sales Navigator Core - بريميوم "المبيعات"</option>
+							<option value="recruiter" data-price="550">Recruiter Lite - بريميوم "مسؤول التوظيف"</option>
+						</select>
+						<svg class="plan-selector-arrow" width="20" height="20" viewBox="0 0 24 24" fill="#9ca3af" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);pointer-events:none;">
+							<path d="M6.93 4.93 12 10l5.07-5.07a1 1 0 0 1 1.41 1.41l-6 6a1 1 0 0 1-1.41 0l-6-6a1 1 0 0 1 0-1.41 1 1 0 0 1 1.41-1.41z"/>
+						</svg>
+					</div>
+
+				<!-- Conditions -->
+				<div style="margin-top:20px;">
+					<label style="display:block;margin-bottom:12px;font-weight:600;font-size:15px;text-align:right;">
+						الشـــروط: <span style="color:#dc2626;">*</span>
+					</label>
+					<label class="condition-checkbox-wrapper" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#0f172a;border:2px solid #374151;border-radius:8px;cursor:pointer;transition:all 0.3s ease;">
+						<span style="font-size:14px;flex:1;text-align:right;">وقت الشراء ما يكون فيه اشتراك فعال بالحساب</span>
+						<input type="checkbox" id="linkedin-condition" style="width:20px;height:20px;cursor:pointer;accent-color:#a855f7;margin-left:0;margin-right:12px;flex-shrink:0;">
+					</label>
+				</div>
+
+				<!-- Credentials (Hidden by default) -->
+				<div class="linkedin-credentials" style="display:none;margin-top:20px;">
+					<div style="margin-bottom:16px;text-align:right;">
+						<label style="display:block;margin-bottom:8px;font-weight:600;font-size:15px;">
+							ايميل لينكد ان: <span style="color:#dc2626;">*</span>
+						</label>
+						<p style="font-size:13px;color:#9ca3af;margin:0 0 8px 0;">User@mail.com</p>
+						<input type="email" id="linkedin-email" placeholder="User@mail.com" style="width:100%;max-width:380px;padding:14px 16px;border:2px solid #374151;border-radius:8px;background:#1f2937;color:#fff;font-size:15px;margin:0 auto;display:block;">
+					</div>
+
+					<div>
+						<label style="display:block;margin-bottom:8px;font-weight:600;font-size:15px;">
+							كلمة المرور: <span style="color:#dc2626;">*</span>
+						</label>
+						<p style="font-size:13px;color:#9ca3af;margin:0 0 8px 0;">Password</p>
+						<input type="password" id="linkedin-password" placeholder="Password" style="width:100%;max-width:380px;padding:14px 16px;border:2px solid #374151;border-radius:8px;background:#1f2937;color:#fff;font-size:15px;margin:0 auto;display:block;">
+					</div>
+				</div>
+			</div>
+
+			<!-- Cart Actions Card -->
+			<div class="cart-actions-card" style="background:rgba(15,23,42,0.6);border:1px solid rgba(55,65,81,0.5);border-radius:12px;padding:20px;">
+				<div class="selected-plan-price" style="display:none;text-align:center;margin-bottom:16px;padding:16px;background:#0f172a;border:2px solid #a855f7;border-radius:8px;">
+					<div style="display:flex;justify-content:center;align-items:center;gap:12px;">
+						<span class="old-price" style="text-decoration:line-through;color:#9ca3af;font-size:18px;">960 ﷼</span>
+						<span class="new-price" style="font-size:28px;font-weight:bold;color:#a855f7;">239 ﷼</span>
+					</div>
+				</div>
+
+				<!-- Apple Pay Button -->
+				<button class="apple-pay-btn" style="width:100%;padding:14px;background:#000;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;margin-bottom:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+					<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+					</svg>
+					شراء باستخدام Pay
+				</button>
+
+				<!-- Add to Cart Form -->
+				<!-- wp:woocommerce/add-to-cart-form /-->
+			</div>
+
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column {"width":"45%","className":"product-image-column"} -->
+		<div class="wp-block-column product-image-column" style="flex-basis:45%">
+			<!-- wp:woocommerce/product-image-gallery {"className":"saudi-product-gallery"} /-->
+		</div>
+		<!-- /wp:column -->
+
+	</div>
+	<!-- /wp:columns -->
+
+	<!-- Customer Reviews Section -->
+	<div class="reviews-section" style="margin-top:60px;">
+		<h2 style="text-align:center;font-size:28px;font-weight:700;margin-bottom:32px;">التقييم العام</h2>
+
+		<!-- Reviews Stats -->
+		<div class="reviews-stats" style="background:rgba(15,23,42,0.6);border:1px solid rgba(55,65,81,0.5);border-radius:12px;padding:32px;margin-bottom:32px;">
+			<div style="display:grid;grid-template-columns:300px 1fr;gap:48px;align-items:center;">
+				<!-- Overall Rating -->
+				<div style="text-align:center;">
+					<div style="font-size:64px;font-weight:700;color:#a855f7;margin-bottom:8px;">100%</div>
+					<div style="display:flex;justify-content:center;gap:4px;margin-bottom:8px;">
+						<svg width="32" height="32" viewBox="0 0 24 24" fill="#a855f7">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<svg width="32" height="32" viewBox="0 0 24 24" fill="#a855f7">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<svg width="32" height="32" viewBox="0 0 24 24" fill="#a855f7">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<svg width="32" height="32" viewBox="0 0 24 24" fill="#a855f7">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<svg width="32" height="32" viewBox="0 0 24 24" fill="#a855f7">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+					</div>
+					<div style="color:#9ca3af;font-size:14px;">بناءً على 21 تقييم</div>
+					<div style="color:#fff;font-weight:600;font-size:18px;margin-top:12px;">22 تعليق</div>
+				</div>
+
+				<!-- Rating Bars -->
+				<div style="display:flex;flex-direction:column;gap:12px;">
+					<div style="display:flex;align-items:center;gap:12px;">
+						<div style="width:100%;height:12px;background:#374151;border-radius:999px;overflow:hidden;">
+							<div style="width:100%;height:100%;background:linear-gradient(90deg,#a855f7,#ec4899);border-radius:999px;"></div>
+						</div>
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<span style="color:#9ca3af;font-size:14px;min-width:40px;">100%</span>
+					</div>
+					<div style="display:flex;align-items:center;gap:12px;">
+						<div style="width:100%;height:12px;background:#374151;border-radius:999px;"></div>
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<span style="color:#9ca3af;font-size:14px;min-width:40px;">0%</span>
+					</div>
+					<div style="display:flex;align-items:center;gap:12px;">
+						<div style="width:100%;height:12px;background:#374151;border-radius:999px;"></div>
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<span style="color:#9ca3af;font-size:14px;min-width:40px;">0%</span>
+					</div>
+					<div style="display:flex;align-items:center;gap:12px;">
+						<div style="width:100%;height:12px;background:#374151;border-radius:999px;"></div>
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<span style="color:#9ca3af;font-size:14px;min-width:40px;">0%</span>
+					</div>
+					<div style="display:flex;align-items:center;gap:12px;">
+						<div style="width:100%;height:12px;background:#374151;border-radius:999px;"></div>
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="#fbbf24">
+							<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+						</svg>
+						<span style="color:#9ca3af;font-size:14px;min-width:40px;">0%</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- WooCommerce Reviews -->
+		<!-- wp:woocommerce/reviews-by-product /-->
+
+		<div style="text-align:center;margin-top:32px;">
+			<a href="#review_form" class="show-more-btn" style="display:inline-block;padding:12px 48px;background:#a855f7;color:#fff;border-radius:8px;text-decoration:none;font-weight:600;transition:all 0.3s ease;">
+				عرض المزيد
+			</a>
+		</div>
+	</div>
+
+	<!-- Related Products Section -->
+	<div class="related-products-wrapper" style="margin-top:60px;">
+		<h2 style="text-align:center;font-size:28px;font-weight:700;margin-bottom:32px;">منتجات مشابهة</h2>
+		<!-- wp:woocommerce/related-products {"columns":4} /-->
+	</div>
+
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","area":"footer","tagName":"footer"} /-->
