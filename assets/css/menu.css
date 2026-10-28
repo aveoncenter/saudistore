@@ -4,6 +4,8 @@
 	inset: var(--ws-admin-offset, 0px) 0 0 !important;
 	padding: 0;
 	background: rgba(0, 0, 0, 0.55) !important;
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
 }
 .ws-nav .is-menu-open .wp-block-navigation__responsive-close {
 	width: 100%;
