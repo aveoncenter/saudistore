@@ -74,6 +74,33 @@
 		});
 	}
 
+	/* Account fields: shown only after a plan is chosen (variable) and the terms box is ticked. */
+	function syncAccount(form) {
+		var acc = form.querySelectorAll('.ws-field--account');
+		if (!acc.length) return;
+		var terms = form.querySelector('input[name="ws_terms"]');
+		var isVar = form.classList.contains('variations_form');
+		var planOk = !isVar || form.getAttribute('data-ws-plan') === '1';
+		var show = planOk && (!terms || terms.checked);
+		acc.forEach(function (el) {
+			var was = el.hidden;
+			el.hidden = !show;
+			el.querySelectorAll('input').forEach(function (i) { i.disabled = !show; });
+			if (show && was) {
+				el.classList.remove('ws-reveal');
+				void el.offsetWidth;
+				el.classList.add('ws-reveal');
+			}
+		});
+	}
+	document.addEventListener('change', function (e) {
+		if (e.target && e.target.name === 'ws_terms') {
+			var f = e.target.closest('form');
+			if (f) syncAccount(f);
+		}
+	});
+	document.querySelectorAll('form.cart').forEach(syncAccount);
+
 	/* Variable products: live price, discount, fields, buy-now state. */
 	if (!window.jQuery) return;
 	jQuery(function ($) {
@@ -83,7 +110,6 @@
 		var $badge = $('[data-ws-discount]');
 		var origPrices = $prices.map(function () { return this.innerHTML; }).get();
 		var origBadge = { html: $badge.find('bdi').html(), hidden: $badge.prop('hidden') };
-		var $account = $form.find('.ws-field--account');
 		var $buyNow = $form.find('.ws-buy-now');
 
 		function fmt(n) { return String(Math.round(n * 100) / 100); }
@@ -97,7 +123,8 @@
 			} else {
 				$badge.prop('hidden', true);
 			}
-			$account.prop('hidden', false).find('input').prop('disabled', false);
+			$form.attr('data-ws-plan', '1');
+			syncAccount($form[0]);
 			$buyNow.toggleClass('disabled', !v.is_purchasable || !v.is_in_stock);
 		});
 
@@ -105,7 +132,8 @@
 			$prices.each(function (i) { this.innerHTML = origPrices[i]; });
 			$badge.find('bdi').html(origBadge.html);
 			$badge.prop('hidden', origBadge.hidden);
-			$account.prop('hidden', true).find('input').prop('disabled', true);
+			$form.attr('data-ws-plan', '0');
+			syncAccount($form[0]);
 			$buyNow.addClass('disabled');
 		});
 

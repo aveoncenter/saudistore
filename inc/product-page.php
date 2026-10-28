@@ -607,7 +607,8 @@ function wordsite_purchase_fields( $product ) {
 	if ( ! $terms && ! $acct ) {
 		return '';
 	}
-	$variable = $product->is_type( 'variable' );
+	// Account fields stay hidden until a plan is chosen (variable) and the terms box is ticked.
+	$variable = $product->is_type( 'variable' ) || '' !== $terms;
 	$out      = '<div class="ws-fields">';
 	if ( $terms ) {
 		$out .= sprintf(
