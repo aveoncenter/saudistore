@@ -262,7 +262,7 @@ add_filter( 'woocommerce_currency_symbol', 'wordsite_currency_symbol', 20, 2 );
  * Product page CSS / JS.
  */
 function wordsite_product_assets() {
-	if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+	if ( ! function_exists( 'is_product' ) || ( ! is_product() && ! ( function_exists( 'wordsite_is_product_search' ) && wordsite_is_product_search() ) ) ) {
 		return;
 	}
 	$ver = wp_get_theme()->get( 'Version' );
@@ -545,6 +545,18 @@ function wordsite_block_carousel( $attrs ) {
 		return '';
 	}
 	$ids = wordsite_carousel_ids( $product, isset( $attrs['type'] ) ? $attrs['type'] : 'related' );
+	return wordsite_product_list_html( $ids, $attrs['title'] );
+}
+
+/**
+ * Shared cards for product-page carousels and catalog-search grids.
+ *
+ * @param int[]  $ids Product IDs.
+ * @param string $title Carousel heading.
+ * @param bool   $grid Return just the cards for a grid.
+ * @return string
+ */
+function wordsite_product_list_html( $ids, $title = '', $grid = false ) {
 	if ( ! $ids ) {
 		return '';
 	}
@@ -581,9 +593,12 @@ function wordsite_block_carousel( $attrs ) {
 		return '';
 	}
 	add_action( 'wp_footer', 'wordsite_quick_view_dialog' );
+	if ( $grid ) {
+		return $cards;
+	}
 	return sprintf(
 		'<section class="ws-carousel" data-ws-carousel><div class="ws-carousel__head"><h2>%1$s</h2><div class="ws-carousel__nav"><button type="button" data-dir="prev" aria-label="السابق">%2$s</button><button type="button" data-dir="next" aria-label="التالي">%2$s</button></div></div><div class="ws-carousel__track">%3$s</div></section>',
-		esc_html( $attrs['title'] ),
+		esc_html( $title ),
 		wordsite_icon( 'chevron' ),
 		$cards
 	);
