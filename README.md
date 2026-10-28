@@ -25,9 +25,10 @@ Package choice ("نوع الباقة") = a WooCommerce **variable product** with
 "منتجات قد تعجبك" uses the product's **Upsells** (Linked Products tab), otherwise best sellers.
 Tip: WooCommerce → Settings → General → **Number of decimals = 0** for prices like 299.
 
-## Category menu (v0.2.7)
+## Category menu (v0.2.8)
 
-The header's ☰ menu shows five product-category cards above the regular navigation links.
+The header's ☰ menu opens a right-side category drawer (full width on smaller screens), matching the supplied reference: a centered "القائمة الرئيسية" title, a red close button, and five plain rows with thumbnails on the right.
+Extra headings, subtitles, card decoration, and quick links are omitted from this drawer.
 The theme creates these WooCommerce categories once, including when an already active theme is updated.
 Matching category names/slugs are reused; existing products are never reassigned.
 
@@ -40,7 +41,8 @@ Matching category names/slugs are reused; existing products are never reassigned
 Manage categories under **Products → Categories**, and assign products from each product's **Product categories** panel.
 Category IDs are retained so renaming a category or its slug does not break the menu.
 The demo assigns AI, Canva, Netflix, and LinkedIn products to the corresponding categories; Snapchat/X is empty until products are added.
-The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button.
+The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button; clicking the dimmed desktop backdrop also closes the drawer.
+The supplied screenshot thumbnails are bundled losslessly at their original 75×75 size. Upload an image under **Products → Categories → Edit → Thumbnail** to override a category's bundled image.
 
 ## Online preview (WordPress Playground)
 

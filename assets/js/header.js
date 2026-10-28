@@ -9,6 +9,14 @@
 	header.parentNode.insertBefore(slot, header);
 	slot.appendChild(header);
 
+	/* The desktop category drawer closes when its dimmed backdrop is clicked. */
+	header.addEventListener('click', function (e) {
+		if (!e.target.matches('.ws-nav .wp-block-navigation__responsive-container.is-menu-open, .ws-nav .is-menu-open > .wp-block-navigation__responsive-close')) return;
+		var menu = e.target.closest('.wp-block-navigation__responsive-container');
+		var close = menu && menu.querySelector('.wp-block-navigation__responsive-container-close');
+		if (close) close.click();
+	});
+
 	var search = header.querySelector('.ws-search');
 	var start = header.querySelector('.ws-header__start');
 	var toggle;
