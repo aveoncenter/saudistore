@@ -2,6 +2,22 @@
 (function () {
 	'use strict';
 
+	/* Read more: expand here, above the purchase options, never navigate to the tabs. */
+	document.addEventListener('click', function (e) {
+		var btn = e.target.closest('[data-ws-readmore]');
+		if (!btn) return;
+		var excerpt = btn.closest('.ws-excerpt');
+		var full = excerpt.querySelector('.ws-excerpt__full');
+		var expanded = btn.getAttribute('aria-expanded') !== 'true';
+		btn.setAttribute('aria-expanded', String(expanded));
+		btn.textContent = btn.getAttribute(expanded ? 'data-less' : 'data-more');
+		if (full) {
+			full.hidden = !expanded;
+		} else {
+			excerpt.querySelector('.ws-excerpt__text').classList.toggle('is-expanded', expanded);
+		}
+	});
+
 	/* Share: native share sheet, or copy the link. */
 	document.addEventListener('click', function (e) {
 		var btn = e.target.closest('[data-ws-share]');

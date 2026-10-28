@@ -398,7 +398,7 @@ function wordsite_block_whatsapp_box() {
 }
 
 /**
- * Short description with "read more".
+ * Short description with an inline, expandable full description.
  *
  * @return string
  */
@@ -414,9 +414,23 @@ function wordsite_block_excerpt() {
 	if ( ! $text ) {
 		return '';
 	}
+	$description = $product->get_description();
+	$preview_id  = wp_unique_id( 'ws-excerpt-' );
+	$full_id     = wp_unique_id( 'ws-description-' );
+	$full        = $description ? sprintf(
+		'<div id="%s" class="ws-excerpt__full" hidden>%s</div>',
+		esc_attr( $full_id ),
+		wp_kses_post( apply_filters( 'the_content', $description ) )
+	) : '';
+
 	return sprintf(
-		'<div class="ws-excerpt"><div class="ws-excerpt__text">%s</div><a class="ws-readmore" href="#ws-details">اقرأ المزيد</a></div>',
-		wp_kses_post( apply_filters( 'woocommerce_short_description', $text ) )
+		'<div class="ws-excerpt"><div id="%1$s" class="ws-excerpt__text">%2$s</div><button type="button" class="ws-readmore" data-ws-readmore aria-expanded="false" aria-controls="%3$s" data-more="%4$s" data-less="%5$s">%4$s</button>%6$s</div>',
+		esc_attr( $preview_id ),
+		wp_kses_post( apply_filters( 'woocommerce_short_description', $text ) ),
+		esc_attr( $description ? $full_id : $preview_id ),
+		esc_attr__( 'اقرأ المزيد', 'wordsite' ),
+		esc_attr__( 'عرض أقل', 'wordsite' ),
+		$full
 	);
 }
 
