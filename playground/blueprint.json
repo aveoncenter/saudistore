@@ -1,0 +1,50 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "meta": {
+    "title": "Saudistore demo",
+    "description": "Saudistore theme + WooCommerce with demo products",
+    "author": "aveoncenter"
+  },
+  "landingPage": "/product/linkedin-premium/",
+  "preferredVersions": {
+    "php": "8.2",
+    "wp": "latest"
+  },
+  "features": {
+    "networking": true
+  },
+  "login": true,
+  "steps": [
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "woocommerce"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "git:directory",
+        "url": "https://github.com/aveoncenter/saudistore",
+        "ref": "product-page",
+        "refType": "branch"
+      },
+      "options": {
+        "activate": true,
+        "targetFolderName": "saudistore"
+      }
+    },
+    {
+      "step": "setSiteLanguage",
+      "language": "ar"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php\n// Demo content for WordPress Playground. Kept as .txt so it can never run on a real server; build.py inlines it into blueprint.json.\nrequire_once '/wordpress/wp-load.php';\nrequire_once ABSPATH . 'wp-admin/includes/image.php';\n\nupdate_option( 'blogname', 'saudidgi' );\nupdate_option( 'woocommerce_currency', 'SAR' );\nupdate_option( 'woocommerce_price_num_decimals', 0 );\nupdate_option( 'woocommerce_coming_soon', 'no' );\nupdate_option( 'woocommerce_store_pages_only', 'no' );\nupdate_option( 'woocommerce_onboarding_profile', array( 'skipped' => true ) );\nupdate_option( 'wordsite_whatsapp', '966500000000' );\nupdate_option( 'permalink_structure', '/%postname%/' );\n\n/** Simple gradient product image with a Latin label (GD). */\nfunction ws_demo_image( $label, $c1, $c2, $slug ) {\n\tif ( ! function_exists( 'imagecreatetruecolor' ) ) {\n\t\treturn 0;\n\t}\n\t$w  = 600;\n\t$im = imagecreatetruecolor( $w, $w );\n\tfor ( $y = 0; $y < $w; $y++ ) {\n\t\t$t = $y / $w;\n\t\t$r = (int) ( $c1[0] + ( $c2[0] - $c1[0] ) * $t );\n\t\t$g = (int) ( $c1[1] + ( $c2[1] - $c1[1] ) * $t );\n\t\t$b = (int) ( $c1[2] + ( $c2[2] - $c1[2] ) * $t );\n\t\timageline( $im, 0, $y, $w, $y, imagecolorallocate( $im, $r, $g, $b ) );\n\t}\n\t$len = strlen( $label );\n\t$sm  = imagecreatetruecolor( $len * 9 + 4, 19 );\n\timagealphablending( $sm, false );\n\timagefill( $sm, 0, 0, imagecolorallocatealpha( $sm, 0, 0, 0, 127 ) );\n\timagesavealpha( $sm, true );\n\timagestring( $sm, 5, 2, 2, $label, imagecolorallocate( $sm, 255, 255, 255 ) );\n\t$scale = max( 2, min( 7, (int) floor( 520 / ( $len * 9 + 4 ) ) ) );\n\t$dw    = ( $len * 9 + 4 ) * $scale;\n\t$dh    = 19 * $scale;\n\timagealphablending( $im, true );\n\timagecopyresized( $im, $sm, (int) ( ( $w - $dw ) / 2 ), (int) ( ( $w - $dh ) / 2 ), 0, 0, $dw, $dh, $len * 9 + 4, 19 );\n\t$up   = wp_upload_dir();\n\t$file = trailingslashit( $up['path'] ) . $slug . '.png';\n\timagepng( $im, $file );\n\t$id = wp_insert_attachment( array( 'post_mime_type' => 'image/png', 'post_title' => $label, 'post_status' => 'inherit' ), $file );\n\twp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $file ) );\n\treturn $id;\n}\n\n$cat = wp_insert_term( 'الإشتراكات', 'product_cat' );\n$cat = is_wp_error( $cat ) ? (int) $cat->get_error_data() : (int) $cat['term_id'];\n\n$simple = array(\n\tarray( 'اشتراك مانوس برو Manus Pro لمدة سنة', 750, 320, 'MANUS', array( 30, 30, 40 ), array( 90, 90, 110 ) ),\n\tarray( 'اشتراك جيميناي برو Gemini Pro لمدة سنة', 100, 70, 'GEMINI', array( 66, 133, 244 ), array( 155, 81, 224 ) ),\n\tarray( 'ChatGPT Plus لمدة شهر (مشترك)', 50, 10, 'ChatGPT', array( 16, 163, 127 ), array( 10, 60, 50 ) ),\n\tarray( 'كانفا برو Canva Pro لمدة سنة', 200, 45, 'CANVA', array( 0, 196, 204 ), array( 125, 42, 232 ) ),\n\tarray( 'نتفلكس بريميوم Netflix لمدة شهر', 70, 35, 'NETFLIX', array( 229, 9, 20 ), array( 20, 20, 20 ) ),\n\tarray( 'سبوتيفاي بريميوم Spotify لمدة 3 شهور', 60, 30, 'SPOTIFY', array( 30, 215, 96 ), array( 18, 18, 18 ) ),\n);\nforeach ( $simple as $i => $d ) {\n\t$p = new WC_Product_Simple();\n\t$p->set_name( $d[0] );\n\t$p->set_regular_price( $d[1] );\n\t$p->set_sale_price( $d[2] );\n\t$p->set_category_ids( array( $cat ) );\n\t$p->set_image_id( ws_demo_image( $d[3], $d[4], $d[5], 'demo-' . $i ) );\n\t$p->set_short_description( 'تفعيل فوري ورسمي مع ضمان كامل طوال مدة الاشتراك.' );\n\t$p->save();\n}\n\n$attr = new WC_Product_Attribute();\n$attr->set_name( 'نوع الباقة' );\n$opts = array( 'بريميوم \"الأساسية\" - Career', 'بريميوم \"التجاري\" - Business', 'بريميوم \"البائع\" - Sales Navigator Core', 'بريميوم \"مسؤول التوظيف\" - Recruiter Lite' );\n$attr->set_options( $opts );\n$attr->set_visible( true );\n$attr->set_variation( true );\n\n$v = new WC_Product_Variable();\n$v->set_name( 'لينكد إن بريميوم - اشتراك سنوي على حسابك' );\n$v->set_slug( 'linkedin-premium' );\n$v->set_attributes( array( $attr ) );\n$v->set_category_ids( array( $cat ) );\n$v->set_image_id( ws_demo_image( 'LinkedIn', array( 10, 102, 194 ), array( 40, 20, 90 ), 'demo-linkedin' ) );\n$v->set_short_description( 'مكانك الأول لتفعيل اشتراك لينكد إن بريميوم لمدة سنة كاملة على حسابك الشخصي مع ضمان كامل طوال مدة الاشتراك.' );\n$v->set_description( '<p>تفاصيل كاملة عن الاشتراك وطريقة التفعيل.</p>' );\n$v->set_reviews_allowed( true );\n$id = $v->save();\nforeach ( $opts as $k => $o ) {\n\t$var = new WC_Product_Variation();\n\t$var->set_parent_id( $id );\n\t$var->set_attributes( array( sanitize_title( 'نوع الباقة' ) => $o ) );\n\t$var->set_regular_price( 960 );\n\t$var->set_sale_price( array( 299, 450, 520, 650 )[ $k ] );\n\t$var->save();\n}\nupdate_post_meta( $id, '_ws_terms', 'وقت الشراء ما يكون فيه اشتراك فعال بالحساب' );\nupdate_post_meta( $id, '_ws_needs_account', 'yes' );\nupdate_post_meta( $id, '_ws_needs_password', 'yes' );\nupdate_post_meta( $id, '_ws_account_name', 'لنكد إن' );\nupdate_post_meta( $id, '_ws_sold_display', '637' );\nforeach ( array( 5, 5, 5, 5, 4, 5, 5, 4, 5, 5 ) as $n => $stars ) {\n\t$c = wp_insert_comment( array( 'comment_post_ID' => $id, 'comment_author' => 'عميل ' . ( $n + 1 ), 'comment_content' => 'خدمة ممتازة وتفعيل سريع', 'comment_type' => 'review', 'comment_approved' => 1 ) );\n\tadd_comment_meta( $c, 'rating', $stars );\n}\nWC_Comments::clear_transients( $id );\nWC_Product_Variable::sync( $id );\nflush_rewrite_rules();\n"
+    }
+  ]
+}

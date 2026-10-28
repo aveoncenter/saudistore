@@ -24,3 +24,12 @@ Per-product settings: **Products → Edit → Product data → General** (bottom
 Package choice ("نوع الباقة") = a WooCommerce **variable product** with an attribute named `نوع الباقة` and one variation per package.
 "منتجات قد تعجبك" uses the product's **Upsells** (Linked Products tab), otherwise best sellers.
 Tip: WooCommerce → Settings → General → **Number of decimals = 0** for prices like 299.
+
+## Online preview (WordPress Playground)
+
+Open a fresh demo site (theme + WooCommerce + demo products) straight from this repo — nothing to install:
+
+https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/aveoncenter/saudistore/product-page/playground/blueprint.json
+
+It always loads the latest code pushed to the `product-page` branch. Changes made inside the preview are temporary.
+To change the branch or demo data, edit `playground/demo-setup.txt` and run `python3 playground/build.py <branch>`.
