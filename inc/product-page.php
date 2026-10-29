@@ -262,7 +262,7 @@ add_filter( 'woocommerce_currency_symbol', 'wordsite_currency_symbol', 20, 2 );
  * Product page CSS / JS.
  */
 function wordsite_product_assets() {
-	if ( ! function_exists( 'is_product' ) || ( ! is_product() && ! ( function_exists( 'wordsite_is_product_search' ) && wordsite_is_product_search() ) ) ) {
+	if ( ! function_exists( 'is_product' ) || ( ! is_product() && ! is_front_page() && ! ( function_exists( 'wordsite_is_product_search' ) && wordsite_is_product_search() ) ) ) {
 		return;
 	}
 	$ver = wp_get_theme()->get( 'Version' );
@@ -554,9 +554,10 @@ function wordsite_block_carousel( $attrs ) {
  * @param int[]  $ids Product IDs.
  * @param string $title Carousel heading.
  * @param bool   $grid Return just the cards for a grid.
+ * @param string $context Optional homepage stock treatment.
  * @return string
  */
-function wordsite_product_list_html( $ids, $title = '', $grid = false ) {
+function wordsite_product_list_html( $ids, $title = '', $grid = false, $context = '' ) {
 	if ( ! $ids ) {
 		return '';
 	}
@@ -569,24 +570,30 @@ function wordsite_product_list_html( $ids, $title = '', $grid = false ) {
 		$link   = esc_url( $p->get_permalink() );
 		$name   = esc_html( $p->get_name() );
 		$button = wordsite_card_cart_button( $p );
+		if ( 'home' === $context && ! $p->is_in_stock() ) {
+			$button = '<span class="ws-card__btn ws-card__btn--unavailable" aria-disabled="true">نفدت الكمية</span>';
+		}
 		$desc   = $p->get_short_description() ? $p->get_short_description() : wp_trim_words( wp_strip_all_tags( $p->get_description() ), 35 );
 		$quick  = sprintf(
 			'<div class="ws-quick__media">%s</div><div class="ws-quick__info"><h3>%s</h3><div class="ws-quick__price">%s</div><div class="ws-quick__desc">%s</div><div class="ws-quick__actions">%s<a class="ws-card__btn ws-card__btn--quick" href="%s">عرض التفاصيل</a></div></div>',
-			$p->get_image( 'woocommerce_single' ),
+			$p->get_image( 'woocommerce_single', 'home' === $context ? array( 'loading' => 'eager', 'decoding' => 'async' ) : array() ),
 			$name,
 			$p->get_price_html(),
 			wp_kses_post( wpautop( $desc ) ),
 			$button,
 			$link
 		);
+		$stock_class = 'home' === $context && ! $p->is_in_stock() ? ' ws-card--sold-out' : '';
+		$stamp = $stock_class ? '<span class="ws-card__stock-stamp">نفدت الكمية</span>' : '';
 		$cards .= sprintf(
-			'<article class="ws-card"><a class="ws-card__img" href="%1$s" tabindex="-1">%2$s</a><h3 class="ws-card__title"><a href="%1$s">%3$s</a></h3><div class="ws-card__price">%4$s</div><div class="ws-card__actions">%5$s<button type="button" class="ws-card__btn ws-card__btn--quick" data-ws-quick>نظرة سريعة</button></div><template class="ws-quick-tpl">%6$s</template></article>',
+			'<article class="ws-card%7$s" dir="rtl" data-product-id="%8$d"><a class="ws-card__img" href="%1$s" tabindex="-1">%2$s%9$s</a><h3 class="ws-card__title"><a href="%1$s">%3$s</a></h3><div class="ws-card__price">%4$s</div><div class="ws-card__actions">%5$s<button type="button" class="ws-card__btn ws-card__btn--quick" data-ws-quick>نظرة سريعة</button></div><template class="ws-quick-tpl">%6$s</template></article>',
 			$link,
-			$p->get_image( 'woocommerce_thumbnail' ),
+			$p->get_image( 'home' === $context ? 'woocommerce_single' : 'woocommerce_thumbnail' ),
 			$name,
 			$p->get_price_html(),
 			$button,
-			$quick
+			$quick,
+			esc_attr( $stock_class ), $p->get_id(), $stamp
 		);
 	}
 	if ( ! $cards ) {
