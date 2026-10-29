@@ -6,7 +6,7 @@ code = open(os.path.join(here, "demo-setup.txt"), encoding="utf-8").read()
 bp = {
     "$schema": "https://playground.wordpress.net/blueprint-schema.json",
     "meta": {"title": "Saudistore demo", "description": "Saudistore theme + WooCommerce with demo products", "author": "aveoncenter"},
-    "landingPage": "/product/linkedin-premium/",
+    "landingPage": "/",
     "preferredVersions": {"php": "8.2", "wp": "latest"},
     "features": {"networking": True},
     "login": True,

@@ -70,7 +70,7 @@ foreach ( $simple as $i => $d ) {
 	$p->set_regular_price( $d[1] );
 	$p->set_sale_price( $d[2] );
 	$category_key = $demo_category_keys[ $i ];
-	$p->set_category_ids( array_filter( array( $cat, $store_category_ids[ $category_key ] ?? 0 ) ) );
+	$p->set_category_ids( array_filter( array( $cat, $store_category_ids[ $category_key ] ?? 0, 5 === $i ? ( $store_category_ids['apps-subscriptions'] ?? 0 ) : 0 ) ) );
 	$p->set_image_id( ws_demo_image( $d[3], $d[4], $d[5], 'demo-' . $i ) );
 	$p->set_short_description( 'تفعيل فوري ورسمي مع ضمان كامل طوال مدة الاشتراك.' );
 	$p->save();
@@ -87,7 +87,7 @@ $v = new WC_Product_Variable();
 $v->set_name( 'لينكد إن بريميوم - اشتراك سنوي على حسابك' );
 $v->set_slug( 'linkedin-premium' );
 $v->set_attributes( array( $attr ) );
-$v->set_category_ids( array_filter( array( $cat, $store_category_ids['linkedin-subscriptions'] ?? 0 ) ) );
+$v->set_category_ids( array_filter( array( $cat, $store_category_ids['linkedin-subscriptions'] ?? 0, $store_category_ids['work-productivity'] ?? 0 ) ) );
 $v->set_image_id( ws_demo_image( 'LinkedIn', array( 10, 102, 194 ), array( 40, 20, 90 ), 'demo-linkedin' ) );
 $v->set_short_description( 'مكانك الأول لتفعيل اشتراك لينكد إن بريميوم لمدة سنة كاملة على حسابك الشخصي مع ضمان كامل طوال مدة الاشتراك.' );
 $v->set_description( '<p>تفاصيل كاملة عن الاشتراك وطريقة التفعيل.</p>' );
