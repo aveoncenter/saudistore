@@ -44,6 +44,19 @@ The demo assigns AI, Canva, Netflix, and LinkedIn products to the corresponding 
 The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button; clicking the dimmed desktop backdrop also closes the drawer.
 The supplied screenshot thumbnails are bundled losslessly at their original 75×75 size. Upload an image under **Products → Categories → Edit → Thumbnail** to override a category's bundled image.
 
+## Homepage categories (v0.2.12)
+
+A six-card category carousel sits between the payment strip and best sellers.
+It uses artwork cropped from the supplied references and the six reference categories:
+AI, learning/skills, design/creativity, work/professional development, gift cards, and apps/subscriptions.
+The five existing drawer categories are unchanged. New category terms are created once without renaming existing terms or reassigning live products.
+The demo additionally assigns LinkedIn to work/professional development and Spotify to apps/subscriptions; new categories may otherwise be empty until products are assigned.
+
+Desktop shows five cards, tablet three, and mobile two. A smooth one-card **physical leftward** step starts every two seconds and loops seamlessly.
+Autoplay pauses on hover, keyboard focus, off-screen sections, or hidden tabs, with explicit pause, previous/next, swipe, and keyboard controls.
+Reduced-motion users get manual navigation only. Without JavaScript the category strip remains scrollable.
+Use `wordsite_home_categories` to adjust the homepage category definitions; links resolve from saved WooCommerce term IDs.
+
 ## Live product search (v0.2.11)
 
 The header search suggests names from words beginning with the typed text in published, in-stock, searchable product titles (minimum two characters).
