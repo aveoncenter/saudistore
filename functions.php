@@ -122,6 +122,7 @@ function wordsite_whatsapp_button() {
 add_action( 'wp_footer', 'wordsite_whatsapp_button' );
 
 require_once get_theme_file_path( 'inc/store-menu.php' );
+require_once get_theme_file_path( 'inc/home-categories.php' );
 
 /**
  * Product page (needs WooCommerce).
