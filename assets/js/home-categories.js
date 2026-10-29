@@ -3,20 +3,17 @@
  'use strict';
  document.querySelectorAll('[data-category-carousel]').forEach(function (root) {
   var viewport = root.querySelector('.ws-category-viewport'), track = root.querySelector('.ws-category-track');
-  var controls = root.querySelector('.ws-category-controls'), pause = root.querySelector('[data-category-pause]');
   var slides = Array.from(track.children), total = slides.length;
   if (total < 2) return;
   slides.forEach(function (slide, i) { slide.dataset.categoryIndex = i; });
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   var timer, finishTimer, moving = false, finishMove, hovered = false, focused = false, visible = false, stopped = reduced.matches, startX = null, swiped = false;
-  root.classList.add('is-ready'); controls.hidden = false;
+  root.classList.add('is-ready');
   function columns() { return Math.max(1, parseInt(getComputedStyle(root).getPropertyValue('--category-columns'), 10)); }
   function step() { return track.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(track).gap); }
   function update() {
    Array.from(track.children).forEach(function (slide, i) { slide.inert = i >= columns(); if (i >= columns()) slide.setAttribute('aria-hidden', 'true'); else slide.removeAttribute('aria-hidden'); });
-   root.querySelector('.ws-category-position').textContent = (Number(track.firstElementChild.dataset.categoryIndex) + 1) + ' / ' + total;
-   pause.hidden = reduced.matches;
-   pause.setAttribute('aria-pressed', String(stopped)); pause.textContent = stopped ? 'تشغيل الحركة' : 'إيقاف الحركة';
+
   }
   function schedule() {
    clearInterval(timer);
@@ -40,9 +37,6 @@
    finishTimer = setTimeout(function () { if (finishMove) finishMove(); }, 950);
   }
   track.addEventListener('transitionend', function (event) { if (event.target === track && event.propertyName === 'transform' && finishMove) finishMove(); });
-  root.querySelector('[data-category-next]').addEventListener('click', function () { move(1); schedule(); });
-  root.querySelector('[data-category-prev]').addEventListener('click', function () { move(-1); schedule(); });
-  pause.addEventListener('click', function () { stopped = !stopped; update(); schedule(); });
   root.addEventListener('mouseenter', function () { hovered = true; schedule(); });
   root.addEventListener('mouseleave', function () { hovered = false; schedule(); });
   root.addEventListener('focusin', function () { focused = true; schedule(); });
@@ -57,7 +51,7 @@
   viewport.addEventListener('click', function (event) { if (swiped) { event.preventDefault(); swiped = false; } }, true);
   viewport.addEventListener('keydown', function (event) {
    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-   event.preventDefault(); root.querySelector(event.key === 'ArrowLeft' ? '[data-category-next]' : '[data-category-prev]').focus(); move(event.key === 'ArrowLeft' ? 1 : -1);
+   event.preventDefault(); viewport.focus(); move(event.key === 'ArrowLeft' ? 1 : -1);
   });
   document.addEventListener('visibilitychange', schedule);
   reduced.addEventListener('change', function () { if (reduced.matches) stopped = true; update(); schedule(); });

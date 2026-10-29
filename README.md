@@ -44,16 +44,17 @@ The demo assigns AI, Canva, Netflix, and LinkedIn products to the corresponding 
 The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button; clicking the dimmed desktop backdrop also closes the drawer.
 The supplied screenshot thumbnails are bundled losslessly at their original 75×75 size. Upload an image under **Products → Categories → Edit → Thumbnail** to override a category's bundled image.
 
-## Homepage categories (v0.2.12)
+## Homepage categories (v0.2.13)
 
 A six-card category carousel sits between the payment strip and best sellers.
+The heading reads **تصفح أقسامنا بكل سهولة**. Full illustrated cards preserve the supplied reference styling, including the service-icon rows, without extra text or call-to-action rows.
 It uses artwork cropped from the supplied references and the six reference categories:
 AI, learning/skills, design/creativity, work/professional development, gift cards, and apps/subscriptions.
 The five existing drawer categories are unchanged. New category terms are created once without renaming existing terms or reassigning live products.
 The demo additionally assigns LinkedIn to work/professional development and Spotify to apps/subscriptions; new categories may otherwise be empty until products are assigned.
 
 Desktop shows five cards, tablet three, and mobile two. A smooth one-card **physical leftward** step starts every two seconds and loops seamlessly.
-Autoplay pauses on hover, keyboard focus, off-screen sections, or hidden tabs, with explicit pause, previous/next, swipe, and keyboard controls.
+Autoplay pauses on hover, keyboard focus, off-screen sections, or hidden tabs, with swipe and keyboard navigation. The visible arrows, counter, and pause-control row have been removed.
 Reduced-motion users get manual navigation only. Without JavaScript the category strip remains scrollable.
 Use `wordsite_home_categories` to adjust the homepage category definitions; links resolve from saved WooCommerce term IDs.
 
