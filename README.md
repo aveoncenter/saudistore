@@ -44,9 +44,20 @@ The demo assigns AI, Canva, Netflix, and LinkedIn products to the corresponding 
 The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button; clicking the dimmed desktop backdrop also closes the drawer.
 The supplied screenshot thumbnails are bundled losslessly at their original 75×75 size. Upload an image under **Products → Categories → Edit → Thumbnail** to override a category's bundled image.
 
+## Homepage product shelves (v0.2.15)
+
+The previous best-sellers and new-arrivals blocks are replaced by five live WooCommerce shelves, immediately below the unchanged category carousel:
+**الأكثر طلبًا**, **الذكاء الاصطناعي**, **اشتراكات لينكدإن**, **التصميم والمونتاج**, **الأفلام والمسلسلات**.
+Each shelf uses compact cyan-outlined cards, actual product images and prices, add-to-cart/plan selection, and quick view. Products are not copied from the reference screenshots.
+The first shelf ranks up to 12 available catalog products by WooCommerce `total_sales` (ID descending breaks ties); six are visible on desktop and one slides left every **three seconds** when there are more than six. Tablet shows four/three and mobile shows two.
+The four category shelves use the saved category IDs, rank up to 12 products by sales, and offer manual arrows, swiping, and keyboard navigation when needed. Empty categories show a clear message instead of unrelated products. Short rows are right-aligned and are never padded with duplicates.
+Sold-out products receive a stock stamp and disabled purchase control where WooCommerce allows them to remain visible; quick view and product details remain available. Store-level hide-out-of-stock settings are respected. Catalog-hidden, draft, private, and password-protected products are excluded.
+Autoplay pauses on hover, focus, open quick view, hidden tabs, and off-screen shelves. Reduced-motion disables autoplay and sliding animation. Without JavaScript the rows remain horizontally scrollable.
+The existing benefits and contact panels remain below the new shelves.
+
 ## Homepage categories (v0.2.14)
 
-A six-card category carousel sits between the payment strip and best sellers.
+A six-card category carousel sits between the payment strip and the product shelves.
 The heading reads **تصفح أقسامنا بكل سهولة**. Full illustrated cards preserve the supplied reference styling, including the service-icon rows, without extra text or call-to-action rows.
 It uses artwork cropped from the supplied references and the six reference categories:
 AI, learning/skills, design/creativity, work/professional development, gift cards, and apps/subscriptions.

@@ -1,0 +1,55 @@
+/* Compact six-column product shelves, aligned to the supplied storefront reference. */
+.ws-home-products { --shelf-columns: 6; --shelf-gap: 20px; --ws-line: #313653; --ws-accent: #44ceff; --ws-radius: 18px; max-width: 1280px; margin: 0 auto !important; padding-top: 48px; }
+.ws-home-shelf { margin: 0 0 56px; }
+.ws-home-shelf__head { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.ws-home-shelf__head h2 { margin: 0; color: #fff; font-size: 24px; line-height: 1.5; font-weight: 800; }
+.ws-home-shelf__tools { display: flex; align-items: center; gap: 20px; }
+.ws-home-shelf__tools > a { color: #fff; text-decoration: none; font-size: 16px; font-weight: 700; white-space: nowrap; }
+.ws-home-shelf__tools > a:hover { color: #72dcff; }
+.ws-home-shelf__arrows { display: flex; direction: ltr; gap: 10px; }
+.ws-home-shelf__arrows[hidden] { display: none; }
+.ws-home-shelf__arrows button { display: grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0; border: 1px solid #777b99; border-radius: 50%; color: #fff; background: transparent; cursor: pointer; font: inherit; font-size: 24px; }
+.ws-home-shelf__arrows button:hover { background: #20305a; border-color: #44ceff; }
+.ws-home-shelf__arrows button:focus-visible, .ws-home-shelf__tools > a:focus-visible { outline: 3px solid #72dcff; outline-offset: 3px; }
+.ws-home-shelf__viewport { padding: 8px 4px 14px; overflow-x: auto; scrollbar-width: thin; }
+.ws-home-shelf.is-ready .ws-home-shelf__viewport { overflow: hidden; touch-action: pan-y; }
+.ws-home-shelf__viewport:focus-visible { outline: 2px solid #72dcff; outline-offset: 3px; }
+.ws-home-shelf__track { display: flex; gap: var(--shelf-gap); align-items: stretch; direction: ltr; }
+.ws-home-shelf.is-static .ws-home-shelf__track { justify-content: flex-end; }
+.ws-home-products .ws-card { box-sizing: border-box; flex: 0 0 calc((100% - (var(--shelf-columns) - 1) * var(--shelf-gap)) / var(--shelf-columns)); width: auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; padding: 4px 7px 12px; border: 2px solid #44ceff; border-radius: 18px; background: #03051b; color: #fff; box-shadow: none; transform: none; }
+.ws-home-products .ws-card:hover { box-shadow: 0 4px 12px #38bdf820; transform: none; }
+.ws-home-products .ws-card__img { position: relative; margin: -1px -4px 0; border-radius: 13px 13px 0 0; }
+.ws-home-products .ws-card__img img { aspect-ratio: 1 / 1; object-fit: contain; border-radius: 12px 12px 0 0; }
+.ws-home-products .ws-card:hover .ws-card__img img { transform: none; }
+.ws-home-products .ws-card__title { display: flex; align-items: center; justify-content: center; min-height: 72px; margin: 0; font-size: 16px; line-height: 1.5; font-weight: 800; }
+.ws-home-products .ws-card__title a { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; color: #fff; text-decoration: none; }
+.ws-home-products .ws-card__price { margin-top: auto; min-height: 28px; font-size: 17px; line-height: 1.5; }
+.ws-home-products .ws-card__price ins { color: #ff8585; }
+.ws-home-products .ws-card__price del { color: #d5d9eb; }
+.ws-home-products .ws-card__actions { display: grid; gap: 9px; margin-top: 0; }
+.ws-home-products .ws-card__btn { box-sizing: border-box; width: 100%; min-height: 44px; height: auto; padding: 8px 6px; border-radius: 24px; font-size: 15px; font-weight: 800; line-height: 1.5; text-align: center; }
+.ws-home-products .ws-card__btn--cart { background: #54cafa; border: 1px solid #d0f2ff; color: #06253a; }
+.ws-home-products .ws-card__btn--quick { background: #3d58a1; border: 1px solid #718ac8; color: #fff; }
+.ws-home-products .ws-card__btn--unavailable { display: flex; justify-content: center; align-items: center; background: #777b8e; color: #111426; cursor: not-allowed; }
+.ws-home-products .ws-card__stock-stamp { position: absolute; z-index: 1; left: 5%; right: 5%; bottom: 20px; transform: rotate(-12deg); padding: 3px; border: 3px solid #ff8585; color: #ff8585; background: #080b24e8; font-size: 20px; font-weight: 800; text-align: center; }
+.ws-home-shelf__empty { padding: 24px; border: 1px solid #313653; border-radius: 12px; color: #bec5df; font-size: 16px; }
+@media (max-width: 1376px) { .ws-home-products { margin-inline: 24px !important; } }
+@media (max-width: 1100px) { .ws-home-products { --shelf-columns: 4; --shelf-gap: 16px; } }
+@media (max-width: 760px) { .ws-home-products { --shelf-columns: 3; } .ws-home-shelf__head { gap: 12px; } .ws-home-shelf__tools { gap: 12px; } }
+@media (max-width: 600px) {
+ .ws-home-products { --shelf-columns: 2; --shelf-gap: 12px; margin-inline: 16px !important; padding-top: 32px; }
+ .ws-home-shelf { margin-bottom: 36px; }
+ .ws-home-shelf__head { flex-wrap: wrap; margin-bottom: 16px; }
+ .ws-home-shelf__head h2 { font-size: 21px; }
+ .ws-home-shelf__tools { gap: 12px; }
+ .ws-home-products .ws-card { padding-inline: 6px; }
+ .ws-home-products .ws-card__title { font-size: 15px; min-height: 90px; }
+ .ws-home-products .ws-card__btn { font-size: 14px; }
+ .ws-home-products .ws-card__price { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .ws-home-shelf__track { transition: none !important; } }
+
+/* Maintain readable primary-action contrast in the homepage quick-view dialog. */
+body.home .ws-quick .ws-card__btn--cart { background: #54cafa; color: #06253a; }
+
+body.home .ws-quick__body { padding-top: 52px; }
