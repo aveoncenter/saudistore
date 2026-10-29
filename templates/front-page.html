@@ -85,38 +85,7 @@
 
 	<!-- wp:saudistore/home-categories /-->
 
-	<!-- wp:group {"align":"full","className":"ws-section","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|30"},"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained","contentSize":"1280px"}} -->
-	<div class="wp-block-group alignfull ws-section" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--30)">
-		<!-- wp:group {"className":"ws-section__head","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"bottom"}} -->
-		<div class="wp-block-group ws-section__head">
-			<!-- wp:heading -->
-			<h2 class="wp-block-heading">الأكثر مبيعًا</h2>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph -->
-			<p><a href="/shop/">عرض الكل ←</a></p>
-			<!-- /wp:paragraph -->
-		</div>
-		<!-- /wp:group -->
-
-		<!-- wp:woocommerce/product-collection {"queryId":11,"query":{"perPage":8,"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"popularity","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":false,"woocommerceOnSale":false,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[],"filterable":false},"tagName":"div","displayLayout":{"type":"flex","columns":4,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"collection":"woocommerce/product-collection/best-sellers","hideControls":["inherit","order","filterable"],"queryContextIncludes":["collection"],"className":"ws-products"} -->
-		<div class="wp-block-woocommerce-product-collection ws-products">
-			<!-- wp:woocommerce/product-template -->
-				<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"thumbnail","isDescendentOfQueryLoop":true} -->
-					<!-- wp:woocommerce/product-sale-badge {"isDescendentOfQueryLoop":true,"align":"right"} /-->
-				<!-- /wp:woocommerce/product-image -->
-				<!-- wp:post-title {"textAlign":"center","level":3,"isLink":true,"style":{"spacing":{"margin":{"bottom":"0.5rem","top":"0"}}},"fontSize":"medium","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
-				<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true,"textAlign":"center","fontSize":"medium"} /-->
-				<!-- wp:woocommerce/product-button {"textAlign":"center","isDescendentOfQueryLoop":true,"fontSize":"small"} /-->
-			<!-- /wp:woocommerce/product-template -->
-			<!-- wp:woocommerce/product-collection-no-results -->
-				<!-- wp:paragraph {"align":"center","textColor":"muted"} -->
-				<p class="has-text-align-center has-muted-color has-text-color">ستظهر المنتجات هنا بعد إضافتها.</p>
-				<!-- /wp:paragraph -->
-			<!-- /wp:woocommerce/product-collection-no-results -->
-		</div>
-		<!-- /wp:woocommerce/product-collection -->
-	</div>
-	<!-- /wp:group -->
+	<!-- wp:saudistore/home-products /-->
 
 	<!-- wp:group {"align":"full","className":"ws-section","style":{"spacing":{"padding":{"top":"var:preset|spacing|50","bottom":"var:preset|spacing|50"},"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained","contentSize":"1280px"}} -->
 	<div class="wp-block-group alignfull ws-section" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--50);padding-bottom:var(--wp--preset--spacing--50)">
@@ -144,39 +113,6 @@
 			</div>
 		</div>
 		<!-- /wp:html -->
-	</div>
-	<!-- /wp:group -->
-
-	<!-- wp:group {"align":"full","className":"ws-section","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|60"},"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"constrained","contentSize":"1280px"}} -->
-	<div class="wp-block-group alignfull ws-section" style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--60)">
-		<!-- wp:group {"className":"ws-section__head","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between","verticalAlignment":"bottom"}} -->
-		<div class="wp-block-group ws-section__head">
-			<!-- wp:heading -->
-			<h2 class="wp-block-heading">وصل حديثًا</h2>
-			<!-- /wp:heading -->
-			<!-- wp:paragraph -->
-			<p><a href="/shop/">عرض الكل ←</a></p>
-			<!-- /wp:paragraph -->
-		</div>
-		<!-- /wp:group -->
-
-		<!-- wp:woocommerce/product-collection {"queryId":12,"query":{"perPage":4,"pages":1,"offset":0,"postType":"product","order":"desc","orderBy":"date","search":"","exclude":[],"inherit":false,"taxQuery":{},"isProductCollectionBlock":true,"featured":false,"woocommerceOnSale":false,"woocommerceStockStatus":["instock","outofstock","onbackorder"],"woocommerceAttributes":[],"woocommerceHandPickedProducts":[],"filterable":false},"tagName":"div","displayLayout":{"type":"flex","columns":4,"shrinkColumns":true},"dimensions":{"widthType":"fill"},"collection":"woocommerce/product-collection/new-arrivals","hideControls":["inherit","order","filterable"],"queryContextIncludes":["collection"],"className":"ws-products"} -->
-		<div class="wp-block-woocommerce-product-collection ws-products">
-			<!-- wp:woocommerce/product-template -->
-				<!-- wp:woocommerce/product-image {"showSaleBadge":false,"imageSizing":"thumbnail","isDescendentOfQueryLoop":true} -->
-					<!-- wp:woocommerce/product-sale-badge {"isDescendentOfQueryLoop":true,"align":"right"} /-->
-				<!-- /wp:woocommerce/product-image -->
-				<!-- wp:post-title {"textAlign":"center","level":3,"isLink":true,"style":{"spacing":{"margin":{"bottom":"0.5rem","top":"0"}}},"fontSize":"medium","__woocommerceNamespace":"woocommerce/product-collection/product-title"} /-->
-				<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true,"textAlign":"center","fontSize":"medium"} /-->
-				<!-- wp:woocommerce/product-button {"textAlign":"center","isDescendentOfQueryLoop":true,"fontSize":"small"} /-->
-			<!-- /wp:woocommerce/product-template -->
-			<!-- wp:woocommerce/product-collection-no-results -->
-				<!-- wp:paragraph {"align":"center","textColor":"muted"} -->
-				<p class="has-text-align-center has-muted-color has-text-color">ستظهر المنتجات هنا بعد إضافتها.</p>
-				<!-- /wp:paragraph -->
-			<!-- /wp:woocommerce/product-collection-no-results -->
-		</div>
-		<!-- /wp:woocommerce/product-collection -->
 	</div>
 	<!-- /wp:group -->
 
