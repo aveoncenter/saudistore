@@ -30,7 +30,7 @@ function wordsite_home_product_ids( $key = '' ) {
 
 function wordsite_home_products() {
 	$sections = array(
-		array( 'key' => '', 'title' => 'الأكثر طلبًا' ),
+		array( 'key' => '', 'title' => 'الأكثر طلباً' ),
 		array( 'key' => 'ai-subscriptions', 'title' => 'الذكاء الاصطناعي' ),
 		array( 'key' => 'linkedin-subscriptions', 'title' => 'اشتراكات لينكدإن' ),
 		array( 'key' => 'editing-design', 'title' => 'التصميم والمونتاج' ),
@@ -51,8 +51,8 @@ function wordsite_home_products() {
 		}
 		$cards = wordsite_product_list_html( wordsite_home_product_ids( $section['key'] ), '', true, 'home' );
 		$html .= sprintf(
-			'<section class="ws-home-shelf" data-home-shelf data-autoplay="%1$d" aria-labelledby="ws-home-shelf-%2$d"><div class="ws-home-shelf__head"><h2 id="ws-home-shelf-%2$d">%3$s</h2><div class="ws-home-shelf__tools"><a href="%4$s">عرض الكل <span aria-hidden="true">←</span></a><div class="ws-home-shelf__arrows" hidden><button type="button" data-shelf-prev aria-label="السابق في %3$s">→</button><button type="button" data-shelf-next aria-label="التالي في %3$s">←</button></div></div></div>',
-			0 === $index ? 3000 : 0, $index, esc_html( $section['title'] ), esc_url( $url )
+			'<section class="ws-home-shelf" data-home-shelf data-autoplay="%1$d" aria-labelledby="ws-home-shelf-%2$d"><div class="ws-home-shelf__head"><h2 id="ws-home-shelf-%2$d">%3$s</h2><div class="ws-home-shelf__tools"><a href="%4$s">عرض الكل%5$s</a><div class="ws-home-shelf__arrows" hidden><button type="button" data-shelf-prev aria-label="السابق في %3$s"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg></button><button type="button" data-shelf-next aria-label="التالي في %3$s"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="m10 6 6 6-6 6" /></svg></button></div></div></div>',
+			0 === $index ? 3000 : 0, $index, esc_html( $section['title'] ), esc_url( $url ), 0 === $index ? '' : ' <span aria-hidden="true">←</span>'
 		);
 		$html .= $cards ? '<div class="ws-home-shelf__viewport" dir="ltr" tabindex="0" aria-label="منتجات القسم، استخدم الأسهم أو اسحب للتنقل"><div class="ws-home-shelf__track">' . $cards . '</div></div>' : '<p class="ws-home-shelf__empty">ستظهر منتجات هذا القسم هنا بعد إضافتها.</p>';
 		$html .= '</section>';
