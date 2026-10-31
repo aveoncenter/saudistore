@@ -422,10 +422,10 @@
 	position: relative;
 	transition: transform 0.2s, box-shadow 0.2s;
 }
-.ws-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(56, 189, 248, 0.25); }
+.ws-card:not(.ws-motion):hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(56, 189, 248, 0.25); }
 .ws-card__img { display: block; overflow: hidden; border-radius: 12px; }
 .ws-card__img img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; transition: transform 0.3s; }
-.ws-card:hover .ws-card__img img { transform: scale(1.04); }
+.ws-card:not(.ws-motion):hover .ws-card__img img { transform: scale(1.04); }
 .ws-card__title { margin: 0; font-size: 1rem; line-height: 1.5; text-align: center; }
 .ws-card__title a {
 	display: -webkit-box;

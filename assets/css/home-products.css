@@ -18,10 +18,10 @@
 .ws-home-shelf__track { display: flex; gap: var(--shelf-gap); align-items: stretch; direction: rtl; }
 .ws-home-shelf.is-static .ws-home-shelf__track { justify-content: flex-start; }
 .ws-home-products .ws-card { --card-unit: calc((100cqw - 8px - (var(--shelf-columns) - 1) * var(--shelf-gap)) / var(--shelf-columns) / 242); box-sizing: border-box; flex: 0 0 calc((100% - (var(--shelf-columns) - 1) * var(--shelf-gap)) / var(--shelf-columns)); width: auto; min-width: 0; display: flex; flex-direction: column; gap: calc(5 * var(--card-unit)); height: auto; min-height: calc(445 * var(--card-unit)); padding: calc(2 * var(--card-unit)) calc(8 * var(--card-unit)) calc(12 * var(--card-unit)); border: 2px solid #44ceff; border-radius: calc(18 * var(--card-unit)); background: #03051b; color: #fff; box-shadow: none; transform: none; }
-.ws-home-products .ws-card:hover { box-shadow: 0 4px 12px #38bdf820; transform: none; }
+.ws-home-products .ws-card:not(.ws-motion):hover { box-shadow: 0 4px 12px #38bdf820; transform: none; }
 .ws-home-products .ws-card__img { position: relative; flex-shrink: 0; margin: 0 calc(-6 * var(--card-unit)); border-radius: calc(13 * var(--card-unit)) calc(13 * var(--card-unit)) 0 0; }
 .ws-home-products .ws-card__img img { aspect-ratio: 1 / 1; object-fit: contain; border-radius: calc(12 * var(--card-unit)) calc(12 * var(--card-unit)) 0 0; }
-.ws-home-products .ws-card:hover .ws-card__img img { transform: none; }
+.ws-home-products .ws-card:not(.ws-motion):hover .ws-card__img img { transform: none; }
 .ws-home-products .ws-card__title { display: flex; align-items: center; justify-content: center; flex-shrink: 0; height: max(42px, calc(56 * var(--card-unit))); min-height: max(42px, calc(56 * var(--card-unit))); margin: 0; font-size: max(14px, calc(17 * var(--card-unit))); line-height: 1.5; font-weight: 800; }
 .ws-home-products .ws-card__title a { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #fff; text-decoration: none; }
 .ws-home-products .ws-card__price { flex-shrink: 0; margin-top: auto; height: max(21px, calc(24 * var(--card-unit))); min-height: max(21px, calc(24 * var(--card-unit))); font-size: max(14px, calc(17 * var(--card-unit))); line-height: 1.5; }
