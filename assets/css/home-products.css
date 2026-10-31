@@ -11,11 +11,11 @@
 .ws-home-shelf__arrows button { display: grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0; border: 1px solid #777b99; border-radius: 50%; color: #fff; background: transparent; cursor: pointer; font: inherit; font-size: 24px; }
 .ws-home-shelf__arrows button:hover { background: #20305a; border-color: #44ceff; }
 .ws-home-shelf__arrows button:focus-visible, .ws-home-shelf__tools > a:focus-visible { outline: 3px solid #72dcff; outline-offset: 3px; }
-.ws-home-shelf__viewport { padding: 8px 4px 14px; overflow-x: auto; scrollbar-width: thin; }
+.ws-home-shelf__viewport { direction: rtl; padding: 8px 4px 14px; overflow-x: auto; scrollbar-width: thin; }
 .ws-home-shelf.is-ready .ws-home-shelf__viewport { overflow: hidden; touch-action: pan-y; }
 .ws-home-shelf__viewport:focus-visible { outline: 2px solid #72dcff; outline-offset: 3px; }
-.ws-home-shelf__track { display: flex; gap: var(--shelf-gap); align-items: stretch; direction: ltr; }
-.ws-home-shelf.is-static .ws-home-shelf__track { justify-content: flex-end; }
+.ws-home-shelf__track { display: flex; gap: var(--shelf-gap); align-items: stretch; direction: rtl; }
+.ws-home-shelf.is-static .ws-home-shelf__track { justify-content: flex-start; }
 .ws-home-products .ws-card { --card-unit: calc((100cqw - 8px - (var(--shelf-columns) - 1) * var(--shelf-gap)) / var(--shelf-columns) / 242); box-sizing: border-box; flex: 0 0 calc((100% - (var(--shelf-columns) - 1) * var(--shelf-gap)) / var(--shelf-columns)); width: auto; min-width: 0; display: flex; flex-direction: column; gap: calc(5 * var(--card-unit)); height: auto; min-height: calc(445 * var(--card-unit)); padding: calc(2 * var(--card-unit)) calc(8 * var(--card-unit)) calc(12 * var(--card-unit)); border: 2px solid #44ceff; border-radius: calc(18 * var(--card-unit)); background: #03051b; color: #fff; box-shadow: none; transform: none; }
 .ws-home-products .ws-card:hover { box-shadow: 0 4px 12px #38bdf820; transform: none; }
 .ws-home-products .ws-card__img { position: relative; flex-shrink: 0; margin: 0 calc(-6 * var(--card-unit)); border-radius: calc(13 * var(--card-unit)) calc(13 * var(--card-unit)) 0 0; }
@@ -36,9 +36,21 @@
 /* Scale the complete reference card, not just its image. This also preserves
    proportions when browser zoom narrows the CSS viewport. No auto-height jump. */
 .ws-home-products .ws-card__btn svg { width: max(14px, calc(18 * var(--card-unit))); height: max(14px, calc(18 * var(--card-unit))); }
-@media (pointer: coarse) { .ws-home-products .ws-card__btn { min-height: 44px; } }
-@media (max-width: 1100px) { .ws-home-products { width: calc(100% - 48px); --shelf-columns: 4; --shelf-gap: 16px; max-width: 100%; } }
-@media (max-width: 831px) { .ws-home-products { --shelf-columns: 3; max-width: 100%; } }
+
+/* The reference keeps compact carousel cards in split-screen/tablet windows.
+   Never stretch three or four cards to fill a narrower desktop shelf. */
+@media (min-width: 601px) and (max-width: 1100px) {
+ .ws-home-products { width: calc(100% - 24px); --shelf-gap: 20px; max-width: 100%; }
+ .ws-home-products .ws-card { --card-unit: calc(156px / 242); flex-basis: 156px; min-height: 320px; padding: 2px 6px 10px; gap: 4px; border-radius: 15px; }
+ .ws-home-products .ws-card__img { margin-inline: -4px; }
+ .ws-home-products .ws-card__title { height: 46px; min-height: 46px; font-size: 14px; font-weight: 700; }
+ .ws-home-products .ws-card__actions { gap: 10px; }
+ .ws-home-products .ws-card__btn { height: 32px; min-height: 32px; font-size: 14px; font-weight: 700; }
+ .ws-home-products .ws-card__btn--quick { font-weight: 600; }
+ .ws-home-shelf__head { margin-bottom: 12px; }
+ .ws-home-shelf__head h2 { font-size: 20px; }
+}
+
 @media (max-width: 600px) {
  .ws-home-products { --shelf-columns: 2; --shelf-gap: 12px; width: calc(100% - 32px); max-width: 517px; margin-inline: auto !important; padding-top: 32px; }
  .ws-home-shelf { margin-bottom: 36px; }
@@ -59,3 +71,6 @@
 body.home .ws-quick .ws-card__btn--cart { background: #54cafa; color: #06253a; }
 
 body.home .ws-quick__body { padding-top: 52px; }
+
+/* Touch targets remain usable without enlarging mouse-driven split-screen cards. */
+@media (pointer: coarse) { .ws-home-products .ws-card__btn { min-height: 44px; } }
