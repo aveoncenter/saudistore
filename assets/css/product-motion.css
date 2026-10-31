@@ -1,0 +1,58 @@
+/* Progressive enhancement only: no card geometry, content, or resting design changes. */
+:root { --ws-card-motion-enabled: 1; }
+body .ws-motion.ws-motion-ready[data-ws-motion] {
+ transform: none;
+ box-shadow: var(--ws-motion-rest-shadow, none);
+ border-color: var(--ws-motion-rest-border);
+ transition: transform 280ms cubic-bezier(.22,.75,.25,1), box-shadow 320ms cubic-bezier(.22,.75,.25,1), border-color 280ms ease;
+}
+body .ws-motion.ws-motion-ready[data-ws-motion]:not(.ws-motion-preserve-after)::after {
+ content: "";
+ position: absolute; inset: 0; z-index: 1; border-radius: inherit;
+ pointer-events: none; opacity: 0;
+ background: radial-gradient(220px circle at var(--ws-light-x, 50%) var(--ws-light-y, 50%), rgba(68,206,255,.11), transparent 75%);
+ transition: opacity 280ms ease;
+}
+/* Separate translate/opacity entrance from the hover's composed transform. */
+body .ws-motion.ws-motion-ready.ws-motion-entering[data-ws-motion] {
+ animation: ws-card-enter 640ms cubic-bezier(.16,1,.3,1) var(--ws-enter-delay, 0ms) backwards;
+ will-change: opacity, translate;
+}
+@keyframes ws-card-enter {
+ from { opacity: .18; translate: 0 18px; }
+ to { opacity: 1; translate: 0 0; }
+}
+body .ws-motion.ws-motion-ready[data-ws-motion] :is(.ws-card__img, .wc-block-components-product-image, .wc-block-grid__product-image) img {
+ transition: transform 440ms cubic-bezier(.22,.75,.25,1);
+ transform: none;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+ body .ws-motion.ws-motion-ready.ws-motion-hover[data-ws-motion] {
+  transform: perspective(900px) translate3d(var(--ws-hover-inset, 0px), -8px, 0) rotateX(var(--ws-tilt-x, 0deg)) rotateY(var(--ws-tilt-y, 0deg)) scale(1.02);
+  box-shadow: var(--ws-motion-rest-shadow, 0 0 0 transparent), 0 12px 28px rgba(56,189,248,.18), 0 0 12px rgba(68,206,255,.12);
+  border-color: #72dcff;
+  z-index: 2; will-change: transform;
+ }
+ body .ws-motion.ws-motion-ready.ws-motion-hover[data-ws-motion]:not(.ws-motion-preserve-after)::after { opacity: 1; }
+ body .ws-motion.ws-motion-ready.ws-motion-hover[data-ws-motion] :is(.ws-card__img, .wc-block-components-product-image, .wc-block-grid__product-image) img { transform: scale(1.035); }
+ /* Classic WooCommerce loops use a direct image rather than an image block. */
+ body .ws-motion.ws-motion-ready[data-ws-motion] > a > img { transition: transform 440ms cubic-bezier(.22,.75,.25,1); }
+ body .ws-motion.ws-motion-ready.ws-motion-hover[data-ws-motion] > a > img { transform: scale(1.025); }
+}
+/* Allow vertical hover bleed without changing shelf padding, width, or card positions. */
+@supports (overflow: clip) {
+ .ws-home-shelf.is-ready .ws-home-shelf__viewport { overflow-x: clip; overflow-y: visible; }
+}
+/* Scaling must not retarget the scroller's snap points while hovering. */
+.ws-carousel__track.ws-motion-interacting { scroll-snap-type: none; }
+/* Scrollable related-product tracks need internal bleed. Compensating margins
+   keep the outer footprint and every resting card position exactly unchanged. */
+.ws-carousel__track.ws-motion-bleed {
+ padding-top: calc(var(--ws-bleed-pt) + 16px); padding-bottom: calc(var(--ws-bleed-pb) + 16px);
+ margin-top: calc(var(--ws-bleed-mt) - 16px); margin-bottom: calc(var(--ws-bleed-mb) - 16px);
+}
+@media (prefers-reduced-motion: reduce) {
+ body .ws-motion.ws-motion-ready[data-ws-motion] { animation: none !important; transition: none !important; translate: none !important; transform: none !important; will-change: auto; }
+ body .ws-motion.ws-motion-ready[data-ws-motion] img { transition: none !important; transform: none !important; }
+ body .ws-motion.ws-motion-ready[data-ws-motion]:not(.ws-motion-preserve-after)::after { display: none; }
+}

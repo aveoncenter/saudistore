@@ -44,6 +44,19 @@ The demo assigns AI, Canva, Netflix, and LinkedIn products to the corresponding 
 The `wordsite_store_menu_categories` filter customizes the defaults. Core navigation continues to handle keyboard focus, Escape, and the close button; clicking the dimmed desktop backdrop also closes the drawer.
 The supplied screenshot thumbnails are bundled losslessly at their original 75×75 size. Upload an image under **Products → Categories → Edit → Thumbnail** to override a category's bundled image.
 
+## Product-card motion (v0.2.22)
+
+A dependency-free progressive enhancement covers the shared `.ws-card` component (homepage shelves, search, related products, and upsells), native WooCommerce product-collection cards, legacy block grids, and classic product loops. Existing markup, card dimensions, grid spacing, images, text, prices, buttons, typography, and resting colors remain unchanged.
+
+- Cards reveal once per DOM instance on entering the viewport: 18 px upward travel, opacity 0.18 → 1, 640 ms premium easing, and an 85 ms neighboring-card stagger capped at 425 ms. Scrolling back or carousel reordering does not replay a completed reveal.
+- Fine mouse pointers get an 8 px lift, 1.02× scale, at most 2.5° cursor-following tilt, a soft cyan shadow/brighter border, a restrained cursor-positioned radial light, and 1.035× image zoom. Effects ease back on leave and reset on scrolling, touch, blur, or preference changes. Touch devices retain reveal only.
+- `prefers-reduced-motion` disables reveal, hover transforms, light, and image zoom, including when the setting changes during an interaction. Keyboard focus immediately resolves an entrance so focused controls remain stable.
+- `IntersectionObserver` handles reveals; one delegated pointer handler batches writes through `requestAnimationFrame`. No animation library is added. A batched `MutationObserver` discovers AJAX/filter/pagination products and preserves seen state for moved carousel cards.
+- Cards are visible by default. Animation delay uses backwards fill only; completion and timeout cleanup remove temporary animation state. Missing JavaScript, blocked animation assets, absent IntersectionObserver, or disabled animations cannot strand an invisible card.
+- Home carousel slot/step calculations use untransformed CSS widths, so hover tilt/scale cannot change the slide distance or visible-card count. Newly inserted cards update carousel capacity. Related scroll tracks reserve compensated internal hover bleed without moving resting cards or changing their outer footprint. Hover temporarily suspends native scroll snapping to prevent scaled cards from retargeting snap points; a tiny inward transform keeps edge-card outlines inside the existing horizontal clip.
+
+Implementation: `inc/product-motion.php`, `assets/css/product-motion.css`, and `assets/js/product-motion.js`. Assets load after existing product styles on WooCommerce storefront routes. Existing hover rules remain as the no-script fallback and exclude enhanced cards to avoid competing transforms. Moving light never receives pointer events and leaves any existing card pseudo-element intact.
+
 ## Homepage product shelves (v0.2.21)
 
 The previous best-sellers and new-arrivals blocks are replaced by five live WooCommerce shelves, immediately below the unchanged category carousel:
