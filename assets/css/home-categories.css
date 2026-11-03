@@ -29,3 +29,25 @@
  .ws-category-track, .ws-category-card { transition: none !important; }
  .ws-category-card:hover, .ws-category-card:focus-visible { transform: none; }
 }
+
+
+/* Native touch scrolling on phones; keep the animated carousel for desktop. */
+@media (max-width: 600px) {
+ .ws-home-categories.is-ready .ws-category-viewport {
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+ }
+ .ws-home-categories.is-ready .ws-category-viewport::-webkit-scrollbar { display: none; }
+ .ws-home-categories.is-ready .ws-category-track {
+  transform: none !important;
+  transition: none !important;
+ }
+ .ws-category-slide { scroll-snap-align: start; }
+}
