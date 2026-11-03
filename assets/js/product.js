@@ -204,44 +204,30 @@
 				animateProductToCart(button);
 			});
 
-			/* Single-product form: play the same image-to-cart animation, then
-			 * continue WooCommerce's normal validated form submission. This keeps
-			 * variation, quantity, terms, email and encrypted password handling. */
-			document.addEventListener('click', function (event) {
-				var button = event.target.closest('body.single-product form.cart .single_add_to_cart_button');
-				if (!button || button.disabled || button.classList.contains('disabled')) return;
-				var form = button.closest('form.cart');
-				if (!form || button.dataset.wsFlyPending) return;
-				if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-				if (!form.checkValidity()) return;
 
-				var variationId = form.querySelector('input[name="variation_id"]');
-				if (form.classList.contains('variations_form') && (!variationId || !variationId.value || variationId.value === '0')) return;
-
-				var productMedia = document.querySelector('.ws-product__media');
-				var productImage = productMedia ? productMedia.querySelector('.woocommerce-product-gallery__image img, img.wp-post-image, img') : null;
-				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
-				if (!productImage || !cartButton) return;
-
-				event.preventDefault();
-				button.dataset.wsFlyPending = '1';
-				button.setAttribute('aria-busy', 'true');
-				animateProductToCart(button, function () {
-					delete button.dataset.wsFlyPending;
-					button.removeAttribute('aria-busy');
-					if (typeof form.requestSubmit === 'function') {
-						form.requestSubmit(button);
-					} else {
-						var submitter = document.createElement('input');
-						submitter.type = 'hidden';
-						submitter.name = button.name || 'add-to-cart';
-						submitter.value = button.value || form.querySelector('[name="add-to-cart"]')?.value || '';
-						form.appendChild(submitter);
-						form.submit();
-					}
-				});
-			}, true);
 		})(window.jQuery);
+	}
+
+
+	/* Auto-open the cart confirmation after WooCommerce completed the add. */
+	var recentCartDrawer = document.querySelector('[data-ws-cart-drawer]');
+	if (recentCartDrawer) {
+		document.body.classList.add('ws-cart-drawer-open');
+		var closeControl = recentCartDrawer.querySelector('[data-ws-cart-close]');
+		if (closeControl) window.requestAnimationFrame(function () { closeControl.focus({ preventScroll: true }); });
+		recentCartDrawer.querySelectorAll('[data-ws-cart-close]').forEach(function (control) {
+			control.addEventListener('click', function () {
+				recentCartDrawer.classList.remove('is-open');
+				recentCartDrawer.setAttribute('aria-hidden', 'true');
+				document.body.classList.remove('ws-cart-drawer-open');
+			});
+		});
+		document.addEventListener('keydown', function (event) {
+			if (event.key !== 'Escape' || !recentCartDrawer.classList.contains('is-open')) return;
+			recentCartDrawer.classList.remove('is-open');
+			recentCartDrawer.setAttribute('aria-hidden', 'true');
+			document.body.classList.remove('ws-cart-drawer-open');
+		});
 	}
 
 	/* Variable products: live price, discount, fields, buy-now state. */
