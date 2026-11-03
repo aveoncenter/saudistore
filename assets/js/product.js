@@ -128,16 +128,20 @@
 				if (clicked) lastAddButton = clicked;
 			}, true);
 
-			function animateProductToCart(button) {
-				if (!button) return;
+			function animateProductToCart(button, onFinish) {
+				if (!button) { if (onFinish) onFinish(); return; }
 				var card = button.closest('.ws-card');
 				var image = card ? card.querySelector('.ws-card__img img') : null;
 				if (!image) {
 					var quickView = button.closest('.ws-quick');
 					image = quickView ? quickView.querySelector('.ws-quick__media img') : null;
 				}
+				if (!image && button.closest('form.cart')) {
+					var productMedia = document.querySelector('.ws-product__media');
+					image = productMedia ? productMedia.querySelector('.woocommerce-product-gallery__image img, img.wp-post-image, img') : null;
+				}
 				var cart = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
-				if (!image || !cart) return;
+				if (!image || !cart) { if (onFinish) onFinish(); return; }
 
 				var from = image.getBoundingClientRect();
 				var to = cart.getBoundingClientRect();
@@ -171,6 +175,11 @@
 				var scale = Math.max(0.12, Math.min(0.24, Math.min(to.width / from.width, to.height / from.height)));
 				var arcX = dx * 0.48;
 				var arcY = dy * 0.48 - (dy < 0 ? 42 : -42);
+				if (typeof flyer.animate !== 'function') {
+					flyer.remove();
+					if (onFinish) onFinish();
+					return;
+				}
 				var animation = flyer.animate([
 					{ transform: 'translate3d(0,0,0) scale(1)', opacity: 1, offset: 0 },
 					{ transform: 'translate3d(' + arcX + 'px,' + arcY + 'px,0) scale(.62)', opacity: .92, offset: .58 },
@@ -180,7 +189,7 @@
 					easing: 'cubic-bezier(.2,.72,.25,1)',
 					fill: 'forwards'
 				});
-				animation.onfinish = function () { flyer.remove(); };
+				animation.onfinish = function () { flyer.remove(); if (onFinish) onFinish(); };
 				animation.oncancel = function () { flyer.remove(); };
 
 				cart.classList.remove('ws-cart-arrived');
@@ -194,6 +203,44 @@
 				lastAddButton = null;
 				animateProductToCart(button);
 			});
+
+			/* Single-product form: play the same image-to-cart animation, then
+			 * continue WooCommerce's normal validated form submission. This keeps
+			 * variation, quantity, terms, email and encrypted password handling. */
+			document.addEventListener('click', function (event) {
+				var button = event.target.closest('body.single-product form.cart .single_add_to_cart_button');
+				if (!button || button.disabled || button.classList.contains('disabled')) return;
+				var form = button.closest('form.cart');
+				if (!form || button.dataset.wsFlyPending) return;
+				if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+				if (!form.checkValidity()) return;
+
+				var variationId = form.querySelector('input[name="variation_id"]');
+				if (form.classList.contains('variations_form') && (!variationId || !variationId.value || variationId.value === '0')) return;
+
+				var productMedia = document.querySelector('.ws-product__media');
+				var productImage = productMedia ? productMedia.querySelector('.woocommerce-product-gallery__image img, img.wp-post-image, img') : null;
+				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
+				if (!productImage || !cartButton) return;
+
+				event.preventDefault();
+				button.dataset.wsFlyPending = '1';
+				button.setAttribute('aria-busy', 'true');
+				animateProductToCart(button, function () {
+					delete button.dataset.wsFlyPending;
+					button.removeAttribute('aria-busy');
+					if (typeof form.requestSubmit === 'function') {
+						form.requestSubmit(button);
+					} else {
+						var submitter = document.createElement('input');
+						submitter.type = 'hidden';
+						submitter.name = button.name || 'add-to-cart';
+						submitter.value = button.value || form.querySelector('[name="add-to-cart"]')?.value || '';
+						form.appendChild(submitter);
+						form.submit();
+					}
+				});
+			}, true);
 		})(window.jQuery);
 	}
 
