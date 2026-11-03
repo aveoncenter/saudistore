@@ -248,7 +248,20 @@
 				var drawer = document.querySelector('.wc-block-mini-cart__drawer');
 				var overlay = drawer ? drawer.closest('.wc-block-components-drawer__screen-overlay') : null;
 				var visible = drawer && (!overlay || !overlay.classList.contains('wc-block-components-drawer__screen-overlay--is-hidden'));
-				var itemImage = visible ? drawer.querySelector('.wc-block-cart-item__image img, .wc-block-cart-item__image') : null;
+				var itemImage = null;
+				if (visible) {
+					var cartImages = Array.from(drawer.querySelectorAll('.wc-block-cart-item__image img, .wc-block-mini-cart__product-image img'));
+					var currentPath = window.location.pathname.replace(/\\/+$/, '');
+					itemImage = cartImages.find(function (candidate) {
+						var link = candidate.closest('a');
+						if (!link) return false;
+						try {
+							return new URL(link.href, window.location.href).pathname.replace(/\\/+$/, '') === currentPath;
+						} catch (error) {
+							return false;
+						}
+					}) || cartImages[0] || null;
+				}
 				if (itemImage && itemImage.getBoundingClientRect().width) {
 					animateProductToCart(button, itemImage);
 				} else if (attempts > 0) {
