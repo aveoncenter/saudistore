@@ -269,6 +269,14 @@ function wordsite_product_assets() {
 	wp_enqueue_style( 'wordsite-product', get_theme_file_uri( 'assets/css/product.css' ), array( 'wordsite-style' ), $ver );
 	wp_enqueue_script( 'wc-add-to-cart' );
 	wp_enqueue_script( 'wordsite-product', get_theme_file_uri( 'assets/js/product.js' ), array( 'jquery' ), $ver, true );
+	wp_localize_script(
+		'wordsite-product',
+		'wordsiteProduct',
+		array(
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( 'wordsite_add_to_cart' ),
+		)
+	);
 }
 add_action( 'wp_enqueue_scripts', 'wordsite_product_assets', 20 );
 
