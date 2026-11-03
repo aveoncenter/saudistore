@@ -117,6 +117,86 @@
 	});
 	document.querySelectorAll('form.cart').forEach(syncAccount);
 
+
+	/* Fly the product image into the header cart after WooCommerce confirms
+	 * an AJAX add-to-cart. The cart count itself remains WooCommerce-managed. */
+	if (window.jQuery) {
+		(function ($) {
+			var lastAddButton = null;
+			document.addEventListener('click', function (e) {
+				var clicked = e.target.closest('.ws-card .ajax_add_to_cart');
+				if (clicked) lastAddButton = clicked;
+			}, true);
+
+			function animateProductToCart(button) {
+				if (!button) return;
+				var card = button.closest('.ws-card');
+				var image = card ? card.querySelector('.ws-card__img img') : null;
+				if (!image) {
+					var quickView = button.closest('.ws-quick');
+					image = quickView ? quickView.querySelector('.ws-quick__media img') : null;
+				}
+				var cart = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
+				if (!image || !cart) return;
+
+				var from = image.getBoundingClientRect();
+				var to = cart.getBoundingClientRect();
+				if (!from.width || !from.height || !to.width || !to.height) return;
+
+				var flyer = image.cloneNode(false);
+				flyer.removeAttribute('srcset');
+				flyer.removeAttribute('sizes');
+				flyer.src = image.currentSrc || image.src;
+				flyer.alt = '';
+				flyer.setAttribute('aria-hidden', 'true');
+				Object.assign(flyer.style, {
+					position: 'fixed',
+					left: from.left + 'px',
+					top: from.top + 'px',
+					width: from.width + 'px',
+					height: from.height + 'px',
+					margin: '0',
+					maxWidth: 'none',
+					zIndex: '100000',
+					pointerEvents: 'none',
+					objectFit: 'cover',
+					borderRadius: '14px',
+					boxShadow: '0 12px 36px rgba(0,0,0,.38)',
+					transformOrigin: 'center center'
+				});
+				document.body.appendChild(flyer);
+
+				var dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+				var dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+				var scale = Math.max(0.12, Math.min(0.24, Math.min(to.width / from.width, to.height / from.height)));
+				var arcX = dx * 0.48;
+				var arcY = dy * 0.48 - (dy < 0 ? 42 : -42);
+				var animation = flyer.animate([
+					{ transform: 'translate3d(0,0,0) scale(1)', opacity: 1, offset: 0 },
+					{ transform: 'translate3d(' + arcX + 'px,' + arcY + 'px,0) scale(.62)', opacity: .92, offset: .58 },
+					{ transform: 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(' + scale + ')', opacity: .28, offset: 1 }
+				], {
+					duration: 720,
+					easing: 'cubic-bezier(.2,.72,.25,1)',
+					fill: 'forwards'
+				});
+				animation.onfinish = function () { flyer.remove(); };
+				animation.oncancel = function () { flyer.remove(); };
+
+				cart.classList.remove('ws-cart-arrived');
+				void cart.offsetWidth;
+				cart.classList.add('ws-cart-arrived');
+				window.setTimeout(function () { cart.classList.remove('ws-cart-arrived'); }, 750);
+			}
+
+			$(document.body).on('added_to_cart', function (event, fragments, cartHash, $button) {
+				var button = $button && $button.length ? $button[0] : lastAddButton;
+				lastAddButton = null;
+				animateProductToCart(button);
+			});
+		})(window.jQuery);
+	}
+
 	/* Variable products: live price, discount, fields, buy-now state. */
 	if (!window.jQuery) return;
 	jQuery(function ($) {
