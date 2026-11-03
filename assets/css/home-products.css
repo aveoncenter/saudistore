@@ -75,3 +75,25 @@ body.home .ws-quick__body { padding-top: 52px; }
 
 /* Touch targets remain usable without enlarging mouse-driven split-screen cards. */
 @media (pointer: coarse) { .ws-home-shelf__arrows button { min-width: 44px; min-height: 44px; } .ws-home-products .ws-card__btn { min-height: 44px; } }
+
+
+/* Native touch scrolling on phones; preserve the custom desktop carousel. */
+@media (max-width: 600px) {
+ .ws-home-shelf.is-ready .ws-home-shelf__viewport {
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+ }
+ .ws-home-shelf.is-ready .ws-home-shelf__viewport::-webkit-scrollbar { display: none; }
+ .ws-home-shelf.is-ready .ws-home-shelf__track {
+  transform: none !important;
+  transition: none !important;
+ }
+ .ws-home-products .ws-card { scroll-snap-align: start; }
+}
