@@ -5,7 +5,7 @@
   var viewport = root.querySelector('.ws-home-shelf__viewport'), track = root.querySelector('.ws-home-shelf__track');
   if (!track) return;
   var cards = Array.from(track.children), total = cards.length;
-  var arrows = root.querySelector('.ws-home-shelf__arrows'), reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  var arrows = root.querySelector('.ws-home-shelf__arrows'), reduced = matchMedia('(prefers-reduced-motion: reduce)'), touchMode = matchMedia('(pointer: coarse)').matches;
   var timer, fallback, moving = false, finish, hovered = false, focused = false, visible = false, startX = null, swiped = false;
   var nextIndex = total;
   var interval = Number(root.dataset.autoplay), rtl = getComputedStyle(track).direction === 'rtl';
@@ -23,13 +23,14 @@
    Array.from(track.children).forEach(function (card) { if (!card.hasAttribute('data-shelf-index')) card.dataset.shelfIndex = nextIndex++; });
    arrows.hidden = total <= columns();
    root.classList.toggle('is-static', total <= columns());
-   Array.from(track.children).forEach(function (card, index) { card.inert = index >= columns(true); if (index >= columns(true)) card.setAttribute('aria-hidden', 'true'); else card.removeAttribute('aria-hidden'); });
+   Array.from(track.children).forEach(function (card, index) { var hidden = !touchMode && index >= columns(true); card.inert = hidden; if (hidden) card.setAttribute('aria-hidden', 'true'); else card.removeAttribute('aria-hidden'); });
   }
   function schedule() {
    clearInterval(timer);
-   if (interval && total > columns() && !reduced.matches && !hovered && !focused && visible && !document.hidden && !document.querySelector('.ws-quick[open]')) timer = setInterval(function () { move(rtl ? -1 : 1); }, interval);
+   if (!touchMode && interval && total > columns() && !reduced.matches && !hovered && !focused && visible && !document.hidden && !document.querySelector('.ws-quick[open]')) timer = setInterval(function () { move(rtl ? -1 : 1); }, interval);
   }
   function move(direction) {
+   if (touchMode) { var touchStep = parseFloat(getComputedStyle(track.firstElementChild).width) + (parseFloat(getComputedStyle(track).gap) || 0); viewport.scrollBy({ left: (rtl ? -1 : 1) * direction * touchStep, behavior: reduced.matches ? 'auto' : 'smooth' }); return; }
    if (moving || total <= columns()) return;
    moving = true;
    var step = parseFloat(getComputedStyle(track.firstElementChild).width) + parseFloat(getComputedStyle(track).gap);
@@ -55,10 +56,12 @@
   root.addEventListener('focusin', function () { focused = true; schedule(); });
   root.addEventListener('focusout', function () { setTimeout(function () { focused = root.contains(document.activeElement); schedule(); }, 0); });
   viewport.addEventListener('dragstart', function (event) { event.preventDefault(); });
-  viewport.addEventListener('pointerdown', function (event) { startX = event.clientX; swiped = false; clearInterval(timer); });
-  viewport.addEventListener('pointerup', function (event) { if (startX !== null && Math.abs(event.clientX - startX) > 40) { swiped = true; move((event.clientX < startX ? 1 : -1) * (rtl ? -1 : 1)); } startX = null; schedule(); });
-  viewport.addEventListener('pointercancel', function () { startX = null; schedule(); });
-  viewport.addEventListener('click', function (event) { if (swiped) { event.preventDefault(); swiped = false; } }, true);
+  if (!touchMode) {
+   viewport.addEventListener('pointerdown', function (event) { startX = event.clientX; swiped = false; clearInterval(timer); });
+   viewport.addEventListener('pointerup', function (event) { if (startX !== null && Math.abs(event.clientX - startX) > 40) { swiped = true; move((event.clientX < startX ? 1 : -1) * (rtl ? -1 : 1)); } startX = null; schedule(); });
+   viewport.addEventListener('pointercancel', function () { startX = null; schedule(); });
+   viewport.addEventListener('click', function (event) { if (swiped) { event.preventDefault(); swiped = false; } }, true);
+  }
   viewport.addEventListener('keydown', function (event) { if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return; event.preventDefault(); viewport.focus(); move((event.key === 'ArrowLeft' ? 1 : -1) * (rtl ? -1 : 1)); });
   document.addEventListener('visibilitychange', schedule);
   var dialog = document.querySelector('.ws-quick');
