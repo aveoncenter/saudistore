@@ -1128,7 +1128,7 @@ function wordsite_ajax_add_product_to_cart() {
 		array( 'div.widget_shopping_cart_content' => '<div class="widget_shopping_cart_content">' . $mini_cart . '</div>' )
 	);
 
-	wp_send_json(
+	wp_send_json_success(
 		array(
 			'fragments'  => $fragments,
 			'cart_hash'  => WC()->cart->get_cart_hash(),
