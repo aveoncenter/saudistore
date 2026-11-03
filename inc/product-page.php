@@ -743,7 +743,10 @@ add_filter( 'woocommerce_add_to_cart_redirect', 'wordsite_buy_now_redirect', 99 
  * @return string
  */
 function wordsite_buy_now_message( $message ) {
-	return empty( $_REQUEST['ws_buy_now'] ) ? $message : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! empty( $_REQUEST['ws_buy_now'] ) || ( function_exists( 'is_product' ) && is_product() ) ) {
+		return '';
+	}
+	return $message; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 }
 add_filter( 'wc_add_to_cart_message_html', 'wordsite_buy_now_message', 99 );
 
