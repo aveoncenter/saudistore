@@ -79,8 +79,8 @@ function wordsite_format_pct( $pct ) {
 function wordsite_needs_account( $product_id ) {
 	$flag = get_post_meta( $product_id, '_ws_needs_account', true );
 	if ( '' === $flag ) {
-		// Never configured: on by default (filter to change).
-		return (bool) apply_filters( 'wordsite_account_fields_default', true, $product_id );
+		// Account details are opt-in per product.
+		return (bool) apply_filters( 'wordsite_account_fields_default', false, $product_id );
 	}
 	return 'yes' === $flag;
 }
@@ -142,8 +142,8 @@ function wordsite_decrypt( $data ) {
  */
 function wordsite_terms_text( $product_id ) {
 	if ( ! metadata_exists( 'post', $product_id, '_ws_terms' ) ) {
-		// Never configured: sensible default (filter to change, '' to disable).
-		return trim( (string) apply_filters( 'wordsite_default_terms', 'وقت الشراء ما يكون فيه اشتراك فعال بالحساب', $product_id ) );
+		// Terms are optional and should only be requested when configured.
+		return trim( (string) apply_filters( 'wordsite_default_terms', '', $product_id ) );
 	}
 	return trim( (string) get_post_meta( $product_id, '_ws_terms', true ) );
 }
@@ -517,7 +517,7 @@ function wordsite_carousel_ids( $product, $type ) {
 function wordsite_card_cart_button( $p ) {
 	if ( $p->is_type( 'simple' ) && $p->is_purchasable() && $p->is_in_stock() && ! wordsite_has_fields( $p->get_id() ) ) {
 		return sprintf(
-			'<a href="%s" data-quantity="1" data-product_id="%d" data-product_sku="%s" class="ws-card__btn ws-card__btn--cart add_to_cart_button ajax_add_to_cart" rel="nofollow" aria-label="%s">%s أضف للسلة</a>',
+			'<a href="%s" data-quantity="1" data-product_id="%d" data-product_sku="%s" class="ws-card__btn ws-card__btn--cart add_to_cart_button ajax_add_to_cart" rel="nofollow" aria-label="%s">%s أضف إلى السلة</a>',
 			esc_url( $p->add_to_cart_url() ),
 			$p->get_id(),
 			esc_attr( $p->get_sku() ),
@@ -978,7 +978,7 @@ function wordsite_product_settings_fields() {
 			'id'          => '_ws_needs_account',
 			'value'       => wordsite_needs_account( get_the_ID() ) ? 'yes' : 'no',
 			'label'       => 'اطلب إيميل الحساب',
-			'description' => 'يطلب من العميل إيميل الحساب الذي سيُفعّل عليه الاشتراك.',
+			'description' => 'فعّل هذا الخيار فقط للمنتجات التي تحتاج بريداً إلكترونياً من العميل لإتمام التفعيل.',
 		)
 	);
 	woocommerce_wp_checkbox(
@@ -986,7 +986,7 @@ function wordsite_product_settings_fields() {
 			'id'          => '_ws_needs_password',
 			'value'       => wordsite_needs_password( get_the_ID() ) ? 'yes' : 'no',
 			'label'       => 'اطلب كلمة المرور أيضاً',
-			'description' => 'تُحفظ مشفّرة، تظهر لك فقط في صفحة الطلب، وتُحذف تلقائياً عند اكتمال الطلب.',
+			'description' => 'يجب تفعيل طلب البريد الإلكتروني أيضاً. تُحفظ كلمة المرور مشفّرة وتُحذف تلقائياً عند اكتمال الطلب أو إلغائه أو استرداده أو فشله.',
 		)
 	);
 	woocommerce_wp_text_input(
