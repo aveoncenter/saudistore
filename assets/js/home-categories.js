@@ -6,7 +6,7 @@
   var slides = Array.from(track.children), total = slides.length;
   if (total < 2) return;
   slides.forEach(function (slide, i) { slide.dataset.categoryIndex = i; });
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)'), touchMode = window.matchMedia('(pointer: coarse)').matches;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)'), touchMode = window.matchMedia('(pointer: coarse), (max-width: 600px)').matches;
   var timer, finishTimer, moving = false, finishMove, hovered = false, focused = false, visible = false, stopped = reduced.matches, startX = null, swiped = false;
   root.classList.add('is-ready');
   function columns() { return Math.max(1, parseInt(getComputedStyle(root).getPropertyValue('--category-columns'), 10)); }
