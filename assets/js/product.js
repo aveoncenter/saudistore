@@ -276,7 +276,7 @@
 				actions.append(viewCart, checkout);
 				toast.appendChild(actions);
 
-				document.body.appendChild(toast);
+				quickView.appendChild(toast);
 				close.addEventListener('click', function () {
 					if (quickToastTimer) window.clearTimeout(quickToastTimer);
 					toast.remove();
