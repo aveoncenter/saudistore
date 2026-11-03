@@ -5,7 +5,7 @@
   var viewport = root.querySelector('.ws-home-shelf__viewport'), track = root.querySelector('.ws-home-shelf__track');
   if (!track) return;
   var cards = Array.from(track.children), total = cards.length;
-  var arrows = root.querySelector('.ws-home-shelf__arrows'), reduced = matchMedia('(prefers-reduced-motion: reduce)'), touchMode = matchMedia('(pointer: coarse)').matches;
+  var arrows = root.querySelector('.ws-home-shelf__arrows'), reduced = matchMedia('(prefers-reduced-motion: reduce)'), touchMode = matchMedia('(pointer: coarse), (max-width: 600px)').matches;
   var timer, fallback, moving = false, finish, hovered = false, focused = false, visible = false, startX = null, swiped = false;
   var nextIndex = total;
   var interval = Number(root.dataset.autoplay), rtl = getComputedStyle(track).direction === 'rtl';
