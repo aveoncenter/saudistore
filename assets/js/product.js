@@ -118,18 +118,18 @@
 	document.querySelectorAll('form.cart').forEach(syncAccount);
 
 
-	/* Fly the product image into the header cart after WooCommerce confirms
-	 * an AJAX add-to-cart. The cart count itself remains WooCommerce-managed. */
+	/* Product image animation and WooCommerce mini-cart integration. */
 	if (window.jQuery) {
 		(function ($) {
 			var lastAddButton = null;
+
 			document.addEventListener('click', function (e) {
 				var clicked = e.target.closest('.ws-card .ajax_add_to_cart');
 				if (clicked) lastAddButton = clicked;
 			}, true);
 
-			function animateProductToCart(button, onFinish) {
-				if (!button) { if (onFinish) onFinish(); return; }
+			function animateProductToCart(button, targetOverride) {
+				if (!button) return;
 				var card = button.closest('.ws-card');
 				var image = card ? card.querySelector('.ws-card__img img') : null;
 				if (!image) {
@@ -137,14 +137,15 @@
 					image = quickView ? quickView.querySelector('.ws-quick__media img') : null;
 				}
 				if (!image && button.closest('form.cart')) {
-					var productMedia = document.querySelector('.ws-product__media');
-					image = productMedia ? productMedia.querySelector('.woocommerce-product-gallery__image img, img.wp-post-image, img') : null;
+					var media = document.querySelector('.ws-product__media');
+					image = media ? media.querySelector('.woocommerce-product-gallery__image img, img.wp-post-image, img') : null;
 				}
-				var cart = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
-				if (!image || !cart) { if (onFinish) onFinish(); return; }
+				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
+				var target = targetOverride || cartButton;
+				if (!image || !target || typeof image.animate !== 'function') return;
 
 				var from = image.getBoundingClientRect();
-				var to = cart.getBoundingClientRect();
+				var to = target.getBoundingClientRect();
 				if (!from.width || !from.height || !to.width || !to.height) return;
 
 				var flyer = image.cloneNode(false);
@@ -175,11 +176,6 @@
 				var scale = Math.max(0.12, Math.min(0.24, Math.min(to.width / from.width, to.height / from.height)));
 				var arcX = dx * 0.48;
 				var arcY = dy * 0.48 - (dy < 0 ? 42 : -42);
-				if (typeof flyer.animate !== 'function') {
-					flyer.remove();
-					if (onFinish) onFinish();
-					return;
-				}
 				var animation = flyer.animate([
 					{ transform: 'translate3d(0,0,0) scale(1)', opacity: 1, offset: 0 },
 					{ transform: 'translate3d(' + arcX + 'px,' + arcY + 'px,0) scale(.62)', opacity: .92, offset: .58 },
@@ -189,45 +185,141 @@
 					easing: 'cubic-bezier(.2,.72,.25,1)',
 					fill: 'forwards'
 				});
-				animation.onfinish = function () { flyer.remove(); if (onFinish) onFinish(); };
+				animation.onfinish = function () { flyer.remove(); };
 				animation.oncancel = function () { flyer.remove(); };
 
-				cart.classList.remove('ws-cart-arrived');
-				void cart.offsetWidth;
-				cart.classList.add('ws-cart-arrived');
-				window.setTimeout(function () { cart.classList.remove('ws-cart-arrived'); }, 750);
+				if (cartButton) {
+					cartButton.classList.remove('ws-cart-arrived');
+					void cartButton.offsetWidth;
+					cartButton.classList.add('ws-cart-arrived');
+					window.setTimeout(function () { cartButton.classList.remove('ws-cart-arrived'); }, 750);
+				}
+			}
+
+			function markProductAdded(button) {
+				if (!button || !button.matches('.single_add_to_cart_button')) return;
+				button.classList.remove('loading');
+				button.classList.add('ws-added-to-cart');
+				button.setAttribute('aria-disabled', 'true');
+				button.setAttribute('data-ws-added-tooltip', 'تمت إضافة المنتج إلى السلة');
+				button.setAttribute('title', 'تمت إضافة المنتج إلى السلة');
+				var form = button.closest('form.cart');
+				if (form && form.classList.contains('variations_form')) {
+					var variation = form.querySelector('input[name="variation_id"]');
+					button.setAttribute('data-ws-added-variation', variation ? variation.value : '');
+				}
+			}
+
+			function showAddError(form, html) {
+				var wrapper = document.querySelector('.woocommerce-notices-wrapper');
+				if (!wrapper) {
+					wrapper = document.createElement('div');
+					wrapper.className = 'woocommerce-notices-wrapper';
+					var product = document.querySelector('.ws-product__summary') || form.parentNode;
+					product.insertBefore(wrapper, product.firstChild);
+				}
+				wrapper.innerHTML = html || '<ul class="woocommerce-error" role="alert"><li>تعذر إضافة المنتج إلى السلة. يرجى المحاولة مرة أخرى.</li></ul>';
+				wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			}
+
+			function animateIntoMiniCart(button, attempts) {
+				var drawer = document.querySelector('.wc-block-mini-cart__drawer');
+				var overlay = drawer ? drawer.closest('.wc-block-components-drawer__screen-overlay') : null;
+				var visible = drawer && (!overlay || !overlay.classList.contains('wc-block-components-drawer__screen-overlay--is-hidden'));
+				var itemImage = visible ? drawer.querySelector('.wc-block-cart-item__image img, .wc-block-cart-item__image') : null;
+				if (itemImage && itemImage.getBoundingClientRect().width) {
+					animateProductToCart(button, itemImage);
+				} else if (attempts > 0) {
+					window.setTimeout(function () { animateIntoMiniCart(button, attempts - 1); }, 70);
+				} else {
+					animateProductToCart(button);
+				}
 			}
 
 			$(document.body).on('added_to_cart', function (event, fragments, cartHash, $button) {
 				var button = $button && $button.length ? $button[0] : lastAddButton;
 				lastAddButton = null;
-				animateProductToCart(button);
+				if (button && button.closest('form.cart')) {
+					markProductAdded(button);
+					window.setTimeout(function () { animateIntoMiniCart(button, 8); }, 100);
+				} else {
+					animateProductToCart(button);
+				}
 			});
 
+			/* Block duplicate submissions after a successful add, but keep the
+			 * control hoverable so its Arabic confirmation tooltip can be read. */
+			document.addEventListener('click', function (event) {
+				var addedButton = event.target.closest('.single_add_to_cart_button.ws-added-to-cart');
+				if (addedButton) {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+				}
+			}, true);
 
+			/* AJAX add for simple and variable single-product forms. Keep the
+			 * native form validation and send selected variation + custom fields. */
+			document.addEventListener('submit', function (event) {
+				var form = event.target;
+				if (!form.matches('body.single-product form.cart')) return;
+				var button = event.submitter || form.querySelector('.single_add_to_cart_button');
+				if (!button || button.classList.contains('ws-buy-now')) return;
+				if (button.classList.contains('ws-added-to-cart') || form.dataset.wsAjaxPending === '1') {
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					return;
+				}
+				if (!window.wordsiteProduct || !window.wordsiteProduct.ajaxUrl || !window.wordsiteProduct.nonce) return;
+				if (form.checkValidity && !form.checkValidity()) return;
+
+				var productField = form.querySelector('input[name="product_id"]');
+				var addField = form.querySelector('input[name="add-to-cart"]');
+				var productId = productField ? productField.value : (button.value || (addField ? addField.value : ''));
+				var quantityField = form.querySelector('input[name="quantity"]');
+				var quantity = quantityField ? quantityField.value : '1';
+				var variationField = form.querySelector('input[name="variation_id"]');
+				var variationId = variationField ? variationField.value : '0';
+				if (!productId) return;
+				if (form.classList.contains('variations_form') && (!variationId || variationId === '0')) return;
+
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				form.dataset.wsAjaxPending = '1';
+				button.classList.add('loading');
+				button.setAttribute('aria-busy', 'true');
+
+				var data = $(form).serialize();
+				data += '&action=wordsite_add_to_cart';
+				data += '&security=' + encodeURIComponent(window.wordsiteProduct.nonce);
+				data += '&product_id=' + encodeURIComponent(productId);
+				data += '&quantity=' + encodeURIComponent(quantity);
+				if (variationField) data += '&variation_id=' + encodeURIComponent(variationId);
+
+				$(document.body).trigger('adding_to_cart', [$(button), data]);
+				$.ajax({
+					type: 'POST',
+					url: window.wordsiteProduct.ajaxUrl,
+					data: data,
+					dataType: 'json'
+				}).done(function (response) {
+					form.dataset.wsAjaxPending = '0';
+					button.classList.remove('loading');
+					button.removeAttribute('aria-busy');
+					if (!response || response.success === false || response.error) {
+						showAddError(form, response && response.data ? response.data.messages : '');
+						return;
+					}
+					var fragments = response.fragments || {};
+					var cartHash = response.cart_hash || '';
+					$(document.body).trigger('added_to_cart', [fragments, cartHash, $(button)]);
+				}).fail(function () {
+					form.dataset.wsAjaxPending = '0';
+					button.classList.remove('loading');
+					button.removeAttribute('aria-busy');
+					showAddError(form, '<ul class="woocommerce-error" role="alert"><li>تعذر الاتصال. تحقق من الإنترنت وحاول مرة أخرى.</li></ul>');
+				});
+			}, true);
 		})(window.jQuery);
-	}
-
-
-	/* Auto-open the cart confirmation after WooCommerce completed the add. */
-	var recentCartDrawer = document.querySelector('[data-ws-cart-drawer]');
-	if (recentCartDrawer) {
-		document.body.classList.add('ws-cart-drawer-open');
-		var closeControl = recentCartDrawer.querySelector('[data-ws-cart-close]');
-		if (closeControl) window.requestAnimationFrame(function () { closeControl.focus({ preventScroll: true }); });
-		recentCartDrawer.querySelectorAll('[data-ws-cart-close]').forEach(function (control) {
-			control.addEventListener('click', function () {
-				recentCartDrawer.classList.remove('is-open');
-				recentCartDrawer.setAttribute('aria-hidden', 'true');
-				document.body.classList.remove('ws-cart-drawer-open');
-			});
-		});
-		document.addEventListener('keydown', function (event) {
-			if (event.key !== 'Escape' || !recentCartDrawer.classList.contains('is-open')) return;
-			recentCartDrawer.classList.remove('is-open');
-			recentCartDrawer.setAttribute('aria-hidden', 'true');
-			document.body.classList.remove('ws-cart-drawer-open');
-		});
 	}
 
 	/* Variable products: live price, discount, fields, buy-now state. */
