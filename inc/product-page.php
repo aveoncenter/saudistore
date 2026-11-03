@@ -1038,12 +1038,35 @@ add_action( 'woocommerce_admin_process_product_object', 'wordsite_save_product_s
  * Add a simple or variable product through AJAX while preserving this theme's
  * terms, account-email and encrypted-password cart item fields.
  */
+/**
+ * Release short-lived idempotency locks used by product-page AJAX requests.
+ *
+ * @param string $option_name Lock option name.
+ */
+function wordsite_release_add_cart_request_lock( $option_name ) {
+	delete_option( sanitize_key( $option_name ) );
+}
+add_action( 'wordsite_release_add_cart_request_lock', 'wordsite_release_add_cart_request_lock', 10, 1 );
+
 function wordsite_ajax_add_product_to_cart() {
 	check_ajax_referer( 'wordsite_add_to_cart', 'security' );
 
-	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+	if ( ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
 		wp_send_json_error( array( 'messages' => 'تعذر الاتصال بسلة المشتريات. يرجى المحاولة مرة أخرى.' ) );
 	}
+
+	// A unique token makes a click idempotent, even if the browser sends
+	// the same AJAX request twice. add_option() is atomic on option_name.
+	$request_token = isset( $_POST['request_token'] ) ? sanitize_text_field( wp_unslash( $_POST['request_token'] ) ) : '';
+	if ( ! preg_match( '/^[A-Za-z0-9-]{16,64}$/', $request_token ) ) {
+		wp_send_json_error( array( 'messages' => 'انتهت صلاحية الطلب. يرجى إعادة المحاولة.' ) );
+	}
+	$session_id = WC()->session->get_customer_id();
+	$lock_name  = 'wordsite_add_cart_request_' . substr( hash( 'sha256', $session_id . '|' . $request_token ), 0, 32 );
+	if ( ! add_option( $lock_name, time(), '', false ) ) {
+		wp_send_json_success( array( 'duplicate_request' => true ) );
+	}
+	wp_schedule_single_event( time() + 180, 'wordsite_release_add_cart_request_lock', array( $lock_name ) );
 
 	// phpcs:disable WordPress.Security.NonceVerification.Missing
 	$product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
