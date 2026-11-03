@@ -475,3 +475,63 @@ body { -webkit-font-smoothing: antialiased; }
 }
 .woocommerce-product-gallery__wrapper,
 .woocommerce-product-gallery .flex-viewport { border-radius: 16px; overflow: hidden; }
+
+/* ---------- Mobile swipeable card rows ---------- */
+@media (max-width: 781px) {
+  /* WooCommerce product collections: native touch swipe */
+  .ws-products .wc-block-product-template {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 14px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    width: 100%;
+    padding: 4px 2px 16px !important;
+    margin: 0 !important;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(167, 139, 250, 0.55) transparent;
+    touch-action: pan-x pan-y;
+  }
+
+  .ws-products .wc-block-product-template > li,
+  .ws-products .wc-block-product-template > .wc-block-product {
+    flex: 0 0 76% !important;
+    width: 76% !important;
+    max-width: 320px;
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* WooCommerce product-category cards */
+  .ws-section .wc-block-product-categories-list,
+  .ws-section .wc-block-product-categories-list--has-images {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 14px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 4px 2px 16px !important;
+    margin: 0 !important;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(167, 139, 250, 0.55) transparent;
+    touch-action: pan-x pan-y;
+  }
+
+  .ws-section .wc-block-product-categories-list > li {
+    flex: 0 0 76% !important;
+    width: 76% !important;
+    max-width: 320px;
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
