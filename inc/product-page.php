@@ -1021,3 +1021,72 @@ function wordsite_save_product_settings( $product ) {
 	// phpcs:enable
 }
 add_action( 'woocommerce_admin_process_product_object', 'wordsite_save_product_settings' );
+
+
+/* -------------------------------------------------------------------------
+ * Post-add cart drawer on single product pages
+ * ---------------------------------------------------------------------- */
+
+/** Remember the item added by a normal single-product form POST. */
+function wordsite_remember_recent_product_add( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
+	if ( wp_doing_ajax() || 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['add-to-cart'] ) || ! empty( $_POST['ws_buy_now'] ) ) {
+		return;
+	}
+	$posted_product_id = absint( wp_unslash( $_POST['add-to-cart'] ) );
+	if ( $posted_product_id !== absint( $product_id ) || ! WC()->session ) {
+		return;
+	}
+	WC()->session->set( 'wordsite_recent_cart_item_key', $cart_item_key );
+}
+add_action( 'woocommerce_add_to_cart', 'wordsite_remember_recent_product_add', 10, 6 );
+
+/** Show a compact confirmation drawer; account passwords are never rendered. */
+function wordsite_render_recent_cart_drawer() {
+	if ( ! function_exists( 'is_product' ) || ! is_product() || ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
+		return;
+	}
+	$item_key = WC()->session->get( 'wordsite_recent_cart_item_key' );
+	if ( ! $item_key ) {
+		return;
+	}
+	WC()->session->set( 'wordsite_recent_cart_item_key', '' );
+	$cart = WC()->cart->get_cart();
+	if ( empty( $cart[ $item_key ] ) || empty( $cart[ $item_key ]['data'] ) || ! ( $cart[ $item_key ]['data'] instanceof WC_Product ) ) {
+		return;
+	}
+
+	$item       = $cart[ $item_key ];
+	$product    = $item['data'];
+	$parent     = ! empty( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : $product;
+	$title      = $parent ? $parent->get_name() : $product->get_name();
+	$image      = $product->get_image( 'woocommerce_thumbnail' );
+	$details    = wc_get_formatted_cart_item_data( $item, true );
+	$quantity   = absint( $item['quantity'] );
+	$line_total = WC()->cart->get_product_subtotal( $product, $quantity );
+	$item_count = WC()->cart->get_cart_contents_count();
+	$subtotal   = WC()->cart->get_cart_subtotal();
+
+	echo '<div class="ws-cart-drawer is-open" data-ws-cart-drawer aria-hidden="false">';
+	echo '<button type="button" class="ws-cart-drawer__backdrop" data-ws-cart-close aria-label="إغلاق سلة المشتريات"></button>';
+	echo '<aside class="ws-cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="ws-cart-drawer-title">';
+	echo '<header class="ws-cart-drawer__head">';
+	echo '<div class="ws-cart-drawer__confirmation"><span class="ws-cart-drawer__check" aria-hidden="true">✓</span><div><strong id="ws-cart-drawer-title">تمت الإضافة إلى سلة المشتريات</strong><small>منتجك أصبح جاهزاً للمتابعة</small></div></div>';
+	echo '<button type="button" class="ws-cart-drawer__close" data-ws-cart-close aria-label="إغلاق">×</button>';
+	echo '</header>';
+	echo '<div class="ws-cart-drawer__body"><article class="ws-cart-drawer__item">';
+	echo '<div class="ws-cart-drawer__image">' . wp_kses_post( $image ) . '</div>';
+	echo '<div class="ws-cart-drawer__info"><h3>' . esc_html( $title ) . '</h3>';
+	if ( $details ) {
+		echo '<div class="ws-cart-drawer__details">' . wp_kses_post( $details ) . '</div>';
+	}
+	echo '<div class="ws-cart-drawer__quantity">الكمية: ' . esc_html( $quantity ) . '</div></div>';
+	echo '<div class="ws-cart-drawer__line-price">' . wp_kses_post( $line_total ) . '</div>';
+	echo '</article>';
+	echo '<div class="ws-cart-drawer__summary"><span>لديك ' . esc_html( $item_count ) . ' منتج في السلة</span><div><span>المجموع</span><strong>' . wp_kses_post( $subtotal ) . '</strong></div></div></div>';
+	echo '<footer class="ws-cart-drawer__actions">';
+	echo '<a class="ws-cart-drawer__checkout" href="' . esc_url( wc_get_checkout_url() ) . '">إتمام الطلب <span aria-hidden="true">←</span></a>';
+	echo '<button type="button" class="ws-cart-drawer__continue" data-ws-cart-close>متابعة التسوق</button>';
+	echo '<a class="ws-cart-drawer__view" href="' . esc_url( wc_get_cart_url() ) . '">عرض السلة</a>';
+	echo '</footer></aside></div>';
+}
+add_action( 'wp_footer', 'wordsite_render_recent_cart_drawer', 50 );
