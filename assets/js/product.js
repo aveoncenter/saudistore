@@ -128,18 +128,19 @@
 	document.querySelectorAll('form.cart').forEach(syncAccount);
 
 
-	/* Product image animation and WooCommerce mini-cart integration. */
+	/* Product animation, existing mini-cart drawer, and quick-view confirmation. */
 	if (window.jQuery) {
 		(function ($) {
 			var lastAddButton = null;
+			var quickToastTimer = null;
 
-			document.addEventListener('click', function (e) {
-				var clicked = e.target.closest('.ws-card .ajax_add_to_cart');
+			document.addEventListener('click', function (event) {
+				var clicked = event.target.closest('.ws-card .ajax_add_to_cart, .ws-quick .ajax_add_to_cart');
 				if (clicked) lastAddButton = clicked;
 			}, true);
 
-			function animateProductToCart(button, targetOverride) {
-				if (!button) return;
+			function animateProductToCart(button) {
+				if (!button || typeof Element.prototype.animate !== 'function') return;
 				var card = button.closest('.ws-card');
 				var image = card ? card.querySelector('.ws-card__img img') : null;
 				if (!image) {
@@ -151,11 +152,10 @@
 					image = media ? media.querySelector('.woocommerce-product-gallery__image img, img.wp-post-image, img') : null;
 				}
 				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
-				var target = targetOverride || cartButton;
-				if (!image || !target || typeof image.animate !== 'function') return;
+				if (!image || !cartButton) return;
 
 				var from = image.getBoundingClientRect();
-				var to = target.getBoundingClientRect();
+				var to = cartButton.getBoundingClientRect();
 				if (!from.width || !from.height || !to.width || !to.height) return;
 
 				var flyer = image.cloneNode(false);
@@ -165,19 +165,11 @@
 				flyer.alt = '';
 				flyer.setAttribute('aria-hidden', 'true');
 				Object.assign(flyer.style, {
-					position: 'fixed',
-					left: from.left + 'px',
-					top: from.top + 'px',
-					width: from.width + 'px',
-					height: from.height + 'px',
-					margin: '0',
-					maxWidth: 'none',
-					zIndex: '100000',
-					pointerEvents: 'none',
-					objectFit: 'cover',
-					borderRadius: '14px',
-					boxShadow: '0 12px 36px rgba(0,0,0,.38)',
-					transformOrigin: 'center center'
+					position: 'fixed', left: from.left + 'px', top: from.top + 'px',
+					width: from.width + 'px', height: from.height + 'px',
+					margin: '0', maxWidth: 'none', zIndex: '100000',
+					pointerEvents: 'none', objectFit: 'cover', borderRadius: '14px',
+					boxShadow: '0 12px 36px rgba(0,0,0,.38)', transformOrigin: 'center center'
 				});
 				document.body.appendChild(flyer);
 
@@ -190,30 +182,105 @@
 					{ transform: 'translate3d(0,0,0) scale(1)', opacity: 1, offset: 0 },
 					{ transform: 'translate3d(' + arcX + 'px,' + arcY + 'px,0) scale(.62)', opacity: .92, offset: .58 },
 					{ transform: 'translate3d(' + dx + 'px,' + dy + 'px,0) scale(' + scale + ')', opacity: .28, offset: 1 }
-				], {
-					duration: 720,
-					easing: 'cubic-bezier(.2,.72,.25,1)',
-					fill: 'forwards'
-				});
+				], { duration: 720, easing: 'cubic-bezier(.2,.72,.25,1)', fill: 'forwards' });
 				animation.onfinish = function () { flyer.remove(); };
 				animation.oncancel = function () { flyer.remove(); };
 
-				if (cartButton) {
-					cartButton.classList.remove('ws-cart-arrived');
-					void cartButton.offsetWidth;
-					cartButton.classList.add('ws-cart-arrived');
-					window.setTimeout(function () { cartButton.classList.remove('ws-cart-arrived'); }, 750);
-				}
+				cartButton.classList.remove('ws-cart-arrived');
+				void cartButton.offsetWidth;
+				cartButton.classList.add('ws-cart-arrived');
+				window.setTimeout(function () { cartButton.classList.remove('ws-cart-arrived'); }, 750);
 			}
 
-			function resetProductAdded(button) {
-				if (!button) return;
-				button.classList.remove('ws-added-to-cart');
-				button.removeAttribute('aria-disabled');
-				button.removeAttribute('data-ws-added-tooltip');
-				button.removeAttribute('data-ws-added-variation');
-				button.removeAttribute('data-ws-added-quantity');
-				button.removeAttribute('title');
+			function openProductPageMiniCart() {
+				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
+				if (!cartButton) return;
+				var drawer = document.querySelector('.wc-block-mini-cart__drawer');
+				if (drawer && drawer.getAttribute('aria-hidden') === 'false') return;
+				cartButton.click();
+			}
+
+			function showQuickViewAddedToast(button) {
+				var quickView = button ? button.closest('.ws-quick') : null;
+				if (!quickView) return;
+				var image = quickView.querySelector('.ws-quick__media img');
+				var title = quickView.querySelector('.ws-quick__info h3');
+				var price = quickView.querySelector('.ws-quick__price');
+				var previous = document.querySelector('.ws-added-toast');
+				if (previous) previous.remove();
+				if (quickToastTimer) window.clearTimeout(quickToastTimer);
+
+				var toast = document.createElement('section');
+				toast.className = 'ws-added-toast';
+				toast.setAttribute('role', 'status');
+				toast.setAttribute('aria-live', 'polite');
+				toast.setAttribute('dir', 'rtl');
+
+				var timer = document.createElement('div');
+				timer.className = 'ws-added-toast__timer';
+				var timerBar = document.createElement('span');
+				timer.appendChild(timerBar);
+				toast.appendChild(timer);
+
+				var head = document.createElement('div');
+				head.className = 'ws-added-toast__head';
+				var check = document.createElement('span');
+				check.className = 'ws-added-toast__check';
+				check.textContent = '✓';
+				var message = document.createElement('strong');
+				message.className = 'ws-added-toast__message';
+				message.textContent = 'تمت إضافة المنتج إلى سلة التسوق';
+				var close = document.createElement('button');
+				close.type = 'button';
+				close.className = 'ws-added-toast__close';
+				close.setAttribute('aria-label', 'إغلاق');
+				close.textContent = '×';
+			head.append(check, message, close);
+				toast.appendChild(head);
+
+				var product = document.createElement('div');
+				product.className = 'ws-added-toast__product';
+				if (image) {
+					var img = document.createElement('img');
+					img.src = image.currentSrc || image.src;
+					img.alt = '';
+					product.appendChild(img);
+				}
+				var productName = document.createElement('strong');
+				productName.className = 'ws-added-toast__name';
+				productName.textContent = title ? title.textContent.trim() : 'المنتج';
+				product.appendChild(productName);
+				if (price) {
+					var productPrice = document.createElement('span');
+					productPrice.className = 'ws-added-toast__price';
+					productPrice.innerHTML = price.innerHTML;
+					product.appendChild(productPrice);
+				}
+				toast.appendChild(product);
+
+				var actions = document.createElement('div');
+				actions.className = 'ws-added-toast__actions';
+				var viewCart = document.createElement('a');
+				viewCart.className = 'ws-added-toast__view';
+				viewCart.href = window.wordsiteProduct && window.wordsiteProduct.cartUrl ? window.wordsiteProduct.cartUrl : '/cart/';
+				viewCart.textContent = 'عرض السلة';
+				var checkout = document.createElement('a');
+				checkout.className = 'ws-added-toast__checkout';
+				checkout.href = window.wordsiteProduct && window.wordsiteProduct.checkoutUrl ? window.wordsiteProduct.checkoutUrl : '/checkout/';
+				checkout.textContent = 'إتمام الطلب';
+				actions.append(viewCart, checkout);
+				toast.appendChild(actions);
+
+				document.body.appendChild(toast);
+				close.addEventListener('click', function () {
+					if (quickToastTimer) window.clearTimeout(quickToastTimer);
+					toast.remove();
+				});
+				quickToastTimer = window.setTimeout(function () {
+					toast.classList.add('is-leaving');
+					toast.remove();
+					quickToastTimer = null;
+				}, 3000);
 			}
 
 			function markProductAdded(button) {
@@ -244,49 +311,21 @@
 				wrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 			}
 
-			function animateIntoMiniCart(button, attempts) {
-				var drawer = document.querySelector('.wc-block-mini-cart__drawer');
-				var overlay = drawer ? drawer.closest('.wc-block-components-drawer__screen-overlay') : null;
-				var visible = drawer && (!overlay || !overlay.classList.contains('wc-block-components-drawer__screen-overlay--is-hidden'));
-				var itemImage = null;
-				if (visible) {
-					var cartImages = Array.from(drawer.querySelectorAll('.wc-block-cart-item__image img, .wc-block-mini-cart__product-image img'));
-					var currentPath = window.location.pathname;
-					while (currentPath.length > 1 && currentPath.endsWith('/')) currentPath = currentPath.slice(0, -1);
-					itemImage = cartImages.find(function (candidate) {
-						var link = candidate.closest('a');
-						if (!link) return false;
-						try {
-							var linkPath = new URL(link.href, window.location.href).pathname;
-							while (linkPath.length > 1 && linkPath.endsWith('/')) linkPath = linkPath.slice(0, -1);
-							return linkPath === currentPath;
-						} catch (error) {
-							return false;
-						}
-					}) || cartImages[0] || null;
-				}
-				if (itemImage && itemImage.getBoundingClientRect().width) {
-					animateProductToCart(button, itemImage);
-				} else if (attempts > 0) {
-					window.setTimeout(function () { animateIntoMiniCart(button, attempts - 1); }, 70);
-				} else {
-					animateProductToCart(button);
-				}
-			}
-
 			$(document.body).on('added_to_cart', function (event, fragments, cartHash, $button) {
 				var button = $button && $button.length ? $button[0] : lastAddButton;
 				lastAddButton = null;
-				if (button && button.closest('form.cart')) {
+				if (button && button.closest('form.cart') && document.body.classList.contains('single-product')) {
 					markProductAdded(button);
-					window.setTimeout(function () { animateIntoMiniCart(button, 8); }, 100);
+					animateProductToCart(button);
+					window.setTimeout(openProductPageMiniCart, 760);
 				} else {
 					animateProductToCart(button);
+					if (button && button.closest('.ws-quick')) showQuickViewAddedToast(button);
 				}
 			});
 
-			/* Block duplicate submissions after a successful add, but keep the
-			 * control hoverable so its Arabic confirmation tooltip can be read. */
+			/* Keep the quick-view/homepage AJAX links in their existing flow. Only
+			 * prevent duplicate clicks on a product-page button after success. */
 			document.addEventListener('click', function (event) {
 				var addedButton = event.target.closest('.single_add_to_cart_button.ws-added-to-cart');
 				if (addedButton) {
@@ -295,8 +334,8 @@
 				}
 			}, true);
 
-			/* AJAX add for simple and variable single-product forms. Keep the
-			 * native form validation and send selected variation + custom fields. */
+			/* AJAX add on single product pages only. The event is captured before
+			 * WooCommerce's native submit handler, preventing a second form POST. */
 			document.addEventListener('submit', function (event) {
 				var form = event.target;
 				if (!form.matches('body.single-product form.cart')) return;
@@ -326,11 +365,17 @@
 				button.classList.add('loading');
 				button.setAttribute('aria-busy', 'true');
 
+				if (!form.dataset.wsCartRequestToken) {
+					form.dataset.wsCartRequestToken = window.crypto && window.crypto.randomUUID
+						? window.crypto.randomUUID()
+						: ('ws' + Date.now().toString(36) + Math.random().toString(36).slice(2, 14));
+				}
 				var data = $(form).serialize();
 				data += '&action=wordsite_add_to_cart';
 				data += '&security=' + encodeURIComponent(window.wordsiteProduct.nonce);
 				data += '&product_id=' + encodeURIComponent(productId);
 				data += '&quantity=' + encodeURIComponent(quantity);
+				data += '&request_token=' + encodeURIComponent(form.dataset.wsCartRequestToken);
 				if (variationField) data += '&variation_id=' + encodeURIComponent(variationId);
 
 				$(document.body).trigger('adding_to_cart', [$(button), data]);
@@ -340,18 +385,21 @@
 					data: data,
 					dataType: 'json'
 				}).done(function (response) {
+					if (response && response.success && response.data && response.data.duplicate_request) {
+						return;
+					}
 					form.dataset.wsAjaxPending = '0';
 					button.classList.remove('loading');
 					button.removeAttribute('aria-busy');
 					if (!response || response.success === false || response.error) {
+						delete form.dataset.wsCartRequestToken;
 						showAddError(form, response && response.data ? response.data.messages : '');
 						return;
 					}
-					var fragments = response.fragments || {};
-					var cartHash = response.cart_hash || '';
-						$(document.body).trigger('added_to_cart', [fragments, cartHash, $(button)]);
+					$(document.body).trigger('added_to_cart', [response.data.fragments || {}, response.data.cart_hash || '', $(button)]);
 				}).fail(function () {
 					form.dataset.wsAjaxPending = '0';
+					delete form.dataset.wsCartRequestToken;
 					button.classList.remove('loading');
 					button.removeAttribute('aria-busy');
 					showAddError(form, '<ul class="woocommerce-error" role="alert"><li>تعذر الاتصال. تحقق من الإنترنت وحاول مرة أخرى.</li></ul>');
@@ -359,7 +407,6 @@
 			}, true);
 		})(window.jQuery);
 	}
-
 
 	/* A changed quantity is an intentional new purchase, so unlock the button. */
 	document.addEventListener('change', function (event) {
