@@ -4,15 +4,20 @@
  document.querySelectorAll('[data-category-carousel]').forEach(function (root) {
   var viewport = root.querySelector('.ws-category-viewport'), track = root.querySelector('.ws-category-track');
   var slides = Array.from(track.children), total = slides.length;
+  var mobileMode = window.matchMedia('(max-width: 600px)').matches;
   if (total < 2) return;
   slides.forEach(function (slide, i) { slide.dataset.categoryIndex = i; });
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)'), touchMode = window.matchMedia('(pointer: coarse), (max-width: 600px)').matches;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)'), touchMode = mobileMode;
   var timer, finishTimer, moving = false, finishMove, hovered = false, focused = false, visible = false, stopped = reduced.matches, startX = null, swiped = false;
   root.classList.add('is-ready');
+  if (touchMode) enableInfiniteTouchScroll(viewport, track, slides);
   function columns() { return Math.max(1, parseInt(getComputedStyle(root).getPropertyValue('--category-columns'), 10)); }
   function step() { return track.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(track).gap); }
   function update() {
-   Array.from(track.children).forEach(function (slide, i) { var hidden = !touchMode && i >= columns(); slide.inert = hidden; if (hidden) slide.setAttribute('aria-hidden', 'true'); else slide.removeAttribute('aria-hidden'); });
+   Array.from(track.children).forEach(function (slide, i) {
+    if (touchMode && slide.hasAttribute('data-loop-clone')) { slide.inert = false; slide.setAttribute('aria-hidden', 'true'); return; }
+    var hidden = !touchMode && i >= columns(); slide.inert = hidden; if (hidden) slide.setAttribute('aria-hidden', 'true'); else slide.removeAttribute('aria-hidden');
+   });
 
   }
   function schedule() {
@@ -62,4 +67,51 @@
   new ResizeObserver(function () { if (finishMove) finishMove(); update(); schedule(); }).observe(viewport);
   update();
  });
+
+  /* Duplicate one complete card set on both sides. While the user scrolls
+   * through a duplicate set, shift by exactly one set width so the motion
+   * remains visually continuous and never reaches a hard end. */
+  function enableInfiniteTouchScroll(viewport, track, originals) {
+   if (originals.length < 3) return;
+   function cloneForLoop(node) {
+    var clone = node.cloneNode(true);
+    clone.setAttribute('data-loop-clone', 'true');
+    clone.setAttribute('aria-hidden', 'true');
+    clone.removeAttribute('id');
+    clone.querySelectorAll('[id]').forEach(function (item) { item.removeAttribute('id'); });
+    clone.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach(function (item) { item.setAttribute('tabindex', '-1'); });
+    return clone;
+   }
+   var before = document.createDocumentFragment(), after = document.createDocumentFragment();
+   originals.forEach(function (item) { before.appendChild(cloneForLoop(item)); });
+   originals.forEach(function (item) { after.appendChild(cloneForLoop(item)); });
+   track.insertBefore(before, track.firstChild);
+   track.appendChild(after);
+   function setWidth() {
+    var item = track.children[originals.length];
+    if (!item) return 0;
+    var gap = parseFloat(getComputedStyle(track).gap) || 0;
+    return originals.length * (item.getBoundingClientRect().width + gap);
+   }
+   function placeAtRealSet() {
+    var width = setWidth();
+    if (width > 0) viewport.scrollLeft = width;
+   }
+   placeAtRealSet();
+   viewport.addEventListener('scroll', function () {
+    var width = setWidth();
+    if (!width) return;
+    var position = viewport.scrollLeft;
+    if (position < width - 1) {
+     viewport.scrollLeft = position + width;
+    } else if (position >= (2 * width) - 1) {
+     viewport.scrollLeft = position - width;
+    }
+   }, { passive: true });
+   if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(placeAtRealSet);
+   }
+   window.addEventListener('resize', placeAtRealSet, { passive: true });
+  }
+
 })();
