@@ -546,3 +546,9 @@
 @media (prefers-reduced-motion: reduce) {
   .ws-header .wc-block-mini-cart__button.ws-cart-arrived { animation: none; }
 }
+
+/* Hide only WooCommerce success banners on product pages; keep errors visible. */
+body.single-product .woocommerce-message,
+body.single-product .wc-block-components-notice-banner.is-success {
+  display: none !important;
+}
