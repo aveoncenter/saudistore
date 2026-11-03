@@ -196,6 +196,16 @@
 				}
 			}
 
+			function resetProductAdded(button) {
+				if (!button) return;
+				button.classList.remove('ws-added-to-cart');
+				button.removeAttribute('aria-disabled');
+				button.removeAttribute('data-ws-added-tooltip');
+				button.removeAttribute('data-ws-added-variation');
+				button.removeAttribute('data-ws-added-quantity');
+				button.removeAttribute('title');
+			}
+
 			function markProductAdded(button) {
 				if (!button || !button.matches('.single_add_to_cart_button')) return;
 				button.classList.remove('loading');
@@ -204,6 +214,8 @@
 				button.setAttribute('data-ws-added-tooltip', 'تمت إضافة المنتج إلى السلة');
 				button.setAttribute('title', 'تمت إضافة المنتج إلى السلة');
 				var form = button.closest('form.cart');
+				var quantity = form ? form.querySelector('input[name="quantity"]') : null;
+				button.setAttribute('data-ws-added-quantity', quantity ? quantity.value : '1');
 				if (form && form.classList.contains('variations_form')) {
 					var variation = form.querySelector('input[name="variation_id"]');
 					button.setAttribute('data-ws-added-variation', variation ? variation.value : '');
@@ -311,7 +323,7 @@
 					}
 					var fragments = response.fragments || {};
 					var cartHash = response.cart_hash || '';
-					$(document.body).trigger('added_to_cart', [fragments, cartHash, $(button)]);
+						$(document.body).trigger('added_to_cart', [fragments, cartHash, $(button)]);
 				}).fail(function () {
 					form.dataset.wsAjaxPending = '0';
 					button.classList.remove('loading');
@@ -321,6 +333,18 @@
 			}, true);
 		})(window.jQuery);
 	}
+
+
+	/* A changed quantity is an intentional new purchase, so unlock the button. */
+	document.addEventListener('change', function (event) {
+		var quantity = event.target;
+		if (!quantity.matches('body.single-product form.cart input[name="quantity"]')) return;
+		var form = quantity.closest('form.cart');
+		var button = form && form.querySelector('.single_add_to_cart_button.ws-added-to-cart');
+		if (button && button.getAttribute('data-ws-added-quantity') !== String(quantity.value)) {
+			resetProductAdded(button);
+		}
+	});
 
 	/* Variable products: live price, discount, fields, buy-now state. */
 	if (!window.jQuery) return;
@@ -336,6 +360,10 @@
 		function fmt(n) { return String(Math.round(n * 100) / 100); }
 
 		$form.on('found_variation', function (e, v) {
+			var $addButton = $form.find('.single_add_to_cart_button');
+			if ($addButton.hasClass('ws-added-to-cart') && $addButton.attr('data-ws-added-variation') !== String(v.variation_id)) {
+				resetProductAdded($addButton[0]);
+			}
 			if (v.price_html) $prices.html(v.price_html);
 			var reg = parseFloat(v.display_regular_price), now = parseFloat(v.display_price);
 			if (reg > now && reg > 0) {
@@ -350,6 +378,7 @@
 		});
 
 		$form.on('reset_data hide_variation', function () {
+			resetProductAdded($form.find('.single_add_to_cart_button')[0]);
 			$prices.each(function (i) { this.innerHTML = origPrices[i]; });
 			$badge.find('bdi').html(origBadge.html);
 			$badge.prop('hidden', origBadge.hidden);
