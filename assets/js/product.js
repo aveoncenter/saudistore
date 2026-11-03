@@ -2,6 +2,16 @@
 (function () {
 	'use strict';
 
+	function resetProductAddedButton(button) {
+		if (!button) return;
+		button.classList.remove('ws-added-to-cart');
+		button.removeAttribute('aria-disabled');
+		button.removeAttribute('data-ws-added-tooltip');
+		button.removeAttribute('data-ws-added-variation');
+		button.removeAttribute('data-ws-added-quantity');
+		button.removeAttribute('title');
+	}
+
 	/* Read more: expand here, above the purchase options, never navigate to the tabs. */
 	document.addEventListener('click', function (e) {
 		var btn = e.target.closest('[data-ws-readmore]');
@@ -342,7 +352,7 @@
 		var form = quantity.closest('form.cart');
 		var button = form && form.querySelector('.single_add_to_cart_button.ws-added-to-cart');
 		if (button && button.getAttribute('data-ws-added-quantity') !== String(quantity.value)) {
-			resetProductAdded(button);
+			resetProductAddedButton(button);
 		}
 	});
 
@@ -378,7 +388,7 @@
 		});
 
 		$form.on('reset_data hide_variation', function () {
-			resetProductAdded($form.find('.single_add_to_cart_button')[0]);
+			resetProductAddedButton($form.find('.single_add_to_cart_button')[0]);
 			$prices.each(function (i) { this.innerHTML = origPrices[i]; });
 			$badge.find('bdi').html(origBadge.html);
 			$badge.prop('hidden', origBadge.hidden);
