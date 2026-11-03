@@ -10,6 +10,11 @@
 		button.removeAttribute('data-ws-added-variation');
 		button.removeAttribute('data-ws-added-quantity');
 		button.removeAttribute('title');
+		var form = button.closest('form.cart');
+		if (form) {
+			delete form.dataset.wsCartRequestToken;
+			form.dataset.wsAjaxPending = '0';
+		}
 	}
 
 	/* Read more: expand here, above the purchase options, never navigate to the tabs. */
@@ -435,7 +440,7 @@
 		$form.on('found_variation', function (e, v) {
 			var $addButton = $form.find('.single_add_to_cart_button');
 			if ($addButton.hasClass('ws-added-to-cart') && $addButton.attr('data-ws-added-variation') !== String(v.variation_id)) {
-				resetProductAdded($addButton[0]);
+				resetProductAddedButton($addButton[0]);
 			}
 			if (v.price_html) $prices.html(v.price_html);
 			var reg = parseFloat(v.display_regular_price), now = parseFloat(v.display_price);
