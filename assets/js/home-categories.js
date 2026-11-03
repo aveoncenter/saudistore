@@ -6,20 +6,21 @@
   var slides = Array.from(track.children), total = slides.length;
   if (total < 2) return;
   slides.forEach(function (slide, i) { slide.dataset.categoryIndex = i; });
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)'), touchMode = window.matchMedia('(pointer: coarse)').matches;
   var timer, finishTimer, moving = false, finishMove, hovered = false, focused = false, visible = false, stopped = reduced.matches, startX = null, swiped = false;
   root.classList.add('is-ready');
   function columns() { return Math.max(1, parseInt(getComputedStyle(root).getPropertyValue('--category-columns'), 10)); }
   function step() { return track.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(track).gap); }
   function update() {
-   Array.from(track.children).forEach(function (slide, i) { slide.inert = i >= columns(); if (i >= columns()) slide.setAttribute('aria-hidden', 'true'); else slide.removeAttribute('aria-hidden'); });
+   Array.from(track.children).forEach(function (slide, i) { var hidden = !touchMode && i >= columns(); slide.inert = hidden; if (hidden) slide.setAttribute('aria-hidden', 'true'); else slide.removeAttribute('aria-hidden'); });
 
   }
   function schedule() {
    clearInterval(timer);
-   if (!stopped && !reduced.matches && !hovered && !focused && visible && !document.hidden && total > columns()) timer = setInterval(function () { move(1); }, 2000);
+   if (!touchMode && !stopped && !reduced.matches && !hovered && !focused && visible && !document.hidden && total > columns()) timer = setInterval(function () { move(1); }, 2000);
   }
   function move(direction) {
+   if (touchMode) { viewport.scrollBy({ left: direction > 0 ? step() : -step(), behavior: reduced.matches ? 'auto' : 'smooth' }); return; }
    if (moving || total <= columns()) return;
    moving = true; var distance = step();
    track.style.transition = 'none';
@@ -42,13 +43,15 @@
   root.addEventListener('focusin', function () { focused = true; schedule(); });
   root.addEventListener('focusout', function () { setTimeout(function () { focused = root.contains(document.activeElement); schedule(); }, 0); });
   viewport.addEventListener('dragstart', function (event) { event.preventDefault(); });
-  viewport.addEventListener('pointerdown', function (event) { startX = event.clientX; swiped = false; clearInterval(timer); });
-  viewport.addEventListener('pointerup', function (event) {
-   if (startX !== null && Math.abs(event.clientX - startX) > 40) { swiped = true; move(event.clientX < startX ? 1 : -1); }
-   startX = null; schedule();
-  });
-  viewport.addEventListener('pointercancel', function () { startX = null; schedule(); });
-  viewport.addEventListener('click', function (event) { if (swiped) { event.preventDefault(); swiped = false; } }, true);
+  if (!touchMode) {
+   viewport.addEventListener('pointerdown', function (event) { startX = event.clientX; swiped = false; clearInterval(timer); });
+   viewport.addEventListener('pointerup', function (event) {
+    if (startX !== null && Math.abs(event.clientX - startX) > 40) { swiped = true; move(event.clientX < startX ? 1 : -1); }
+    startX = null; schedule();
+   });
+   viewport.addEventListener('pointercancel', function () { startX = null; schedule(); });
+   viewport.addEventListener('click', function (event) { if (swiped) { event.preventDefault(); swiped = false; } }, true);
+  }
   viewport.addEventListener('keydown', function (event) {
    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
    event.preventDefault(); viewport.focus(); move(event.key === 'ArrowLeft' ? 1 : -1);
