@@ -273,8 +273,10 @@ function wordsite_product_assets() {
 		'wordsite-product',
 		'wordsiteProduct',
 		array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-			'nonce'   => wp_create_nonce( 'wordsite_add_to_cart' ),
+			'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+			'nonce'       => wp_create_nonce( 'wordsite_add_to_cart' ),
+			'cartUrl'     => wc_get_cart_url(),
+			'checkoutUrl' => wc_get_checkout_url(),
 		)
 	);
 }
