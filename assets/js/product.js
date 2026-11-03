@@ -251,12 +251,15 @@
 				var itemImage = null;
 				if (visible) {
 					var cartImages = Array.from(drawer.querySelectorAll('.wc-block-cart-item__image img, .wc-block-mini-cart__product-image img'));
-					var currentPath = window.location.pathname.replace(/\\/+$/, '');
+					var currentPath = window.location.pathname;
+					while (currentPath.length > 1 && currentPath.endsWith('/')) currentPath = currentPath.slice(0, -1);
 					itemImage = cartImages.find(function (candidate) {
 						var link = candidate.closest('a');
 						if (!link) return false;
 						try {
-							return new URL(link.href, window.location.href).pathname.replace(/\\/+$/, '') === currentPath;
+							var linkPath = new URL(link.href, window.location.href).pathname;
+							while (linkPath.length > 1 && linkPath.endsWith('/')) linkPath = linkPath.slice(0, -1);
+							return linkPath === currentPath;
 						} catch (error) {
 							return false;
 						}
