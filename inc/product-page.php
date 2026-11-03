@@ -1037,10 +1037,6 @@ add_action( 'woocommerce_admin_process_product_object', 'wordsite_save_product_s
  * ---------------------------------------------------------------------- */
 
 /**
- * Add a simple or variable product through AJAX while preserving this theme's
- * terms, account-email and encrypted-password cart item fields.
- */
-/**
  * Release short-lived idempotency locks used by product-page AJAX requests.
  *
  * @param string $option_name Lock option name.
@@ -1050,6 +1046,10 @@ function wordsite_release_add_cart_request_lock( $option_name ) {
 }
 add_action( 'wordsite_release_add_cart_request_lock', 'wordsite_release_add_cart_request_lock', 10, 1 );
 
+/**
+ * Add a simple or variable product through AJAX while preserving this theme's
+ * terms, account-email and encrypted-password cart item fields.
+ */
 function wordsite_ajax_add_product_to_cart() {
 	check_ajax_referer( 'wordsite_add_to_cart', 'security' );
 
