@@ -1022,71 +1022,96 @@ function wordsite_save_product_settings( $product ) {
 }
 add_action( 'woocommerce_admin_process_product_object', 'wordsite_save_product_settings' );
 
-
 /* -------------------------------------------------------------------------
- * Post-add cart drawer on single product pages
+ * AJAX product-page add to cart (keeps the page in place).
  * ---------------------------------------------------------------------- */
 
-/** Remember the item added by a normal single-product form POST. */
-function wordsite_remember_recent_product_add( $cart_item_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
-	if ( wp_doing_ajax() || 'POST' !== strtoupper( $_SERVER['REQUEST_METHOD'] ?? '' ) || empty( $_POST['add-to-cart'] ) || ! empty( $_POST['ws_buy_now'] ) ) {
-		return;
+/**
+ * Add a simple or variable product through AJAX while preserving this theme's
+ * terms, account-email and encrypted-password cart item fields.
+ */
+function wordsite_ajax_add_product_to_cart() {
+	check_ajax_referer( 'wordsite_add_to_cart', 'security' );
+
+	if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+		wp_send_json_error( array( 'messages' => 'تعذر الاتصال بسلة المشتريات. يرجى المحاولة مرة أخرى.' ) );
 	}
-	$posted_product_id = absint( wp_unslash( $_POST['add-to-cart'] ) );
-	if ( $posted_product_id !== absint( $product_id ) || ! WC()->session ) {
-		return;
+
+	// phpcs:disable WordPress.Security.NonceVerification.Missing
+	$product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+	$quantity   = isset( $_POST['quantity'] ) ? wc_stock_amount( wp_unslash( $_POST['quantity'] ) ) : 1;
+	$variation_id = isset( $_POST['variation_id'] ) ? absint( wp_unslash( $_POST['variation_id'] ) ) : 0;
+	// phpcs:enable
+
+	$product = $product_id ? wc_get_product( $product_id ) : false;
+	if ( ! $product || ! $product->is_purchasable() || ! $product->is_in_stock() || $quantity < 1 ) {
+		wc_add_notice( 'هذا المنتج غير متوفر حالياً. يرجى تحديث الصفحة والمحاولة مرة أخرى.', 'error' );
+		wordsite_ajax_add_to_cart_error();
 	}
-	WC()->session->set( 'wordsite_recent_cart_item_key', $cart_item_key );
+
+	$variation = array();
+	// The parent product ID is sent separately. Keep all selected attributes
+	// so WooCommerce can validate and add the exact variation.
+	foreach ( wp_unslash( $_POST ) as $key => $value ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( 0 === strpos( (string) $key, 'attribute_' ) && is_scalar( $value ) ) {
+			$variation[ wc_clean( $key ) ] = wc_clean( $value );
+		}
+	}
+
+	if ( $product->is_type( 'variable' ) ) {
+		$selected_variation = $variation_id ? wc_get_product( $variation_id ) : false;
+		if ( ! $selected_variation || ! $selected_variation->is_type( 'variation' ) || (int) $selected_variation->get_parent_id() !== $product_id ) {
+			wc_add_notice( 'يرجى اختيار نوع الباقة قبل الإضافة إلى السلة.', 'error' );
+			wordsite_ajax_add_to_cart_error();
+		}
+		if ( ! $variation ) {
+			$variation = $selected_variation->get_variation_attributes();
+		}
+	} elseif ( $variation_id ) {
+		wc_add_notice( 'تعذر التحقق من خيار المنتج. يرجى تحديث الصفحة والمحاولة مرة أخرى.', 'error' );
+		wordsite_ajax_add_to_cart_error();
+	}
+
+	$passed = apply_filters( 'woocommerce_add_to_cart_validation', true, $product_id, $quantity, $variation_id, $variation );
+	if ( ! $passed ) {
+		wordsite_ajax_add_to_cart_error();
+	}
+
+	$cart_item_key = WC()->cart->add_to_cart( $product_id, $quantity, $variation_id, $variation );
+	if ( ! $cart_item_key ) {
+		if ( ! wc_notice_count( 'error' ) ) {
+			wc_add_notice( 'تعذر إضافة المنتج إلى السلة. يرجى مراجعة الخيارات والمحاولة مرة أخرى.', 'error' );
+		}
+		wordsite_ajax_add_to_cart_error();
+	}
+
+	do_action( 'woocommerce_ajax_added_to_cart', $product_id, $quantity );
+
+	ob_start();
+	woocommerce_mini_cart();
+	$mini_cart = ob_get_clean();
+	$fragments = apply_filters(
+		'woocommerce_add_to_cart_fragments',
+		array( 'div.widget_shopping_cart_content' => '<div class="widget_shopping_cart_content">' . $mini_cart . '</div>' )
+	);
+
+	wp_send_json(
+		array(
+			'fragments'  => $fragments,
+			'cart_hash'  => WC()->cart->get_cart_hash(),
+			'product_id' => $product_id,
+			'quantity'   => $quantity,
+		)
+	);
 }
-add_action( 'woocommerce_add_to_cart', 'wordsite_remember_recent_product_add', 10, 6 );
 
-/** Show a compact confirmation drawer; account passwords are never rendered. */
-function wordsite_render_recent_cart_drawer() {
-	if ( ! function_exists( 'is_product' ) || ! is_product() || ! function_exists( 'WC' ) || ! WC()->cart || ! WC()->session ) {
-		return;
+/** Return queued WooCommerce validation notices as an AJAX error. */
+function wordsite_ajax_add_to_cart_error() {
+	$messages = wc_print_notices( true );
+	if ( '' === trim( $messages ) ) {
+		$messages = '<ul class="woocommerce-error" role="alert"><li>تعذر إضافة المنتج إلى السلة. يرجى المحاولة مرة أخرى.</li></ul>';
 	}
-	$item_key = WC()->session->get( 'wordsite_recent_cart_item_key' );
-	if ( ! $item_key ) {
-		return;
-	}
-	WC()->session->set( 'wordsite_recent_cart_item_key', '' );
-	$cart = WC()->cart->get_cart();
-	if ( empty( $cart[ $item_key ] ) || empty( $cart[ $item_key ]['data'] ) || ! ( $cart[ $item_key ]['data'] instanceof WC_Product ) ) {
-		return;
-	}
-
-	$item       = $cart[ $item_key ];
-	$product    = $item['data'];
-	$parent     = ! empty( $item['product_id'] ) ? wc_get_product( $item['product_id'] ) : $product;
-	$title      = $parent ? $parent->get_name() : $product->get_name();
-	$image      = $product->get_image( 'woocommerce_thumbnail' );
-	$details    = wc_get_formatted_cart_item_data( $item, true );
-	$quantity   = absint( $item['quantity'] );
-	$line_total = WC()->cart->get_product_subtotal( $product, $quantity );
-	$item_count = WC()->cart->get_cart_contents_count();
-	$subtotal   = WC()->cart->get_cart_subtotal();
-
-	echo '<div class="ws-cart-drawer is-open" data-ws-cart-drawer aria-hidden="false">';
-	echo '<button type="button" class="ws-cart-drawer__backdrop" data-ws-cart-close aria-label="إغلاق سلة المشتريات"></button>';
-	echo '<aside class="ws-cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="ws-cart-drawer-title">';
-	echo '<header class="ws-cart-drawer__head">';
-	echo '<div class="ws-cart-drawer__confirmation"><span class="ws-cart-drawer__check" aria-hidden="true">✓</span><div><strong id="ws-cart-drawer-title">تمت الإضافة إلى سلة المشتريات</strong><small>منتجك أصبح جاهزاً للمتابعة</small></div></div>';
-	echo '<button type="button" class="ws-cart-drawer__close" data-ws-cart-close aria-label="إغلاق">×</button>';
-	echo '</header>';
-	echo '<div class="ws-cart-drawer__body"><article class="ws-cart-drawer__item">';
-	echo '<div class="ws-cart-drawer__image">' . wp_kses_post( $image ) . '</div>';
-	echo '<div class="ws-cart-drawer__info"><h3>' . esc_html( $title ) . '</h3>';
-	if ( $details ) {
-		echo '<div class="ws-cart-drawer__details">' . wp_kses_post( $details ) . '</div>';
-	}
-	echo '<div class="ws-cart-drawer__quantity">الكمية: ' . esc_html( $quantity ) . '</div></div>';
-	echo '<div class="ws-cart-drawer__line-price">' . wp_kses_post( $line_total ) . '</div>';
-	echo '</article>';
-	echo '<div class="ws-cart-drawer__summary"><span>لديك ' . esc_html( $item_count ) . ' منتج في السلة</span><div><span>المجموع</span><strong>' . wp_kses_post( $subtotal ) . '</strong></div></div></div>';
-	echo '<footer class="ws-cart-drawer__actions">';
-	echo '<a class="ws-cart-drawer__checkout" href="' . esc_url( wc_get_checkout_url() ) . '">إتمام الطلب <span aria-hidden="true">←</span></a>';
-	echo '<button type="button" class="ws-cart-drawer__continue" data-ws-cart-close>متابعة التسوق</button>';
-	echo '<a class="ws-cart-drawer__view" href="' . esc_url( wc_get_cart_url() ) . '">عرض السلة</a>';
-	echo '</footer></aside></div>';
+	wp_send_json_error( array( 'messages' => $messages ) );
 }
-add_action( 'wp_footer', 'wordsite_render_recent_cart_drawer', 50 );
+add_action( 'wp_ajax_wordsite_add_to_cart', 'wordsite_ajax_add_product_to_cart' );
+add_action( 'wp_ajax_nopriv_wordsite_add_to_cart', 'wordsite_ajax_add_product_to_cart' );
