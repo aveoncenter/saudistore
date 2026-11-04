@@ -17,6 +17,15 @@
 		if (close) close.click();
 	});
 
+
+	/* Match the reference site's four-tile category/menu control. */
+	var menuButton = header.querySelector('.ws-nav .wp-block-navigation__responsive-container-open');
+	if (menuButton) {
+		menuButton.classList.add('ws-reference-menu-icon');
+		menuButton.setAttribute('aria-label', 'فتح قائمة التصنيفات');
+		menuButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.7"/><rect x="14" y="3" width="7" height="7" rx="1.7"/><rect x="3" y="14" width="7" height="7" rx="1.7"/><rect x="14" y="14" width="7" height="7" rx="1.7"/></svg>';
+	}
+
 	var search = header.querySelector('.ws-search');
 	var start = header.querySelector('.ws-header__start');
 	var toggle;
