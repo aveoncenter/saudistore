@@ -9,23 +9,6 @@
 	header.parentNode.insertBefore(slot, header);
 	slot.appendChild(header);
 
-	/* Keep the native WooCommerce mini-cart drawer openable from the header.
-	 * WooCommerce owns the cart UI; this is only a fallback for its Interactivity API action. */
-	header.addEventListener('click', function (e) {
-		var button = e.target.closest('.wc-block-mini-cart__button');
-		if (!button) return;
-		var api = window.wp && window.wp.interactivity;
-		if (!api || typeof api.store !== 'function') return;
-		try {
-			var miniCart = api.store('woocommerce/mini-cart');
-			if (miniCart && miniCart.actions && typeof miniCart.actions.openDrawer === 'function') {
-				miniCart.actions.openDrawer();
-			}
-		} catch (error) {
-			/* The native block click handler remains the primary behavior. */
-		}
-	});
-
 	/* The desktop category drawer closes when its dimmed backdrop is clicked. */
 	header.addEventListener('click', function (e) {
 		if (!e.target.matches('.ws-nav .wp-block-navigation__responsive-container.is-menu-open, .ws-nav .is-menu-open > .wp-block-navigation__responsive-close')) return;
