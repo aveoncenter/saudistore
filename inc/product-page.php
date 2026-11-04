@@ -1128,12 +1128,20 @@ function wordsite_ajax_add_product_to_cart() {
 		array( 'div.widget_shopping_cart_content' => '<div class="widget_shopping_cart_content">' . $mini_cart . '</div>' )
 	);
 
+	$image_product = $variation_id ? wc_get_product( $variation_id ) : $product;
+	$image_id      = $image_product instanceof WC_Product ? $image_product->get_image_id() : 0;
+	if ( ! $image_id && $product instanceof WC_Product ) {
+		$image_id = $product->get_image_id();
+	}
+	$image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'woocommerce_single' ) : '';
+
 	wp_send_json_success(
 		array(
 			'fragments'  => $fragments,
 			'cart_hash'  => WC()->cart->get_cart_hash(),
 			'product_id' => $product_id,
 			'quantity'   => $quantity,
+			'image_url'  => $image_url ? esc_url_raw( $image_url ) : '',
 		)
 	);
 }
