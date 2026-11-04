@@ -126,7 +126,7 @@ add_action( 'wp_footer', 'wordsite_whatsapp_button' );
  * Taraqqi brand logo for the header and footer.
  */
 function wordsite_taraqqi_logo_shortcode() {
-	$logo_url = get_theme_file_uri( 'assets/images/taraqqi-logo.webp' );
+	$logo_url = add_query_arg( 'ver', '0.2.35', get_theme_file_uri( 'assets/images/taraqqi-logo.webp' ) );
 	$label    = 'Taraqqi | ترقّي';
 	return sprintf(
 		'<a class="ws-brand-logo" href="%1$s" aria-label="%2$s"><img src="%3$s" alt="%2$s" width="760" height="300" decoding="async" fetchpriority="high" /></a>',
