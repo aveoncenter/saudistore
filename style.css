@@ -577,3 +577,152 @@ html { scroll-padding-top: var(--ws-gallery-top, 72px); }
 }
 .woocommerce-product-gallery__wrapper,
 .woocommerce-product-gallery .flex-viewport { border-radius: 16px; overflow: hidden; }
+
+/* Match the native WooCommerce category/archive cards to the Saudistore
+   illustrated product-card system used by the homepage shelves. */
+.ws-products .wc-block-product-template {
+	display: grid !important;
+	grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+	gap: 20px !important;
+	align-items: stretch;
+}
+.ws-products .wc-block-product {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	padding: 2px 8px 12px !important;
+	gap: 8px;
+	border: 2px solid #44ceff !important;
+	border-radius: 16px !important;
+	background: #03051b !important;
+	box-shadow: none !important;
+	transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.ws-products .wc-block-product:hover {
+	border-color: #72dcff !important;
+	box-shadow: 0 8px 22px rgba(56, 189, 248, .14) !important;
+	transform: translateY(-2px);
+}
+.ws-products .wc-block-components-product-image {
+	width: calc(100% + 12px);
+	max-width: none;
+	margin: 0 -6px 4px !important;
+	overflow: hidden;
+	border-radius: 12px 12px 0 0;
+}
+.ws-products .wc-block-components-product-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	border-radius: 11px 11px 0 0;
+}
+.ws-products .wp-block-post-title {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 56px;
+	margin: 0 !important;
+	padding: 0 2px;
+	font-size: 16px;
+	font-weight: 800;
+	line-height: 1.4;
+	text-align: center;
+}
+.ws-products .wp-block-post-title a {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+	color: #fff !important;
+	text-decoration: none;
+}
+.ws-products .wc-block-components-product-price {
+	margin-top: auto;
+	color: #fff !important;
+	font-size: 17px;
+	font-weight: 800;
+	line-height: 1.5;
+	text-align: center;
+	white-space: nowrap;
+}
+.ws-products .wc-block-components-product-price ins {
+	color: #ff8585 !important;
+	text-decoration: none;
+}
+.ws-products .wc-block-components-product-price del {
+	color: #d5d9eb !important;
+	font-size: .85em;
+}
+.ws-products .wc-block-components-product-button {
+	width: 100%;
+	margin: 0 !important;
+}
+.ws-products .wc-block-components-product-button__button,
+.ws-products .wp-block-button__link {
+	display: flex !important;
+	width: 100% !important;
+	min-height: 40px;
+	align-items: center;
+	justify-content: center;
+	padding: 6px 8px !important;
+	border: 1px solid #e1f7ff !important;
+	border-radius: 999px !important;
+	background: #54cafa !important;
+	color: #fff !important;
+	font-size: 14px !important;
+	font-weight: 800 !important;
+	line-height: 1.2;
+	text-align: center;
+}
+.ws-products .wc-block-components-product-button__button:hover,
+.ws-products .wp-block-button__link:hover {
+	background: #35b9ed !important;
+	color: #fff !important;
+}
+@media (max-width: 900px) {
+	.ws-products .wc-block-product-template {
+		grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+		gap: 16px !important;
+	}
+}
+@media (max-width: 600px) {
+	.ws-products .wc-block-product-template {
+		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+		gap: 12px !important;
+	}
+	.ws-products .wc-block-product {
+		min-height: 0;
+		padding: 2px 6px 10px !important;
+		gap: 5px;
+		border-radius: 14px !important;
+	}
+	.ws-products .wc-block-components-product-image {
+		width: calc(100% + 8px);
+		margin: 0 -4px 3px !important;
+		border-radius: 10px 10px 0 0;
+	}
+	.ws-products .wc-block-components-product-image img {
+		aspect-ratio: 1 / 1;
+		border-radius: 9px 9px 0 0;
+	}
+	.ws-products .wp-block-post-title {
+		min-height: 52px;
+		padding-inline: 1px;
+		font-size: 14px;
+		line-height: 1.35;
+	}
+	.ws-products .wc-block-components-product-price {
+		font-size: 15px;
+	}
+	.ws-products .wc-block-components-product-button__button,
+	.ws-products .wp-block-button__link {
+		min-height: 32px;
+		padding: 0 5px !important;
+		font-size: 13px !important;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.ws-products .wc-block-product { transition: none; }
+}
