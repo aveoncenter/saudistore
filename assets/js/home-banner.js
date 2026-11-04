@@ -36,8 +36,7 @@
 				else startRotation();
 			});
 
-			var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-			if (!reducedMotion) startRotation();
+			startRotation();
 		});
 	}
 
