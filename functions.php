@@ -121,6 +121,38 @@ function wordsite_whatsapp_button() {
 }
 add_action( 'wp_footer', 'wordsite_whatsapp_button' );
 
+
+/**
+ * Taraqqi brand logo for the header and footer.
+ */
+function wordsite_taraqqi_logo_shortcode() {
+	$logo_url = get_theme_file_uri( 'assets/images/taraqqi-logo.webp' );
+	$label    = 'Taraqqi | ترقّي';
+	return sprintf(
+		'<a class="ws-brand-logo" href="%1$s" aria-label="%2$s"><img src="%3$s" alt="%2$s" width="760" height="300" decoding="async" fetchpriority="high" /></a>',
+		esc_url( home_url( '/' ) ),
+		esc_attr( $label ),
+		esc_url( $logo_url )
+	);
+}
+add_shortcode( 'taraqqi_logo', 'wordsite_taraqqi_logo_shortcode' );
+
+/**
+ * Taraqqi browser tab / home-screen icon.
+ */
+function wordsite_taraqqi_site_icon() {
+	$icon_url = get_theme_file_uri( 'assets/images/taraqqi-icon.webp' );
+	printf( '<link rel="icon" href="%s" type="image/webp" sizes="256x256" />\n', esc_url( $icon_url ) );
+	printf( '<link rel="apple-touch-icon" href="%s" />\n', esc_url( $icon_url ) );
+}
+add_action( 'wp_head', 'wordsite_taraqqi_site_icon', 101 );
+
+/** Use the selected brand name in browser document titles. */
+add_filter( 'document_title_parts', static function ( $title ) {
+	$title['site'] = 'Taraqqi | ترقّي';
+	return $title;
+} );
+
 require_once get_theme_file_path( 'inc/store-menu.php' );
 require_once get_theme_file_path( 'inc/home-categories.php' );
 
