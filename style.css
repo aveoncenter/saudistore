@@ -3,7 +3,7 @@ Theme Name: Saudistore
 Theme URI: https://github.com/aveoncenter/saudistore
 Author: aveoncenter
 Description: Dark, Arabic-first (RTL) WooCommerce block theme for a digital subscriptions store.
-Version: 0.2.48
+Version: 0.2.49
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -849,4 +849,10 @@ body::-webkit-scrollbar-thumb:hover,
  * slides in from the left with right-to-left content. */
 .wc-block-components-drawer__screen-overlay {
 	direction: rtl;
+}
+
+/* Remove WordPress flow-layout block gap from the floating header's grid cells.
+ * The 20px top margin was making the floating rectangle taller than the reference. */
+.ws-header.is-floating .ws-header__row > * {
+	margin-block-start: 0 !important;
 }
