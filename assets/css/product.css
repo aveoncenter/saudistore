@@ -749,3 +749,74 @@ body.admin-bar .ws-added-toast { top: 48px; }
 	.ws-added-toast { animation: none; }
 	.ws-added-toast__timer span { animation: none; transform: scaleX(0); }
 }
+
+/* Mobile digital-product cards: same proportions and bright outline as the
+   reference storefront. The homepage shelf has its own slightly more specific
+   rules in home-products.css. */
+@media (max-width: 600px) {
+	.ws-card {
+		min-width: 0;
+		padding: 2px 6px 10px;
+		gap: 5px;
+		border: 2px solid #44ceff;
+		border-radius: 14px;
+		background: #03051b;
+		box-shadow: none;
+	}
+	.ws-card__img {
+		margin: 0 -4px;
+		border-radius: 11px 11px 0 0;
+		overflow: hidden;
+	}
+	.ws-card__img img {
+		width: 100%;
+		aspect-ratio: 1 / 1;
+		height: auto;
+		object-fit: cover;
+		border-radius: 10px 10px 0 0;
+	}
+	.ws-card__title {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 52px;
+		margin: 0;
+		padding: 0 2px;
+		font-size: 14px;
+		line-height: 1.35;
+		font-weight: 800;
+	}
+	.ws-card__title a {
+		min-height: 0;
+		-webkit-line-clamp: 3;
+		line-height: 1.35;
+	}
+	.ws-card__price {
+		min-height: 24px;
+		font-size: 15px;
+		line-height: 1.5;
+		white-space: nowrap;
+	}
+	.ws-card__actions { gap: 8px; }
+	.ws-card__btn {
+		min-height: 32px;
+		height: 32px;
+		padding: 0 5px;
+		border-radius: 999px;
+		font-size: 13px;
+		line-height: 1.2;
+		white-space: nowrap;
+	}
+	.ws-card__btn svg { width: 15px; height: 15px; }
+	.ws-card__btn--cart {
+		background: #54cafa;
+		border: 1px solid #e1f7ff;
+		color: #fff;
+	}
+	.ws-card__btn--quick {
+		background: #3d58a1;
+		border: 1px solid #718ac8;
+		color: #fff;
+	}
+	.ws-search-grid .ws-card__title { font-size: 14px; }
+}
