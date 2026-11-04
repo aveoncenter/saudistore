@@ -161,16 +161,16 @@ add_filter( 'document_title_parts', static function ( $title ) {
  * Homepage image carousel featuring the two Taraqqi promotional banners.
  */
 function wordsite_taraqqi_home_banner_carousel_shortcode() {
-	$dark_banner  = get_theme_file_uri( 'assets/images/home-banners/taraqqi-banner-dark.webp' );
-	$light_banner = get_theme_file_uri( 'assets/images/home-banners/taraqqi-banner-light.webp' );
+	$dark_banner  = get_theme_file_uri( 'assets/images/home-banners/taraqqi-banner-dark.avif' );
+	$light_banner = get_theme_file_uri( 'assets/images/home-banners/taraqqi-banner-light.avif' );
 
 	return sprintf(
 		'<div class="ws-banner-carousel" data-taraqqi-banner-carousel role="region" aria-roledescription="carousel" aria-label="%1$s">
 			<div class="ws-banner-carousel__slide is-active" aria-hidden="false">
-				<img src="%2$s" alt="%3$s" width="1440" height="600" loading="eager" decoding="async" fetchpriority="high" />
+				<img src="%2$s" alt="%3$s" width="960" height="400" loading="eager" decoding="async" fetchpriority="high" />
 			</div>
 			<div class="ws-banner-carousel__slide" aria-hidden="true">
-				<img src="%4$s" alt="%5$s" width="1440" height="600" loading="eager" decoding="async" />
+				<img src="%4$s" alt="%5$s" width="960" height="400" loading="eager" decoding="async" />
 			</div>
 		</div>',
 		esc_attr( 'عروض ترقّي للاشتراكات الرقمية' ),
