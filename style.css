@@ -3,7 +3,7 @@ Theme Name: Saudistore
 Theme URI: https://github.com/aveoncenter/saudistore
 Author: aveoncenter
 Description: Dark, Arabic-first (RTL) WooCommerce block theme for a digital subscriptions store.
-Version: 0.2.33
+Version: 0.2.34
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -727,37 +727,41 @@ html { scroll-padding-top: var(--ws-gallery-top, 72px); }
 	.ws-products .wc-block-product { transition: none; }
 }
 
-/* Taraqqi identity */
+/* Taraqqi identity — transparent logo kept close to the previous wordmark size. */
 .ws-brand-logo {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: clamp(160px, 19vw, 230px);
+	width: 132px;
 	max-width: 100%;
 	line-height: 0;
 	text-decoration: none !important;
+	background: transparent !important;
 }
 .ws-brand-logo img {
 	display: block;
 	width: 100%;
 	height: auto;
-	max-height: 82px;
+	max-height: 50px;
 	object-fit: contain;
 	border: 0;
+	background: transparent !important;
 	box-shadow: none;
 }
-.ws-header__brand .ws-brand-logo { width: 214px; }
+.ws-header__brand .ws-brand-logo { width: 132px; }
 .ws-footer .ws-brand-logo {
-	width: 220px;
-	max-width: min(100%, 220px);
+	width: 158px;
+	max-width: min(100%, 158px);
 	margin-bottom: 0.75rem;
 }
-.ws-header.is-floating .ws-header__brand .ws-brand-logo { width: 140px; }
-.ws-header.is-floating .ws-header__brand .ws-brand-logo img { max-height: 54px; }
+.ws-footer .ws-brand-logo img { max-height: 62px; }
+.ws-header.is-floating .ws-header__brand .ws-brand-logo { width: 122px; }
+.ws-header.is-floating .ws-header__brand .ws-brand-logo img { max-height: 46px; }
 @media (max-width: 781px) {
-	.ws-header__brand .ws-brand-logo { width: 150px; }
-	.ws-header__brand .ws-brand-logo img { max-height: 70px; }
-	.ws-header.is-floating .ws-header__brand .ws-brand-logo { width: 108px; }
-	.ws-header.is-floating .ws-header__brand .ws-brand-logo img { max-height: 44px; }
-	.ws-footer .ws-brand-logo { width: 190px; }
+	.ws-header__brand .ws-brand-logo { width: 116px; }
+	.ws-header__brand .ws-brand-logo img { max-height: 44px; }
+	.ws-header.is-floating .ws-header__brand .ws-brand-logo { width: 104px; }
+	.ws-header.is-floating .ws-header__brand .ws-brand-logo img { max-height: 40px; }
+	.ws-footer .ws-brand-logo { width: 140px; }
+	.ws-footer .ws-brand-logo img { max-height: 55px; }
 }
