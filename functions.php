@@ -142,8 +142,8 @@ add_shortcode( 'taraqqi_logo', 'wordsite_taraqqi_logo_shortcode' );
  */
 function wordsite_taraqqi_site_icon() {
 	$icon_url = get_theme_file_uri( 'assets/images/taraqqi-icon.webp' );
-	printf( '<link rel="icon" href="%s" type="image/webp" sizes="256x256" />\n', esc_url( $icon_url ) );
-	printf( '<link rel="apple-touch-icon" href="%s" />\n', esc_url( $icon_url ) );
+	printf( '<link rel="icon" href="%s" type="image/webp" sizes="256x256" />', esc_url( $icon_url ) );
+	printf( '<link rel="apple-touch-icon" href="%s" />', esc_url( $icon_url ) );
 }
 add_action( 'wp_head', 'wordsite_taraqqi_site_icon', 101 );
 
