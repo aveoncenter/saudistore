@@ -147,34 +147,43 @@
 			function animateProductToCart(button) {
 				if (!button || typeof Element.prototype.animate !== 'function') return;
 				var card = button.closest('.ws-card');
-				var image = card ? card.querySelector('.ws-card__img img') : null;
-				if (!image) {
-					var quickView = button.closest('.ws-quick');
-					image = quickView ? quickView.querySelector('.ws-quick__media img') : null;
-				}
-				if (!image && button.closest('form.cart')) {
-					var media = document.querySelector('.ws-product__media');
-					image = media ? media.querySelector('.woocommerce-product-gallery__image img, img.wp-post-image, img') : null;
-				}
-				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
-				if (!image || !cartButton) return;
+				var quickView = button.closest('.ws-quick');
+				var productPage = button.closest('form.cart') && document.body.classList.contains('single-product');
+				var image = null;
+				var sourceBox = null;
+				var imageUrl = button.getAttribute('data-ws-product-image') || '';
 
-				var from = image.getBoundingClientRect();
+				if (card) {
+					image = card.querySelector('.ws-card__img img');
+				} else if (quickView) {
+					image = quickView.querySelector('.ws-quick__media img');
+				} else if (productPage) {
+					var media = document.querySelector('.ws-product__media');
+					if (media) {
+						sourceBox = media.querySelector('.woocommerce-product-gallery__wrapper') || media;
+						if (!imageUrl) {
+							image = media.querySelector('.woocommerce-product-gallery__image img.wp-post-image, .woocommerce-product-gallery__image img, img.wp-post-image');
+						}
+					}
+				}
+
+				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
+				if (!cartButton || (!image && !imageUrl) || (!sourceBox && !image)) return;
+				var from = (sourceBox || image).getBoundingClientRect();
 				var to = cartButton.getBoundingClientRect();
 				if (!from.width || !from.height || !to.width || !to.height) return;
 
-				var flyer = image.cloneNode(false);
-				flyer.removeAttribute('srcset');
-				flyer.removeAttribute('sizes');
-				flyer.src = image.currentSrc || image.src;
+				var flyer = document.createElement('img');
+				flyer.src = imageUrl || image.currentSrc || image.src;
 				flyer.alt = '';
 				flyer.setAttribute('aria-hidden', 'true');
 				Object.assign(flyer.style, {
 					position: 'fixed', left: from.left + 'px', top: from.top + 'px',
 					width: from.width + 'px', height: from.height + 'px',
 					margin: '0', maxWidth: 'none', zIndex: '100000',
-					pointerEvents: 'none', objectFit: 'cover', borderRadius: '14px',
-					boxShadow: '0 12px 36px rgba(0,0,0,.38)', transformOrigin: 'center center'
+					pointerEvents: 'none', objectFit: 'contain', borderRadius: '14px',
+					boxShadow: '0 12px 36px rgba(0,0,0,.38)', transformOrigin: 'center center',
+					background: 'transparent'
 				});
 				document.body.appendChild(flyer);
 
@@ -207,7 +216,7 @@
 					title = quickView.querySelector('.ws-quick__info h3');
 					price = quickView.querySelector('.ws-quick__price');
 				} else if (productPage) {
-					image = document.querySelector('.ws-product__media .woocommerce-product-gallery__image img, .ws-product__media img.wp-post-image, .ws-product__media img');
+					image = null;
 					title = document.querySelector('.ws-product__summary .ws-product__title, .ws-product__summary h1.product_title, .ws-product__summary h1');
 					price = document.querySelector('.ws-product__summary [data-ws-price]');
 				}
@@ -247,9 +256,10 @@
 
 				var product = document.createElement('div');
 				product.className = 'ws-added-toast__product';
-				if (image) {
+				var productImageUrl = button && button.getAttribute('data-ws-product-image');
+				if (productImageUrl || image) {
 					var img = document.createElement('img');
-					img.src = image.currentSrc || image.src;
+					img.src = productImageUrl || image.currentSrc || image.src;
 					img.alt = '';
 					product.appendChild(img);
 				}
@@ -403,6 +413,9 @@
 						delete form.dataset.wsCartRequestToken;
 						showAddError(form, response && response.data ? response.data.messages : '');
 						return;
+					}
+					if (response.data.image_url) {
+						button.setAttribute('data-ws-product-image', response.data.image_url);
 					}
 					$(document.body).trigger('added_to_cart', [response.data.fragments || {}, response.data.cart_hash || '', $(button)]);
 				}).fail(function () {
