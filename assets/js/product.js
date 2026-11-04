@@ -197,20 +197,22 @@
 				window.setTimeout(function () { cartButton.classList.remove('ws-cart-arrived'); }, 750);
 			}
 
-			function openProductPageMiniCart() {
-				var cartButton = document.querySelector('.ws-header .wc-block-mini-cart__button, .wc-block-mini-cart__button');
-				if (!cartButton) return;
-				var drawer = document.querySelector('.wc-block-mini-cart__drawer');
-				if (drawer && drawer.getAttribute('aria-hidden') === 'false') return;
-				cartButton.click();
-			}
-
-			function showQuickViewAddedToast(button) {
+			function showAddedToast(button) {
 				var quickView = button ? button.closest('.ws-quick') : null;
-				if (!quickView) return;
-				var image = quickView.querySelector('.ws-quick__media img');
-				var title = quickView.querySelector('.ws-quick__info h3');
-				var price = quickView.querySelector('.ws-quick__price');
+				var productPage = document.body.classList.contains('single-product');
+				var image = null, title = null, price = null;
+
+				if (quickView) {
+					image = quickView.querySelector('.ws-quick__media img');
+					title = quickView.querySelector('.ws-quick__info h3');
+					price = quickView.querySelector('.ws-quick__price');
+				} else if (productPage) {
+					image = document.querySelector('.ws-product__media .woocommerce-product-gallery__image img, .ws-product__media img.wp-post-image, .ws-product__media img');
+					title = document.querySelector('.ws-product__summary .ws-product__title, .ws-product__summary h1.product_title, .ws-product__summary h1');
+					price = document.querySelector('.ws-product__summary [data-ws-price]');
+				}
+				if (!quickView && !productPage) return;
+
 				var previous = document.querySelector('.ws-added-toast');
 				if (previous) previous.remove();
 				if (quickToastTimer) window.clearTimeout(quickToastTimer);
@@ -240,7 +242,7 @@
 				close.className = 'ws-added-toast__close';
 				close.setAttribute('aria-label', 'إغلاق');
 				close.textContent = '×';
-			head.append(check, message, close);
+				head.append(check, message, close);
 				toast.appendChild(head);
 
 				var product = document.createElement('div');
@@ -276,7 +278,8 @@
 				actions.append(viewCart, checkout);
 				toast.appendChild(actions);
 
-				quickView.appendChild(toast);
+				/* Keep Quick View's confirmation above the modal backdrop. */
+				(quickView || document.body).appendChild(toast);
 				close.addEventListener('click', function () {
 					if (quickToastTimer) window.clearTimeout(quickToastTimer);
 					toast.remove();
@@ -322,10 +325,10 @@
 				if (button && button.closest('form.cart') && document.body.classList.contains('single-product')) {
 					markProductAdded(button);
 					animateProductToCart(button);
-					window.setTimeout(openProductPageMiniCart, 760);
+					showAddedToast(button);
 				} else {
 					animateProductToCart(button);
-					if (button && button.closest('.ws-quick')) showQuickViewAddedToast(button);
+					if (button && button.closest('.ws-quick')) showAddedToast(button);
 				}
 			});
 
