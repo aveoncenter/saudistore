@@ -30,9 +30,6 @@ function wordsite_enqueue_assets() {
 	wp_enqueue_style( 'wordsite-style', get_stylesheet_uri(), array( 'wordsite-fonts' ), $ver );
 	wp_enqueue_style( 'wordsite-menu', get_theme_file_uri( 'assets/css/menu.css' ), array( 'wordsite-style' ), $ver );
 	wp_enqueue_script( 'wordsite-header', get_theme_file_uri( 'assets/js/header.js' ), array(), $ver, true );
-	if ( is_front_page() ) {
-		wp_enqueue_script( 'wordsite-home-banner', get_theme_file_uri( 'assets/js/home-banner.js' ), array(), $ver, true );
-	}
 }
 add_action( 'wp_enqueue_scripts', 'wordsite_enqueue_assets' );
 
@@ -155,32 +152,6 @@ add_filter( 'document_title_parts', static function ( $title ) {
 	$title['site'] = 'Taraqqi | ترقّي';
 	return $title;
 } );
-
-
-/**
- * Homepage image carousel featuring the two Taraqqi promotional banners.
- */
-function wordsite_taraqqi_home_banner_carousel_shortcode() {
-	$dark_banner  = get_theme_file_uri( 'assets/images/home-banners/taraqqi-banner-dark.avif' );
-	$light_banner = get_theme_file_uri( 'assets/images/home-banners/taraqqi-banner-light.avif' );
-
-	return sprintf(
-		'<div class="ws-banner-carousel" data-taraqqi-banner-carousel role="region" aria-roledescription="carousel" aria-label="%1$s">
-			<div class="ws-banner-carousel__slide is-active" aria-hidden="false">
-				<img src="%2$s" alt="%3$s" width="960" height="400" loading="eager" decoding="async" fetchpriority="high" />
-			</div>
-			<div class="ws-banner-carousel__slide" aria-hidden="true">
-				<img src="%4$s" alt="%5$s" width="960" height="400" loading="eager" decoding="async" />
-			</div>
-		</div>',
-		esc_attr( 'عروض ترقّي للاشتراكات الرقمية' ),
-		esc_url( $dark_banner ),
-		esc_attr( 'اشتراكات رقمية أصلية بأفضل الأسعار للسوق السعودي' ),
-		esc_url( $light_banner ),
-		esc_attr( 'ارتقِ بتجربتك الرقمية مع ترقّي' )
-	);
-}
-add_shortcode( 'taraqqi_home_banner_carousel', 'wordsite_taraqqi_home_banner_carousel_shortcode' );
 
 require_once get_theme_file_path( 'inc/store-menu.php' );
 require_once get_theme_file_path( 'inc/home-categories.php' );
