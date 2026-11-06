@@ -14,7 +14,18 @@
 @media (hover: hover) and (pointer: fine) {
  .ws-category-card:hover { z-index: 1; transform: translateY(-6px) scale(1.02); filter: brightness(1.035) drop-shadow(0 6px 8px #0004); }
 }
-.ws-category-card__art { display: block; width: 100%; height: auto; aspect-ratio: 280 / 345; object-fit: contain; background: transparent; }
+.ws-category-card__art {
+ display: block; width: 100%; aspect-ratio: 220 / 271;
+ background-image: url('../images/home-categories/category-sprite.avif');
+ background-repeat: no-repeat; background-size: 740.91% auto;
+ background-position-y: 0; background-color: transparent;
+}
+.ws-category-card__art--1 { background-position-x: 16.666667%; }
+.ws-category-card__art--2 { background-position-x: 33.333333%; }
+.ws-category-card__art--3 { background-position-x: 50%; }
+.ws-category-card__art--4 { background-position-x: 66.666667%; }
+.ws-category-card__art--5 { background-position-x: 83.333333%; }
+.ws-category-card__art--6 { background-position-x: 100%; }
 /* Accessible live category names; the reference artwork supplies the visible copy. */
 .ws-category-card__label { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (max-width: 1376px) { .ws-home-categories { margin-inline: 24px !important; } }
