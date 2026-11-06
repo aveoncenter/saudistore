@@ -16,7 +16,7 @@ function wordsite_setup() {
 	add_theme_support( 'woocommerce' );
 	add_theme_support( 'wp-block-styles' );
 	add_theme_support( 'editor-styles' );
-	add_editor_style( array( 'assets/fonts/riyal.css', 'assets/fonts/cairo.css', 'style.css' ) );
+	add_editor_style( array( 'assets/fonts/riyal.css', 'assets/fonts/cairo.css', 'style.css', 'assets/css/theme-mode.css' ) );
 }
 add_action( 'after_setup_theme', 'wordsite_setup' );
 
@@ -126,7 +126,9 @@ add_action( 'wp_footer', 'wordsite_whatsapp_button' );
  * Taraqqi brand logo for the header and footer.
  */
 function wordsite_taraqqi_logo_shortcode() {
-	$logo_url = add_query_arg( 'ver', '0.2.35', get_theme_file_uri( 'assets/images/taraqqi-logo.webp' ) );
+	/* Same artwork as taraqqi-logo.webp with its navy matte stored as transparency, so the
+	 * logo needs no blend mode (a blended logo disables the floating header's backdrop blur). */
+	$logo_url = add_query_arg( 'ver', '0.2.51', get_theme_file_uri( 'assets/images/taraqqi-logo-transparent.webp' ) );
 	$label    = 'Taraqqi | ترقّي';
 	return sprintf(
 		'<a class="ws-brand-logo" href="%1$s" aria-label="%2$s"><img src="%3$s" alt="%2$s" width="760" height="300" decoding="async" fetchpriority="high" /></a>',
@@ -156,6 +158,8 @@ add_filter( 'document_title_parts', static function ( $title ) {
 require_once get_theme_file_path( 'inc/store-menu.php' );
 require_once get_theme_file_path( 'inc/home-categories.php' );
 require_once get_theme_file_path( 'inc/home-hero.php' );
+require_once get_theme_file_path( 'inc/home-sections.php' );
+require_once get_theme_file_path( 'inc/theme-mode.php' );
 
 /**
  * Product page (needs WooCommerce).
@@ -165,4 +169,5 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require_once get_theme_file_path( 'inc/product-search.php' );
 	require_once get_theme_file_path( 'inc/home-products.php' );
 	require_once get_theme_file_path( 'inc/product-motion.php' );
+	require_once get_theme_file_path( 'inc/header-cart-total.php' );
 }

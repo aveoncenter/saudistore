@@ -3,7 +3,7 @@ Theme Name: Saudistore
 Theme URI: https://github.com/aveoncenter/saudistore
 Author: aveoncenter
 Description: Dark, Arabic-first (RTL) WooCommerce block theme for a digital subscriptions store.
-Version: 0.2.50
+Version: 0.2.51
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -129,14 +129,16 @@ body { -webkit-font-smoothing: antialiased; }
 	inset: 0;
 	z-index: -1;
 	border-radius: inherit;
-	background: rgba(7, 8, 29, 0.96);
+	background: var(--tq-header-glass-solid, rgba(7, 8, 29, 0.96));
 	pointer-events: none;
 }
+/* Glass: blur raised 18px -> 27px (+50%) with a slightly more translucent surface.
+ * Colours come from theme-mode.css so dark and light modes share one rule. */
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
 	.ws-header.is-floating::before {
-		background: rgba(7, 8, 29, 0.9);
-		-webkit-backdrop-filter: blur(18px) saturate(135%);
-		backdrop-filter: blur(18px) saturate(135%);
+		background: var(--tq-header-glass-sheen, linear-gradient(transparent, transparent)), var(--tq-header-glass, rgba(7, 8, 29, 0.74));
+		-webkit-backdrop-filter: blur(27px) saturate(160%);
+		backdrop-filter: blur(27px) saturate(160%);
 	}
 }
 .ws-header.is-floating .ws-header__row { min-height: 52px; }
@@ -419,27 +421,6 @@ html { scroll-padding-top: var(--ws-gallery-top, 72px); }
 	color: #fff;
 }
 .wp-block-query-pagination .page-numbers.current { background: var(--wp--preset--gradient--brand); border-color: transparent; }
-
-/* ---------- Features ---------- */
-.ws-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-.ws-feature {
-	padding: 1.5rem;
-	border: 1px solid var(--wp--preset--color--border);
-	border-radius: 18px;
-	background: var(--wp--preset--color--surface);
-}
-.ws-feature h3 { margin: 0.85rem 0 0.25rem; font-size: 1.1rem; }
-.ws-feature p { margin: 0; color: var(--wp--preset--color--muted); font-size: 0.95rem; }
-.ws-feature__icon {
-	display: grid;
-	place-items: center;
-	width: 48px;
-	height: 48px;
-	border-radius: 14px;
-	background: rgba(139, 92, 246, 0.15);
-	color: #a78bfa;
-}
-.ws-feature__icon svg { width: 24px; height: 24px; }
 
 /* ---------- CTA ---------- */
 .ws-cta { box-shadow: 0 20px 60px rgba(59, 91, 219, 0.35); }
@@ -747,8 +728,8 @@ html { scroll-padding-top: var(--ws-gallery-top, 72px); }
 	border: 0;
 	background: transparent !important;
 	box-shadow: none;
-	/* Discard the logo's baked-in navy matte against the existing site background. */
-	mix-blend-mode: lighten;
+	/* The logo asset is transparent, so no blend mode is needed. A blended descendant
+	 * stops the floating header's backdrop-filter from blurring the page behind it. */
 }
 .ws-header__brand .ws-brand-logo { width: 132px; }
 .ws-footer .ws-brand-logo {

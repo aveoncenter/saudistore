@@ -1,4 +1,4 @@
-# Saudistore — WooCommerce block theme (Arabic / RTL, dark)
+# Saudistore — WooCommerce block theme (Arabic / RTL, dark + light)
 
 Custom block theme for the saudidgi digital-subscriptions store.
 
@@ -12,6 +12,40 @@ Custom block theme for the saudidgi digital-subscriptions store.
 - Don't edit templates in the Site Editor: saved copies live in the database and override file updates.
   (If you did, Appearance → Editor → Templates → ⋮ → Reset.)
 - Font: Cairo (SIL OFL), bundled in `assets/fonts`.
+
+## Light mode, header cart total & homepage sections (v0.2.51)
+
+**Dark / light mode**
+- Toggle (sun/moon) in the header after the search icon (`inc/theme-mode.php`, `assets/js/theme-mode.js`, `assets/css/theme-mode.css`). Dark stays the default design.
+- First visit follows the device setting (`prefers-color-scheme`); a manual choice is saved in `localStorage` (`taraqqi-theme`) and applied before first paint, so there is no flash. Without a saved choice the site follows OS changes live.
+- Switching uses a short View Transition crossfade (CSS-transition fallback; instant with `prefers-reduced-motion`). Fires a `taraqqi:themechange` event.
+- Light mode re-points the WordPress colour presets (base, surface, border, text, muted, link) and overrides the places that hard-code dark colours: header, drawer menu, search, product cards/shelves, quick view, product page, mini-cart drawer, cart/checkout fields, footer, scrollbars.
+- The logo artwork is unchanged. Its wordmark is white, so in light mode it sits on a small navy chip.
+
+**Header cart total** (`inc/header-cart-total.php`, `assets/js/cart-total.js`)
+- Shows WooCommerce's real cart total (`WC()->cart->get_total('edit')`, same currency/format as the store; 0 when empty) beside the cart icon. Clicking it opens the mini-cart.
+- Refreshes from the Store API with no page reload after: home-card / quick-view / product-page add to cart, mini-cart drawer quantity or remove, cart and checkout page edits, classic fragments, back/forward cache and returning to the tab. Screen readers get an `aria-live` "إجمالي السلة: N ريال سعودي".
+- Phones: header icons are compacted (≤600 px) so menu, search, theme, logo, account, cart and total fit from 320 px with no overflow; desktop header size is unchanged.
+
+**Floating header glass**
+- Blur raised from 18 px to 27 px with a lighter-tinted surface in both modes.
+- Root cause of the "no blur" bug: the logo used `mix-blend-mode: lighten`, which makes Chromium skip the ancestor's `backdrop-filter`. The logo now uses `assets/images/taraqqi-logo-transparent.webp` (same artwork with its navy matte converted to transparency; the original file is kept) and no blend mode.
+
+**Homepage sections** (`inc/home-sections.php`, `assets/css/home-sections.css`, `assets/js/home-sections.js`)
+- Order: banner → payments → categories → product shelves → **features** → **customer reviews** → contact CTA → **FAQ** → footer.
+- `saudistore/home-features`: four animated gradient icons replacing the old four cards (same texts). Edit with `wordsite_home_features`.
+- `saudistore/home-reviews`: continuous, seamless marquee (pauses on hover, off-screen, hidden tab or the pause button; touch-drag on phones; static scroll with reduced motion).
+  **The 10 included reviews are sample content, not real testimonials.** Admins see a notice on the homepage. Replace them before launch:
+  ```php
+  add_filter( 'wordsite_home_reviews', function () {
+  	return array(
+  		array( 'text' => 'نص التقييم', 'author' => 'اسم العميل', 'product' => 'المنتج', 'rating' => 5 ),
+  	);
+  } );
+  add_filter( 'wordsite_home_reviews_are_samples', '__return_false' ); // hides the admin notice
+  ```
+- `saudistore/home-faq`: six accessible `<details>` items with smooth open/close and FAQPage structured data. Edit with `wordsite_home_faq_items`; answer links use `{refund_url}`, `{privacy_url}`, `{support_url}` placeholders (filter `wordsite_home_faq_links`).
+- If the homepage template was customised in the Site Editor, reset it (see Notes) to get the new sections. The toggle and cart total are injected by render filters, so they appear even with a customised header.
 
 ## Homepage banner carousel (v0.2.50)
 

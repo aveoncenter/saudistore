@@ -29,7 +29,8 @@
 		toggle.setAttribute('aria-controls', search.id);
 		toggle.setAttribute('aria-expanded', 'false');
 		toggle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg>';
-		start.appendChild(toggle);
+		/* Keep search beside the category menu; the theme toggle (if any) follows it. */
+		start.insertBefore(toggle, start.querySelector('.ws-theme-toggle'));
 		header.classList.add('is-search-ready');
 		toggle.addEventListener('click', function () {
 			var open = !header.classList.contains('is-search-open');
