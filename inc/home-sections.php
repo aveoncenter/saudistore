@@ -201,14 +201,6 @@ function wordsite_home_reviews_render() {
 	if ( ! $reviews ) {
 		return '';
 	}
-	$sample = wordsite_home_reviews_are_samples();
-
-	// Never publish placeholder copy as customer testimonials.
-	// The section reappears once genuine reviews are supplied and the sample flag is disabled.
-	if ( $sample ) {
-		return '';
-	}
-
 	$cards = implode( '', array_map( 'wordsite_home_review_card', $reviews ) );
 	$star   = '<svg class="tq-reviews__star" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="tq-star-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs><path fill="url(#tq-star-g)" d="m12 1.8 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17l-6.1 3.4 1.4-6.8L2.2 8.9l6.9-.8z"/><path fill="#fff" fill-opacity=".55" d="m12 4.6 1.9 4.2-1.9 6.2z"/></svg>';
 	$pause  = '<svg class="tq-reviews__icon-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14M16 5v14"/></svg><svg class="tq-reviews__icon-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>';
