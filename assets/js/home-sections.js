@@ -37,7 +37,7 @@
 		var CYCLE_MS = 60000;
 		function speed() { return window.innerWidth < 600 ? 32 : 44; }
 		var anim = null, setWidth = 0;
-		var hovered = false, dragging = false, offscreen = false, userPaused = false, resumeTimer = 0;
+		var hoveredCard = null, dragging = false, offscreen = false, userPaused = false, resumeTimer = 0;
 		var drag = null;
 
 		function build() {
@@ -54,7 +54,7 @@
 			anim.currentTime = progress * CYCLE_MS;
 			update();
 		}
-		function shouldRun() { return !hovered && !dragging && !offscreen && !userPaused && !document.hidden; }
+		function shouldRun() { return !hoveredCard && !dragging && !offscreen && !userPaused && !document.hidden; }
 		function update() {
 			if (!anim) return;
 			if (shouldRun()) { if (anim.playState !== 'running') anim.play(); }
@@ -73,9 +73,27 @@
 		}
 		function wrap(time) { return ((time % CYCLE_MS) + CYCLE_MS) % CYCLE_MS; }
 
-		/* Pause on hover (fine pointers only) and keyboard focus inside the section. */
-		reviews.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hovered = true; update(); } });
-		reviews.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hovered = false; update(); } });
+		/* Pause only while the pointer is over an individual review card.
+		 * Hovering the heading, section padding, viewport gaps or empty track space
+		 * must not stop the marquee. Delegation also covers the cloned loop cards. */
+		function cardFromTarget(target) {
+			return target && target.closest ? target.closest('.tq-review') : null;
+		}
+		track.addEventListener('pointerover', function (e) {
+			if (e.pointerType !== 'mouse') return;
+			var card = cardFromTarget(e.target);
+			if (!card || !track.contains(card) || card === hoveredCard) return;
+			hoveredCard = card;
+			update();
+		});
+		track.addEventListener('pointerout', function (e) {
+			if (e.pointerType !== 'mouse') return;
+			var card = cardFromTarget(e.target);
+			if (!card || card !== hoveredCard) return;
+			if (cardFromTarget(e.relatedTarget) === card) return;
+			hoveredCard = null;
+			update();
+		});
 
 		/* Touch drag scrubs the loop horizontally; vertical panning stays native (touch-action: pan-y). */
 		viewport.addEventListener('pointerdown', function (e) {
