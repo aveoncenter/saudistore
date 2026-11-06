@@ -155,6 +155,7 @@ add_filter( 'document_title_parts', static function ( $title ) {
 
 require_once get_theme_file_path( 'inc/store-menu.php' );
 require_once get_theme_file_path( 'inc/home-categories.php' );
+require_once get_theme_file_path( 'inc/home-hero.php' );
 
 /**
  * Product page (needs WooCommerce).

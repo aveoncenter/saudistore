@@ -1,0 +1,178 @@
+/* Homepage hero: two-banner crossfade carousel (inc/home-hero.php, assets/js/home-hero.js). */
+.ws-hero-carousel {
+	--hero-gutter: 40px;
+	--hero-radius: 18px;
+	--hero-fade: 600ms;
+	box-sizing: border-box;
+	width: min(calc(100% - (var(--hero-gutter) * 2)), 1680px);
+	margin: 0 auto !important;
+	padding-block: clamp(16px, 2.2vw, 36px) clamp(14px, 1.6vw, 26px);
+}
+.ws-hero-carousel__frame {
+	position: relative;
+	isolation: isolate;
+	border-radius: var(--hero-radius);
+	background: #0b1030;
+	box-shadow: 0 22px 60px -18px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(139, 92, 246, 0.06), 0 18px 70px -30px rgba(56, 189, 248, 0.35);
+}
+/* Subtle glass border drawn above the artwork so the edge stays crisp on both banners. */
+.ws-hero-carousel__frame::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	border: 1px solid rgba(190, 198, 255, 0.16);
+	border-radius: inherit;
+	pointer-events: none;
+}
+.ws-hero-carousel__viewport {
+	position: relative;
+	aspect-ratio: 12 / 5;
+	overflow: hidden;
+	border-radius: inherit;
+	touch-action: pan-y;
+	-webkit-user-select: none;
+	user-select: none;
+}
+.ws-hero-slide {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity var(--hero-fade) cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear var(--hero-fade);
+}
+.ws-hero-slide.is-active {
+	z-index: 2;
+	opacity: 1;
+	visibility: visible;
+	transition: opacity var(--hero-fade) cubic-bezier(0.4, 0, 0.2, 1), visibility 0s;
+}
+/* The outgoing slide stays opaque underneath while the next one fades in: a true crossfade, no dark dip. */
+.ws-hero-slide.is-leaving {
+	z-index: 1;
+	opacity: 1;
+	visibility: visible;
+	transition: none;
+}
+.ws-hero-slide__link,
+.ws-hero-slide picture {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.ws-hero-slide__link { -webkit-tap-highlight-color: transparent; -webkit-user-drag: none; }
+.ws-hero-slide__link:focus-visible { outline: none; }
+.ws-hero-carousel__frame:has(.ws-hero-slide__link:focus-visible) {
+	outline: 2px solid #64d6ff;
+	outline-offset: 3px;
+}
+.ws-hero-slide__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	-webkit-user-drag: none;
+}
+
+/* Arrows: glass circles, revealed on desktop hover/keyboard focus only. */
+.ws-hero-arrow {
+	position: absolute;
+	top: 50%;
+	z-index: 4;
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	margin: 0;
+	padding: 0;
+	border: 1px solid rgba(190, 198, 255, 0.24);
+	border-radius: 50%;
+	background: rgba(7, 8, 29, 0.55);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	color: #fff;
+	cursor: pointer;
+	opacity: 0;
+	transform: translateY(-50%);
+	transition: opacity 200ms ease, background-color 200ms ease, border-color 200ms ease;
+}
+.ws-hero-arrow svg { width: 20px; height: 20px; }
+.ws-hero-arrow--prev { inset-inline-start: 18px; }
+.ws-hero-arrow--next { inset-inline-end: 18px; }
+.ws-hero-arrow--next svg { transform: scaleX(-1); }
+[dir="ltr"] .ws-hero-arrow svg { transform: scaleX(-1); }
+[dir="ltr"] .ws-hero-arrow--next svg { transform: none; }
+.ws-hero-arrow:hover { background: rgba(91, 33, 182, 0.6); border-color: rgba(167, 139, 250, 0.6); }
+.ws-hero-arrow:focus-visible { opacity: 1; outline: 2px solid #64d6ff; outline-offset: 2px; }
+.ws-hero-carousel:not(.is-ready) .ws-hero-arrow { display: none; }
+@media (hover: hover) and (pointer: fine) {
+	.ws-hero-carousel__frame:hover .ws-hero-arrow { opacity: 1; }
+}
+@media (hover: none), (pointer: coarse) {
+	.ws-hero-arrow { display: none; }
+}
+
+/* Indicators: space is always reserved so nothing shifts when JavaScript starts. */
+.ws-hero-dots {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+	min-height: 28px;
+	margin-top: 10px;
+}
+.ws-hero-carousel:not(.is-ready) .ws-hero-dots { visibility: hidden; }
+.ws-hero-dot {
+	display: grid;
+	place-items: center;
+	min-width: 28px;
+	height: 28px;
+	margin: 0;
+	padding: 0 4px;
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+.ws-hero-dot span {
+	display: block;
+	width: 8px;
+	height: 8px;
+	border-radius: 999px;
+	background: rgba(169, 176, 214, 0.38);
+	transition: width 320ms cubic-bezier(0.4, 0, 0.2, 1), background-color 320ms ease, box-shadow 320ms ease;
+}
+.ws-hero-dot:hover span { background: rgba(169, 176, 214, 0.7); }
+.ws-hero-dot.is-active span {
+	width: 28px;
+	background: linear-gradient(90deg, #8b5cf6 0%, #38bdf8 100%);
+	box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+}
+.ws-hero-dot:focus-visible { outline: 2px solid #64d6ff; outline-offset: 0; border-radius: 999px; }
+
+.ws-visually-hidden {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+@media (max-width: 1100px) {
+	.ws-hero-carousel { --hero-gutter: 24px; --hero-radius: 16px; }
+}
+@media (max-width: 600px) {
+	.ws-hero-carousel { --hero-gutter: 12px; --hero-radius: 12px; padding-block: 14px 8px; }
+	.ws-hero-dots { margin-top: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ws-hero-carousel { --hero-fade: 1ms; }
+	.ws-hero-dot span,
+	.ws-hero-arrow { transition: none; }
+}

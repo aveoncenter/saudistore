@@ -13,6 +13,16 @@ Custom block theme for the saudidgi digital-subscriptions store.
   (If you did, Appearance → Editor → Templates → ⋮ → Reset.)
 - Font: Cairo (SIL OFL), bundled in `assets/fonts`.
 
+## Homepage banner carousel (v0.2.50)
+
+The former introductory hero (headline, buttons and floating tiles) is replaced by a two-banner promotional carousel directly below the header. The payment strip, categories, product shelves, benefits and contact panels are unchanged and stay in their original order.
+
+- Block `saudistore/home-hero` (`templates/front-page.html`) rendered by `inc/home-hero.php`; assets `assets/css/home-hero.css` and `assets/js/home-hero.js` are enqueued on the front page only. No libraries or plugins.
+- Artwork: `assets/images/home-banners/taraqqi-banner-{dark,light}-{1200,2400}.{avif,webp}`, converted unaltered from the supplied 2400×1000 PNGs. `<picture>` serves AVIF with a WebP fallback and responsive `srcset`.
+- Layout: 1680 px maximum width, 40 px desktop side margins (24 px tablet, 12 px phone), 18 px radius (16/12 px on smaller screens), subtle glass border. The frame has a fixed 12:5 aspect ratio and `object-fit: contain`, so the full banner is always visible and nothing shifts while slides change.
+- Behaviour: slide 1 shows first, then autoplay every 3 s with an infinite loop and a 600 ms crossfade (the outgoing banner stays opaque underneath, so there is no dark dip). Dots below the banner and hover arrows (desktop) switch slides manually; ←/→ keys work when the carousel has focus; touch swipe on phones (vertical page scrolling stays native). Autoplay pauses on hover, keyboard focus, touch, hidden tab and when scrolled off-screen, and restarts a full 3 s interval when the interaction ends. `prefers-reduced-motion` disables autoplay and the fade.
+- Each banner links to the shop page (`wordsite_home_hero_link` filter). Slides are editable via the `wordsite_home_hero_slides` filter. A visually hidden `<h1>` keeps the homepage heading for SEO and screen readers.
+
 ## Product page (v0.2.0)
 `templates/single-product.html` + `inc/product-page.php` + `assets/css/product.css` + `assets/js/product.js`.
 
