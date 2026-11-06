@@ -112,4 +112,9 @@ foreach ( array( 5, 5, 5, 5, 4, 5, 5, 4, 5, 5 ) as $n => $stars ) {
 }
 WC_Comments::clear_transients( $id );
 WC_Product_Variable::sync( $id );
+/* Swap the generated demo placeholders for the theme's branded card artwork. */
+if ( function_exists( 'wordsite_apply_product_art' ) ) {
+	wordsite_apply_product_art();
+}
+
 flush_rewrite_rules();

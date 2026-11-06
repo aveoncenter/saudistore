@@ -157,6 +157,7 @@ add_filter( 'document_title_parts', static function ( $title ) {
 
 require_once get_theme_file_path( 'inc/store-menu.php' );
 require_once get_theme_file_path( 'inc/home-categories.php' );
+require_once get_theme_file_path( 'inc/product-art.php' );
 require_once get_theme_file_path( 'inc/home-hero.php' );
 require_once get_theme_file_path( 'inc/home-sections.php' );
 require_once get_theme_file_path( 'inc/theme-mode.php' );
