@@ -202,22 +202,24 @@ function wordsite_home_reviews_render() {
 		return '';
 	}
 	$sample = wordsite_home_reviews_are_samples();
-	$cards  = implode( '', array_map( 'wordsite_home_review_card', $reviews ) );
+
+	// Never publish placeholder copy as customer testimonials.
+	// The section reappears once genuine reviews are supplied and the sample flag is disabled.
+	if ( $sample ) {
+		return '';
+	}
+
+	$cards = implode( '', array_map( 'wordsite_home_review_card', $reviews ) );
 	$star   = '<svg class="tq-reviews__star" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><defs><linearGradient id="tq-star-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".55" stop-color="#8b5cf6"/><stop offset="1" stop-color="#c084fc"/></linearGradient></defs><path fill="url(#tq-star-g)" d="m12 1.8 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17l-6.1 3.4 1.4-6.8L2.2 8.9l6.9-.8z"/><path fill="#fff" fill-opacity=".55" d="m12 4.6 1.9 4.2-1.9 6.2z"/></svg>';
-	$note   = ( $sample && current_user_can( 'edit_theme_options' ) )
-		? '<p class="tq-reviews__sample-note">محتوى تجريبي للعرض فقط — يظهر هذا التنبيه للمديرين. استبدل النصوص بتقييمات عملاء حقيقية عبر الفلتر <code>wordsite_home_reviews</code> قبل الإطلاق.</p>'
-		: '';
 	$pause  = '<svg class="tq-reviews__icon-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5v14M16 5v14"/></svg><svg class="tq-reviews__icon-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5z"/></svg>';
 
-	return '<section class="tq-reviews" data-tq-reviews' . ( $sample ? ' data-sample-content="true"' : '' ) . ' aria-labelledby="tq-reviews-title">'
-		. ( $sample ? '<!-- SAMPLE CONTENT: illustrative demo reviews, not genuine customer testimonials. Replace via the wordsite_home_reviews filter. -->' : '' )
+	return '<section class="tq-reviews" data-tq-reviews aria-labelledby="tq-reviews-title">'
 		. '<div class="tq-reviews__head">'
 		. '<span class="tq-reviews__line" aria-hidden="true"></span>'
 		. '<h2 id="tq-reviews-title" class="tq-reviews__title">تجارب العملاء' . $star . '</h2>'
 		. '<span class="tq-reviews__line" aria-hidden="true"></span>'
 		. '<button type="button" class="tq-reviews__toggle" data-tq-reviews-toggle aria-pressed="false" aria-label="إيقاف حركة التقييمات" hidden>' . $pause . '</button>'
 		. '</div>'
-		. $note
 		. '<div class="tq-reviews__viewport" data-tq-reviews-viewport>'
 		. '<div class="tq-reviews__track" data-tq-reviews-track>'
 		. '<ul class="tq-reviews__group" role="list">' . $cards . '</ul>'
