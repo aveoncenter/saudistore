@@ -16,6 +16,41 @@ function wordsite_home_categories() {
 	) );
 }
 
+/**
+ * Resolve a category card artwork file, or null when the theme ships none.
+ *
+ * Tries every supported extension so a missing .webp never leaves a broken
+ * <img> on the homepage, and returns the real pixel size for width/height.
+ *
+ * @param string $key Category key.
+ * @return array|null Array with url, width and height.
+ */
+function wordsite_home_category_art( $key ) {
+	$key = sanitize_file_name( $key );
+	foreach ( array( 'webp', 'png', 'jpg', 'svg' ) as $extension ) {
+		$relative = 'assets/images/home-categories/' . $key . '.' . $extension;
+		$path     = get_theme_file_path( $relative );
+		if ( ! is_readable( $path ) ) {
+			continue;
+		}
+		$width  = 1130;
+		$height = 1392;
+		if ( 'svg' !== $extension ) {
+			$size = wp_getimagesize( $path );
+			if ( $size ) {
+				$width  = (int) $size[0];
+				$height = (int) $size[1];
+			}
+		}
+		return array(
+			'url'    => add_query_arg( 'ver', wp_get_theme()->get( 'Version' ), get_theme_file_uri( $relative ) ),
+			'width'  => $width,
+			'height' => $height,
+		);
+	}
+	return null;
+}
+
 function wordsite_home_category_carousel() {
 	if ( ! taxonomy_exists( 'product_cat' ) ) {
 		return '';
@@ -30,12 +65,20 @@ function wordsite_home_category_carousel() {
 		if ( is_wp_error( $url ) ) {
 			continue;
 		}
-		$file = 'assets/images/home-categories/' . sanitize_file_name( $key ) . '.webp';
-		$image = add_query_arg( 'ver', wp_get_theme()->get( 'Version' ), get_theme_file_uri( $file ) );
-		$cards .= sprintf(
-			'<li class="ws-category-slide" dir="rtl"><a class="ws-category-card" href="%1$s"><img class="ws-category-card__art" src="%2$s" alt="%3$s" width="1130" height="1392" loading="lazy" decoding="async"><h3 class="ws-category-card__label">%3$s</h3></a></li>',
-			esc_url( $url ), esc_url( $image ), esc_attr( $definition['label'] )
-		);
+		$art = wordsite_home_category_art( $key );
+		if ( $art ) {
+			$card = sprintf(
+				'<a class="ws-category-card" href="%1$s"><img class="ws-category-card__art" src="%2$s" alt="%3$s" width="%4$d" height="%5$d" loading="lazy" decoding="async"><h3 class="ws-category-card__label">%3$s</h3></a>',
+				esc_url( $url ), esc_url( $art['url'] ), esc_attr( $definition['label'] ), $art['width'], $art['height']
+			);
+		} else {
+			/* No artwork in the theme: show a readable text card instead of a broken image. */
+			$card = sprintf(
+				'<a class="ws-category-card ws-category-card--text" href="%1$s"><h3 class="ws-category-card__title">%2$s</h3><span class="ws-category-card__services">%3$s</span></a>',
+				esc_url( $url ), esc_html( $definition['label'] ), esc_html( $definition['services'] )
+			);
+		}
+		$cards .= '<li class="ws-category-slide" dir="rtl">' . $card . '</li>';
 	}
 	if ( ! $cards ) {
 		return '';

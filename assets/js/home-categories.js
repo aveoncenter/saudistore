@@ -10,6 +10,9 @@
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)'), touchMode = mobileMode;
   var timer, finishTimer, moving = false, finishMove, hovered = false, focused = false, visible = false, stopped = reduced.matches, startX = null, swiped = false;
   root.classList.add('is-ready');
+  /* The carousel rotates slides in and out of the scrollport, so a lazily
+   * deferred card could rotate in blank. Load them all once JS takes over. */
+  track.querySelectorAll('img[loading="lazy"]').forEach(function (image) { image.loading = 'eager'; });
   if (touchMode) enableInfiniteTouchScroll(viewport, track, slides);
   function columns() { return Math.max(1, parseInt(getComputedStyle(root).getPropertyValue('--category-columns'), 10)); }
   function step() { return track.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(track).gap); }
@@ -93,12 +96,22 @@
     var gap = parseFloat(getComputedStyle(track).gap) || 0;
     return originals.length * (item.getBoundingClientRect().width + gap);
    }
+   /* Reposition without smooth scrolling, and ignore the scroll events the jump
+    * itself emits, otherwise the handler below keeps adding a set width and the
+    * strip lands in the middle of the loop instead of on the first card. */
+   var jumpUntil = 0;
    function placeAtRealSet() {
     var width = setWidth();
-    if (width > 0) viewport.scrollLeft = width;
+    if (width <= 0) return;
+    var previous = viewport.style.scrollBehavior;
+    jumpUntil = Date.now() + 150;
+    viewport.style.scrollBehavior = 'auto';
+    viewport.scrollLeft = width;
+    viewport.style.scrollBehavior = previous;
    }
    placeAtRealSet();
    viewport.addEventListener('scroll', function () {
+    if (Date.now() < jumpUntil) return;
     var width = setWidth();
     if (!width) return;
     var position = viewport.scrollLeft;

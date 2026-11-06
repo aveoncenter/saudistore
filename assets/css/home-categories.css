@@ -51,3 +51,21 @@
  }
  .ws-category-slide { scroll-snap-align: start; }
 }
+
+/* Text fallback card: used only when the theme ships no artwork for a category,
+   so the carousel never shows a broken image or an empty slot. */
+.ws-category-card--text {
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ gap: 8px;
+ aspect-ratio: 1130 / 1392;
+ padding: 24px 20px;
+ box-sizing: border-box;
+ border: 1px solid #ffffff1f;
+ border-radius: 28px;
+ background: linear-gradient(160deg, #1b2a6b 0%, #2b1d63 55%, #4b1e7a 100%);
+ text-align: center;
+}
+.ws-category-card--text .ws-category-card__title { margin: 0; color: #fff; font-size: clamp(16px, 1.4vw, 20px); font-weight: 800; line-height: 1.5; }
+.ws-category-card--text .ws-category-card__services { color: #cdd6f4; font-size: 12px; line-height: 1.6; }
