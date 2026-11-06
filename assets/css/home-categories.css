@@ -15,9 +15,9 @@
  .ws-category-card:hover { z-index: 1; transform: translateY(-6px) scale(1.02); filter: brightness(1.035) drop-shadow(0 6px 8px #0004); }
 }
 .ws-category-card__art {
- display: block; width: 100%; aspect-ratio: 220 / 271;
+ display: block; width: 100%; aspect-ratio: 200 / 246;
  background-image: url('../images/home-categories/category-sprite.avif');
- background-repeat: no-repeat; background-size: 740.91% auto;
+ background-repeat: no-repeat; background-size: 736% auto;
  background-position-y: 0; background-color: transparent;
 }
 .ws-category-card__art--1 { background-position-x: 16.666667%; }
