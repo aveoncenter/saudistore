@@ -453,3 +453,49 @@
 	.tq-feature:hover .tq-feature__orb,
 	.tq-review figure:hover { transform: none; }
 }
+
+
+/* ---------- Compact homepage trust / benefits strip ---------- */
+/* Reduce the four feature items to roughly half their previous visual scale,
+   while retaining the four-column layout, dividers, colours and animations. */
+.tq-features {
+	padding-block: clamp(22px, 2.75vw, 40px) clamp(14px, 1.75vw, 24px);
+}
+.tq-features__list {
+	gap: clamp(8px, 1.2vw, 16px);
+}
+.tq-feature {
+	padding: 3px 5px 2px;
+}
+.tq-feature__icon {
+	--size: clamp(39px, 3.2vw, 48px);
+	margin-bottom: clamp(9px, 0.9vw, 13px);
+}
+.tq-feature__icon::before { inset: -8px; filter: blur(6px); }
+.tq-feature__icon::after { inset: -4px; }
+.tq-feature__title {
+	margin-bottom: 3px;
+	font-size: clamp(8px, 0.65vw, 9.5px);
+	line-height: 1.5;
+}
+.tq-feature__text {
+	max-width: 220px;
+	font-size: clamp(7px, 0.5vw, 7.5px);
+	line-height: 1.85;
+}
+.tq-feature + .tq-feature::before {
+	inset-inline-start: calc(clamp(8px, 1.2vw, 16px) / -2);
+}
+@media (max-width: 1000px) {
+	.tq-features__list { row-gap: 18px; }
+}
+@media (max-width: 600px) {
+	.tq-features { padding-top: 20px; padding-bottom: 14px; }
+	.tq-features__list { gap: 15px 6px; }
+	.tq-feature { padding-inline: 1px; }
+	.tq-feature__icon { --size: 37px; margin-bottom: 8px; }
+	.tq-feature__icon::before { inset: -5px; }
+	.tq-feature__icon::after { inset: -3px; }
+	.tq-feature__title { font-size: 8px; }
+	.tq-feature__text { font-size: 7px; line-height: 1.7; }
+}
