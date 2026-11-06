@@ -499,3 +499,75 @@
 	.tq-feature__title { font-size: 8px; }
 	.tq-feature__text { font-size: 7px; line-height: 1.7; }
 }
+
+
+/* ---------- FAQ: reduce the complete section by 30% ---------- */
+/* Keep the same two-column layout and full content width; scale the
+   section's vertical rhythm, typography, cards and controls together. */
+.tq-faq {
+	padding-bottom: clamp(39px, 4.9vw, 70px);
+}
+.tq-faq__title {
+	margin-bottom: clamp(15px, 2.1vw, 25px);
+	font-size: clamp(15.5px, 1.61vw, 21px);
+}
+.tq-faq__grid {
+	gap: clamp(10px, 1.12vw, 14px) clamp(11px, 1.4vw, 18px);
+}
+.tq-faq__item {
+	border-radius: 13px;
+}
+.tq-faq__q {
+	gap: 11px;
+	min-height: 55px;
+	padding: 13px 17px;
+	font-size: clamp(11px, 0.84vw, 12.6px);
+}
+.tq-faq__q:focus-visible { outline-offset: 2px; border-radius: 11px; }
+.tq-faq__icon {
+	flex-basis: 27px;
+	width: 27px;
+	height: 27px;
+}
+.tq-faq__icon::before,
+.tq-faq__icon::after {
+	width: 10px;
+	height: 1.5px;
+}
+.tq-faq__item[open]:not(.is-closing) .tq-faq__icon {
+	box-shadow: 0 0 11px rgba(56, 189, 248, 0.45);
+}
+.tq-faq__a-inner { padding: 0 17px 15px; }
+.tq-faq__a-inner::before { margin-bottom: 11px; }
+.tq-faq__a p {
+	font-size: clamp(10.5px, 0.74vw, 11.2px);
+	line-height: 1.95;
+}
+.tq-faq__a a { text-underline-offset: 2px; }
+
+@media (max-width: 781px) {
+	.tq-faq__grid { gap: 10px; }
+	.tq-faq__q {
+		min-height: 46px;
+		padding: 11px 13px;
+		gap: 8px;
+		font-size: 11px;
+	}
+	.tq-faq__icon {
+		flex-basis: 24px;
+		width: 24px;
+		height: 24px;
+	}
+	.tq-faq__a-inner { padding: 0 13px 13px; }
+}
+
+@media (max-width: 600px) {
+	.tq-faq { padding-bottom: 39px; }
+	.tq-faq__title {
+		margin-bottom: 15px;
+		font-size: 15.5px;
+	}
+	.tq-faq__q { min-height: 46px; }
+	.tq-faq__a p { font-size: 10.5px; }
+}
+
