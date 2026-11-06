@@ -30,7 +30,7 @@ function wordsite_home_category_carousel() {
 		if ( is_wp_error( $url ) ) {
 			continue;
 		}
-		$file = 'assets/images/home-categories/' . sanitize_file_name( $key ) . '.png';
+		$file = 'assets/images/home-categories/' . sanitize_file_name( $key ) . '.webp';
 		$image = add_query_arg( 'ver', wp_get_theme()->get( 'Version' ), get_theme_file_uri( $file ) );
 		$cards .= sprintf(
 			'<li class="ws-category-slide" dir="rtl"><a class="ws-category-card" href="%1$s"><img class="ws-category-card__art" src="%2$s" alt="%3$s" width="1130" height="1392" loading="lazy" decoding="async"><h3 class="ws-category-card__label">%3$s</h3></a></li>',
