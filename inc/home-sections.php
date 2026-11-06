@@ -215,7 +215,7 @@ function wordsite_home_reviews_render() {
 		. '<div class="tq-reviews__viewport" data-tq-reviews-viewport>'
 		. '<div class="tq-reviews__track" data-tq-reviews-track>'
 		. '<ul class="tq-reviews__group" role="list">' . $cards . '</ul>'
-		. '<ul class="tq-reviews__group tq-reviews__group--clone" role="list" aria-hidden="true" inert>' . $cards . '</ul>'
+		. '<ul class="tq-reviews__group tq-reviews__group--clone" role="list" aria-hidden="true">' . $cards . '</ul>'
 		. '</div></div>'
 		. '</section>';
 }
