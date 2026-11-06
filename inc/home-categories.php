@@ -8,6 +8,7 @@ function wordsite_home_categories() {
 	return apply_filters( 'wordsite_home_categories', array(
 		'work-productivity' => array( 'name' => 'العمل والتطوير المهني', 'label' => 'العمل والتطوير المهني', 'services' => 'LinkedIn · Zoom · Notion' ),
 		'streaming-subscriptions' => array( 'name' => 'الترفيه والمشاهدة', 'label' => 'الترفيه والمشاهدة', 'services' => 'Netflix · Spotify · Shahid · Prime Video' ),
+		'spotify' => array( 'name' => 'Spotify', 'label' => 'Spotify', 'services' => 'Spotify Premium · Music without limits' ),
 		'apps-subscriptions' => array( 'name' => 'تطبيقات واشتراكات متنوعة', 'label' => 'تطبيقات واشتراكات متنوعة', 'services' => 'تطبيقاتك المفضلة في مكان واحد' ),
 		'editing-design' => array( 'name' => 'التصميم والإبداع', 'label' => 'التصميم والإبداع', 'services' => 'Adobe · CapCut · Canva · Figma' ),
 		'ai-subscriptions' => array( 'name' => 'الذكاء الاصطناعي', 'label' => 'الذكاء الاصطناعي', 'services' => 'ChatGPT · Gemini · Claude' ),
