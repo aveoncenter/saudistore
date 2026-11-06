@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1130" height="1392" viewBox="0 0 1130 1392">
+<defs>
+ <linearGradient id="bg" x2="0.8" y2="1"><stop stop-color="#05071f"/><stop offset="1" stop-color="#07103d"/></linearGradient>
+ <radialGradient id="violet"><stop stop-color="#6b21e9" stop-opacity=".58"/><stop offset="1" stop-color="#6b21e9" stop-opacity="0"/></radialGradient>
+ <radialGradient id="blue"><stop stop-color="#008cff" stop-opacity=".55"/><stop offset="1" stop-color="#008cff" stop-opacity="0"/></radialGradient>
+ <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8b5cf6"/><stop offset=".52" stop-color="#38bdf8"/><stop offset="1" stop-color="#22e58c"/></linearGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="55"/></filter>
+ <filter id="shadow"><feGaussianBlur stdDeviation="26"/></filter>
+ <linearGradient id="spotify" x2="0" y2="1"><stop stop-color="#102b3d"/><stop offset="1" stop-color="#091b32"/></linearGradient>
+</defs>
+<rect width="1130" height="1392" rx="38" fill="url(#bg)"/>
+<ellipse cx="850" cy="540" rx="360" ry="430" fill="url(#blue)" filter="url(#blur)"/>
+<ellipse cx="230" cy="870" rx="330" ry="450" fill="url(#violet)" filter="url(#blur)"/>
+<rect x="66" y="66" width="260" height="53" rx="26" fill="#7343ff" fill-opacity=".16" stroke="#8473ff"/>
+<text x="196" y="101" text-anchor="middle" font-family="Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="1.3" fill="#c3bdff">DIGITAL SUBSCRIPTIONS</text>
+<rect x="147" y="240" width="836" height="810" rx="84" fill="#000" opacity=".62" filter="url(#shadow)"/>
+<rect x="140" y="210" width="850" height="830" rx="78" fill="#10174b" fill-opacity=".82" stroke="#8c9bff" stroke-opacity=".42" stroke-width="3"/>
+<rect x="153" y="223" width="824" height="804" rx="68" fill="none" stroke="#fff" stroke-opacity=".09" stroke-width="2"/>
+<circle cx="565" cy="615" r="250" fill="#12e58d" opacity=".18" filter="url(#blur)"/>
+<circle cx="565" cy="615" r="213" fill="url(#spotify)" stroke="url(#ring)" stroke-width="9"/>
+<circle cx="565" cy="615" r="193" fill="none" stroke="#14b878" stroke-opacity=".6" stroke-width="3"/>
+<g fill="none" stroke="#1de984" stroke-linecap="round">
+ <path d="M441 548 Q565 490 689 548" stroke-width="23"/>
+ <path d="M459 621 Q565 574 671 621" stroke-width="20"/>
+ <path d="M484 690 Q565 654 646 690" stroke-width="17"/>
+</g>
+<g fill="#55d9ff">
+ <circle cx="850" cy="270" r="9"/><circle cx="925" cy="345" r="6"/>
+</g>
+<circle cx="215" cy="440" r="7" fill="#a667ff"/>
+<circle cx="888" cy="820" r="5" fill="#37e5ba"/>
+<!-- Taraqqi brand bag monogram -->
+<g transform="translate(850 1190)">
+ <circle r="67" fill="#171b53" stroke="#9080ff" stroke-width="3"/>
+ <path d="M-31 -12h62l-5 43h-52z" fill="none" stroke="#8b5cf6" stroke-width="7" stroke-linejoin="round"/>
+ <path d="M-17 -12v-12a17 17 0 0 1 34 0v12" fill="none" stroke="#38bdf8" stroke-width="7" stroke-linecap="round"/>
+ <path d="M-20 6l9 9 20-23" fill="none" stroke="#44e6bc" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<text x="565" y="1170" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="86" fill="#fbfcff">Spotify</text>
+<text x="565" y="1248" text-anchor="middle" font-family="Arial,sans-serif" font-size="31" fill="#b6cbf6">موسيقى بلا حدود</text>
+<rect x="385" y="1282" width="360" height="58" rx="29" fill="#444db4" fill-opacity=".28" stroke="#68a5ff" stroke-width="2"/>
+<text x="565" y="1319" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="1.5" fill="#b9dcff">PREMIUM ACCESS</text>
+<rect x="8" y="8" width="1114" height="1376" rx="38" fill="none" stroke="#758eff" stroke-opacity=".22" stroke-width="2"/>
+</svg>
