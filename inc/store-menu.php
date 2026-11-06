@@ -62,7 +62,7 @@ function wordsite_store_menu_term( $key, $definition ) {
  * Reuse matching terms, never overwrite them, and never reassign live products.
  */
 function wordsite_ensure_store_categories() {
-	if ( ! taxonomy_exists( 'product_cat' ) || '2' === get_option( 'wordsite_store_categories_version' ) ) {
+	if ( ! taxonomy_exists( 'product_cat' ) || '3' === get_option( 'wordsite_store_categories_version' ) ) {
 		return;
 	}
 	$ids      = get_option( 'wordsite_store_category_ids', array() );
@@ -82,7 +82,7 @@ function wordsite_ensure_store_categories() {
 	}
 	update_option( 'wordsite_store_category_ids', $ids, false );
 	if ( $complete ) {
-		update_option( 'wordsite_store_categories_version', '2', false );
+		update_option( 'wordsite_store_categories_version', '3', false );
 	}
 }
 add_action( 'init', 'wordsite_ensure_store_categories', 20 );
