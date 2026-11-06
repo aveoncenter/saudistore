@@ -6,12 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 function wordsite_home_categories() {
 	return apply_filters( 'wordsite_home_categories', array(
-		'ai-subscriptions' => array( 'name' => 'اشتراكات الذكاء الاصطناعي', 'label' => 'الذكاء الاصطناعي', 'services' => 'ChatGPT · Gemini · Claude' ),
-		'learning-skills' => array( 'name' => 'التعلم وتطوير المهارات', 'label' => 'التعلم وتطوير المهارات', 'services' => 'Duolingo · Udemy · Coursera' ),
-		'editing-design' => array( 'name' => 'تطبيقات المونتاج والتصاميم', 'label' => 'التصميم والإبداع', 'services' => 'Adobe · Canva · CapCut' ),
-		'work-productivity' => array( 'name' => 'العمل والتطوير المهني', 'label' => 'العمل والتطوير المهني', 'services' => 'LinkedIn · Zoom · Notion' ),
-		'gift-cards' => array( 'name' => 'بطاقات الهدايا', 'label' => 'بطاقات الهدايا', 'services' => 'Steam · Apple · Google Play' ),
-		'apps-subscriptions' => array( 'name' => 'تطبيقات واشتراكات متنوعة', 'label' => 'تطبيقات واشتراكات متنوعة', 'services' => 'تطبيقاتك المفضلة في مكان واحد' ),
+		'entertainment' => array( 'name' => 'الترفيه والمشاهدة', 'label' => 'الترفيه والمشاهدة', 'image' => 'entertainment.webp' ),
+		'apps-subscriptions' => array( 'name' => 'تطبيقات واشتراكات متنوعة', 'label' => 'تطبيقات واشتراكات متنوعة', 'image' => 'apps-subscriptions.webp' ),
+		'work-productivity' => array( 'name' => 'العمل والتطوير المهني', 'label' => 'العمل والتطوير المهني', 'image' => 'work-productivity.webp' ),
+		'editing-design' => array( 'name' => 'تطبيقات المونتاج والتصاميم', 'label' => 'التصميم والإبداع', 'image' => 'editing-design.webp' ),
+		'ai-subscriptions' => array( 'name' => 'اشتراكات الذكاء الاصطناعي', 'label' => 'الذكاء الاصطناعي', 'image' => 'ai-subscriptions.webp' ),
+		'learning-skills' => array( 'name' => 'التعلم وتطوير المهارات', 'label' => 'التعلم وتطوير المهارات', 'image' => 'learning-skills.webp' ),
+		'gift-cards' => array( 'name' => 'بطاقات الهدايا', 'label' => 'بطاقات الهدايا', 'image' => 'gift-cards.webp' ),
 	) );
 }
 
@@ -29,10 +30,10 @@ function wordsite_home_category_carousel() {
 		if ( is_wp_error( $url ) ) {
 			continue;
 		}
-		$file = 'assets/images/home-categories/' . sanitize_file_name( $key ) . '.svg';
+		$file = 'assets/images/home-categories/' . ( ! empty( $definition['image'] ) ? $definition['image'] : sanitize_file_name( $key ) . '.svg' );
 		$image = add_query_arg( 'ver', wp_get_theme()->get( 'Version' ), get_theme_file_uri( $file ) );
 		$cards .= sprintf(
-			'<li class="ws-category-slide" dir="rtl"><a class="ws-category-card" href="%1$s"><img class="ws-category-card__art" src="%2$s" alt="" width="306" height="424" loading="lazy" decoding="async"><h3 class="ws-category-card__label">%3$s</h3></a></li>',
+			'<li class="ws-category-slide" dir="rtl"><a class="ws-category-card" href="%1$s"><img class="ws-category-card__art" src="%2$s" alt="" width="280" height="345" loading="lazy" decoding="async"><h3 class="ws-category-card__label">%3$s</h3></a></li>',
 			esc_url( $url ), esc_url( $image ), esc_html( $definition['label'] )
 		);
 	}
