@@ -2,8 +2,8 @@
 /**
  * Light / dark appearance: no-flash bootstrap, header toggle and assets.
  *
- * - The inline head script picks the saved choice (localStorage `taraqqi-theme`) or, on a
- *   first visit, the device's `prefers-color-scheme`, and sets <html data-theme> before paint.
+ * - The inline head script picks the saved choice (localStorage `taraqqi-theme`) or defaults
+ *   first-time visitors to light mode, and sets <html data-theme> before paint.
  * - The toggle button is appended after the header's category navigation (`.ws-nav`), so it
  *   also appears when the header template part has been customised in the Site Editor.
  * - assets/css/theme-mode.css holds the shared colour tokens and every light-mode override;
@@ -23,7 +23,7 @@ function wordsite_theme_mode_bootstrap() {
 	?>
 <meta name="color-scheme" content="dark light" />
 <meta name="theme-color" content="#060818" data-tq-theme-color />
-<script>(function(d){var r=d.documentElement,t='dark';try{var s=localStorage.getItem('taraqqi-theme');t=(s==='light'||s==='dark')?s:((window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark');}catch(e){}r.setAttribute('data-theme',t);r.style.colorScheme=t;var m=d.querySelector('meta[data-tq-theme-color]');if(m)m.setAttribute('content',t==='light'?'#f3f6fd':'#060818');})(document);</script>
+<script>(function(d){var r=d.documentElement,t='dark';try{var s=localStorage.getItem('taraqqi-theme');t=(s==='light'||s==='dark')?s:'light';}catch(e){}r.setAttribute('data-theme',t);r.style.colorScheme=t;var m=d.querySelector('meta[data-tq-theme-color]');if(m)m.setAttribute('content',t==='light'?'#f3f6fd':'#060818');})(document);</script>
 	<?php
 }
 add_action( 'wp_head', 'wordsite_theme_mode_bootstrap', 0 );
