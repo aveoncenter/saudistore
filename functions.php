@@ -145,10 +145,10 @@ add_shortcode( 'taraqqi_logo', 'wordsite_taraqqi_logo_shortcode' );
 function wordsite_taraqqi_payment_logos_shortcode() {
 	$version   = wp_get_theme()->get( 'Version' );
 	$image_url = add_query_arg( 'ver', $version, get_theme_file_uri( 'assets/images/payment/payment-methods-strip.webp' ) );
-	$apple_url = add_query_arg( 'ver', $version, get_theme_file_uri( 'assets/images/payment/apple-pay-badge.webp' ) );
+	$apple_url = add_query_arg( 'ver', $version, get_theme_file_uri( 'assets/images/payment/apple-pay-badge.png' ) );
 
 	return sprintf(
-		'<div class="ws-footer__payment-logos" aria-label="%1$s"><img class="ws-footer__payment-strip-base" src="%2$s" alt="%1$s" width="1100" height="130" loading="lazy" decoding="async" /><img class="ws-footer__applepay-overlay" src="%3$s" alt="Apple Pay" width="567" height="364" loading="lazy" decoding="async" /></div>',
+		'<div class="ws-footer__payment-logos" aria-label="%1$s"><img class="ws-footer__payment-strip-base" src="%2$s" alt="%1$s" width="1100" height="130" loading="lazy" decoding="async" /><img class="ws-footer__applepay-overlay" src="%3$s" alt="Apple Pay" width="227" height="146" loading="lazy" decoding="async" /></div>',
 		esc_attr__( 'Apple Pay, STC Bank, bank transfer, Visa, Mastercard and mada', 'wordsite' ),
 		esc_url( $image_url ),
 		esc_url( $apple_url )
