@@ -143,15 +143,15 @@ add_shortcode( 'taraqqi_logo', 'wordsite_taraqqi_logo_shortcode' );
  * Render one crisp, white-background strip containing the available payment methods.
  */
 function wordsite_taraqqi_payment_logos_shortcode() {
-	$version   = wp_get_theme()->get( 'Version' );
-	$image_url = add_query_arg( 'ver', $version, get_theme_file_uri( 'assets/images/payment/payment-methods-strip.webp' ) );
-	$apple_url = add_query_arg( 'ver', $version, get_theme_file_uri( 'assets/images/payment/apple-pay-badge.png' ) );
-
+	$image_url = add_query_arg(
+		'ver',
+		wp_get_theme()->get( 'Version' ),
+		get_theme_file_uri( 'assets/images/payment/payment-methods-strip.webp' )
+	);
 	return sprintf(
-		'<div class="ws-footer__payment-logos" aria-label="%1$s"><img class="ws-footer__payment-strip-base" src="%2$s" alt="%1$s" width="1100" height="130" loading="lazy" decoding="async" /><img class="ws-footer__applepay-overlay" src="%3$s" alt="Apple Pay" width="227" height="146" loading="lazy" decoding="async" /></div>',
+		'<div class="ws-footer__payment-logos" aria-label="%1$s"><img src="%2$s" alt="%1$s" width="900" height="227" loading="lazy" decoding="async" /></div>',
 		esc_attr__( 'Apple Pay, STC Bank, bank transfer, Visa, Mastercard and mada', 'wordsite' ),
-		esc_url( $image_url ),
-		esc_url( $apple_url )
+		esc_url( $image_url )
 	);
 }
 add_shortcode( 'taraqqi_payment_logos', 'wordsite_taraqqi_payment_logos_shortcode' );
