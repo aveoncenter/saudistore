@@ -851,3 +851,40 @@ body::-webkit-scrollbar-thumb:hover,
 	margin-right: auto !important;
 	transform: none !important;
 }
+
+
+/* ---------- Compact footer payment logos ---------- */
+.ws-footer__payment-logos {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 16px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 2px 0 10px;
+	direction: ltr;
+}
+.ws-footer__payment-logos img {
+	display: block;
+	width: auto;
+	height: 18px;
+	max-width: 62px;
+	object-fit: contain;
+	object-position: center;
+	border: 0;
+	border-radius: 2px;
+	box-shadow: none;
+}
+.ws-footer__payment-logos .ws-pay-logo--apple {
+	height: 17px;
+	max-width: 27px;
+}
+@media (max-width: 600px) {
+	.ws-footer__payment-logos {
+		gap: 12px;
+		padding-bottom: 8px;
+	}
+	.ws-footer__payment-logos img { height: 16px; max-width: 54px; }
+	.ws-footer__payment-logos .ws-pay-logo--apple { height: 16px; max-width: 26px; }
+}

@@ -140,6 +140,34 @@ function wordsite_taraqqi_logo_shortcode() {
 add_shortcode( 'taraqqi_logo', 'wordsite_taraqqi_logo_shortcode' );
 
 /**
+ * Compact payment-method logos in the footer.
+ */
+function wordsite_taraqqi_payment_logos_shortcode() {
+	$logos = array(
+		array( 'apple-pay.jpg', 'Apple Pay', 'ws-pay-logo--apple', 34, 23 ),
+		array( 'stc-bank.jpg', 'STC Bank', '', 120, 40 ),
+		array( 'bank-transfer.jpg', 'Bank transfer', '', 120, 40 ),
+		array( 'visa-mastercard.jpg', 'Visa and Mastercard', '', 120, 40 ),
+		array( 'mada.jpg', 'mada', '', 120, 40 ),
+	);
+	$html = '<div class="ws-footer__payment-logos" aria-label="' . esc_attr__( 'طرق الدفع المتاحة', 'wordsite' ) . '">';
+	foreach ( $logos as $logo ) {
+		$url = get_theme_file_uri( 'assets/images/payment/' . $logo[0] );
+		$html .= sprintf(
+			'<img src="%1$s" alt="%2$s" class="%3$s" width="%4$d" height="%5$d" loading="lazy" decoding="async" />',
+			esc_url( $url ),
+			esc_attr( $logo[1] ),
+			esc_attr( $logo[2] ),
+			(int) $logo[3],
+			(int) $logo[4]
+		);
+	}
+	$html .= '</div>';
+	return $html;
+}
+add_shortcode( 'taraqqi_payment_logos', 'wordsite_taraqqi_payment_logos_shortcode' );
+
+/**
  * Taraqqi browser tab / home-screen icon.
  */
 function wordsite_taraqqi_site_icon() {
