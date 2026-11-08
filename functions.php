@@ -140,30 +140,19 @@ function wordsite_taraqqi_logo_shortcode() {
 add_shortcode( 'taraqqi_logo', 'wordsite_taraqqi_logo_shortcode' );
 
 /**
- * Compact payment-method logos in the footer.
+ * Render one crisp, white-background strip containing the available payment methods.
  */
 function wordsite_taraqqi_payment_logos_shortcode() {
-	$logos = array(
-		array( 'apple-pay.jpg', 'Apple Pay', 'ws-pay-logo--apple', 34, 23 ),
-		array( 'stc-bank.jpg', 'STC Bank', '', 120, 40 ),
-		array( 'bank-transfer.jpg', 'Bank transfer', '', 120, 40 ),
-		array( 'visa-mastercard.jpg', 'Visa and Mastercard', '', 120, 40 ),
-		array( 'mada.jpg', 'mada', '', 120, 40 ),
+	$image_url = add_query_arg(
+		'ver',
+		wp_get_theme()->get( 'Version' ),
+		get_theme_file_uri( 'assets/images/payment/payment-methods-strip.webp' )
 	);
-	$html = '<div class="ws-footer__payment-logos" aria-label="' . esc_attr__( 'طرق الدفع المتاحة', 'wordsite' ) . '">';
-	foreach ( $logos as $logo ) {
-		$url = get_theme_file_uri( 'assets/images/payment/' . $logo[0] );
-		$html .= sprintf(
-			'<img src="%1$s" alt="%2$s" class="%3$s" width="%4$d" height="%5$d" loading="lazy" decoding="async" />',
-			esc_url( $url ),
-			esc_attr( $logo[1] ),
-			esc_attr( $logo[2] ),
-			(int) $logo[3],
-			(int) $logo[4]
-		);
-	}
-	$html .= '</div>';
-	return $html;
+	return sprintf(
+		'<div class="ws-footer__payment-logos" aria-label="%1$s"><img src="%2$s" alt="%1$s" width="900" height="227" loading="lazy" decoding="async" /></div>',
+		esc_attr__( 'Apple Pay, STC Bank, bank transfer, Visa, Mastercard and mada', 'wordsite' ),
+		esc_url( $image_url )
+	);
 }
 add_shortcode( 'taraqqi_payment_logos', 'wordsite_taraqqi_payment_logos_shortcode' );
 

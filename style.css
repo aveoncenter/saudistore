@@ -3,7 +3,7 @@ Theme Name: Saudistore
 Theme URI: https://github.com/aveoncenter/saudistore
 Author: aveoncenter
 Description: Dark, Arabic-first (RTL) WooCommerce block theme for a digital subscriptions store.
-Version: 0.2.59
+Version: 0.2.60
 Requires at least: 6.6
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -853,38 +853,32 @@ body::-webkit-scrollbar-thumb:hover,
 }
 
 
+
+
 /* ---------- Compact footer payment logos ---------- */
 .ws-footer__payment-logos {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex-wrap: wrap;
-	gap: 16px;
 	width: 100%;
 	margin: 0 auto;
-	padding: 2px 0 10px;
+	padding: 0 12px 8px;
+	background-color: #fff;
 	direction: ltr;
 }
 .ws-footer__payment-logos img {
 	display: block;
-	width: auto;
-	height: 18px;
-	max-width: 62px;
-	object-fit: contain;
-	object-position: center;
+	width: min(100%, 400px);
+	max-width: 400px;
+	height: auto;
+	margin: 0 auto;
 	border: 0;
-	border-radius: 2px;
+	border-radius: 0;
+	background-color: #fff;
 	box-shadow: none;
-}
-.ws-footer__payment-logos .ws-pay-logo--apple {
-	height: 17px;
-	max-width: 27px;
+	object-fit: contain;
 }
 @media (max-width: 600px) {
-	.ws-footer__payment-logos {
-		gap: 12px;
-		padding-bottom: 8px;
-	}
-	.ws-footer__payment-logos img { height: 16px; max-width: 54px; }
-	.ws-footer__payment-logos .ws-pay-logo--apple { height: 16px; max-width: 26px; }
+	.ws-footer__payment-logos { padding: 0 8px 6px; }
+	.ws-footer__payment-logos img { width: min(100%, 360px); max-width: 360px; }
 }
