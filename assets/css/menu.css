@@ -94,3 +94,63 @@
 	.ws-nav .is-menu-open .wp-block-navigation__responsive-dialog { animation: none; }
 	.ws-nav a.ws-menu-category { transition: none; }
 }
+
+
+/* Mobile bottom-sheet category menu: mirror the store's category drawer reference. */
+@media (max-width: 600px) {
+ .ws-nav .wp-block-navigation__responsive-container.is-menu-open {
+  display: block !important;
+  position: fixed !important;
+  z-index: 1200 !important;
+  inset: var(--ws-admin-offset, 0px) 0 var(--ws-mobile-nav-height, 72px) !important;
+  padding: 0 !important;
+  background: rgba(5, 10, 30, .38) !important;
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+ }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-close {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  min-height: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+ }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-dialog {
+  width: 100% !important;
+  max-height: min(76dvh, 680px) !important;
+  min-height: 0 !important;
+  overflow: hidden auto !important;
+  overscroll-behavior: contain;
+  margin: 0 !important;
+  border-radius: 24px 24px 0 0 !important;
+  background: #fff !important;
+  box-shadow: 0 -12px 36px rgba(6, 16, 45, .18) !important;
+  animation: ws-mobile-sheet-in 240ms cubic-bezier(.22,.75,.25,1) both;
+ }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-container-content {
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important;
+ }
+ .ws-menu-heading { height: 64px; border-bottom-color: #e5e7ef; }
+ .ws-menu-heading h2 { color: #111936; font-size: 19px; }
+ .ws-nav .wp-block-navigation__responsive-container-close {
+  top: 8px; left: 10px; color: #cc2854;
+ }
+ .ws-nav ul.ws-menu-category-list > li { border-bottom-color: #e5e7ef; }
+ .ws-nav a.ws-menu-category {
+  min-height: 78px;
+  padding: 7px 16px;
+  grid-template-columns: 60px minmax(0,1fr);
+  gap: 16px;
+  color: #111936;
+ }
+ .ws-menu-category__image { width: 60px; height: 60px; border-radius: 14px; }
+ .ws-menu-category strong { color: #111936; font-size: clamp(17px, 4.6vw, 20px); }
+ .ws-nav a.ws-menu-category:hover,
+ .ws-nav a.ws-menu-category.is-current { color: #111936; background: #f3f5fb; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-dialog { animation: none; }
+}
