@@ -26,136 +26,119 @@
 		}
 	}
 
-	/* ---------- Reviews: seamless, slow, pausable marquee ---------- */
+	/* ---------- Reviews: continuously moving, with native touch swiping ---------- */
 	var reviews = document.querySelector('[data-tq-reviews]');
-	if (reviews && typeof Element.prototype.animate === 'function') {
+	if (reviews) {
 		var viewport = reviews.querySelector('[data-tq-reviews-viewport]');
 		var track = reviews.querySelector('[data-tq-reviews-track]');
-		var group = track.querySelector('.tq-reviews__group');
+		var group = track && track.querySelector('.tq-reviews__group');
 		var toggle = reviews.querySelector('[data-tq-reviews-toggle]');
-		/* Constant, calm drift speed (px/s) regardless of how many reviews there are. */
-		var CYCLE_MS = 60000;
-		function speed() { return window.innerWidth < 600 ? 32 : 44; }
-		var anim = null, setWidth = 0;
-		var hoveredCard = null, dragging = false, offscreen = false, userPaused = false, resumeTimer = 0;
-		var drag = null;
+		var CYCLE_MS = 60000, anim = null, setWidth = 0;
+		var hoveredCard = null, offscreen = false, userPaused = false;
+		var drag = null, dragging = false, resumeTimer = 0;
 
+		function speed() { return window.innerWidth < 600 ? 32 : 44; }
+		function wrap(time) { return ((time % CYCLE_MS) + CYCLE_MS) % CYCLE_MS; }
+		function update() {
+			if (!anim) return;
+			var shouldRun = !hoveredCard && !dragging && !offscreen && !userPaused && !document.hidden;
+			if (shouldRun && anim.playState !== 'running') anim.play();
+			else if (!shouldRun && anim.playState === 'running') anim.pause();
+		}
 		function build() {
+			if (!group || !track || typeof track.animate !== 'function') return false;
 			setWidth = group.getBoundingClientRect().width;
-			if (!setWidth) return;
-			var progress = anim && anim.effect && anim.currentTime != null ? (anim.currentTime % CYCLE_MS) / CYCLE_MS : 0;
+			if (!setWidth) return false;
+			var progress = anim && anim.currentTime != null ? (anim.currentTime % CYCLE_MS) / CYCLE_MS : 0;
 			if (anim) anim.cancel();
-			CYCLE_MS = Math.max(20000, Math.round((setWidth / speed()) * 1000));
-			/* LTR track: content drifts towards the right, revealing cards from the left. */
+			CYCLE_MS = Math.max(20000, Math.round(setWidth / speed() * 1000));
 			anim = track.animate(
 				[{ transform: 'translate3d(' + (-setWidth) + 'px,0,0)' }, { transform: 'translate3d(0,0,0)' }],
 				{ duration: CYCLE_MS, iterations: Infinity, easing: 'linear' }
 			);
 			anim.currentTime = progress * CYCLE_MS;
 			update();
+			return true;
 		}
-		function shouldRun() { return !hoveredCard && !dragging && !offscreen && !userPaused && !document.hidden; }
-		function update() {
-			if (!anim) return;
-			if (shouldRun()) { if (anim.playState !== 'running') anim.play(); }
-			else if (anim.playState === 'running') anim.pause();
-		}
-		function start() {
-			if (reduced.matches) { stop(); return; }
-			reviews.classList.add('is-moving');
-			if (toggle) toggle.hidden = false;
-			build();
-		}
-		function stop() {
-			if (anim) { anim.cancel(); anim = null; }
+		function cardFromTarget(target) { return target && target.closest ? target.closest('.tq-review') : null; }
+
+		if (track && group && viewport && typeof track.animate === 'function') {
+			track.addEventListener('pointerover', function (e) {
+				if (e.pointerType !== 'mouse') return;
+				var card = cardFromTarget(e.target);
+				if (!card || !track.contains(card)) return;
+				hoveredCard = card;
+				update();
+			});
+			track.addEventListener('pointerout', function (e) {
+				if (e.pointerType !== 'mouse') return;
+				var card = cardFromTarget(e.target);
+				if (!card || card !== hoveredCard || cardFromTarget(e.relatedTarget) === card) return;
+				hoveredCard = null;
+				update();
+			});
+
+			/* Native horizontal touch scroll is more predictable on Android/iOS
+			   than capturing a finger and scrubbing a Web Animation timeline. */
+			viewport.addEventListener('pointerdown', function () {
+				if (anim) { userPaused = true; update(); }
+			});
+			viewport.addEventListener('pointerup', function () {
+				clearTimeout(resumeTimer);
+				resumeTimer = setTimeout(function () { userPaused = false; update(); }, 1800);
+			});
+			viewport.addEventListener('pointercancel', function () {
+				clearTimeout(resumeTimer);
+				resumeTimer = setTimeout(function () { userPaused = false; update(); }, 1800);
+			});
+			if (toggle) {
+				toggle.addEventListener('click', function () {
+					userPaused = !userPaused;
+					toggle.setAttribute('aria-pressed', String(userPaused));
+					toggle.setAttribute('aria-label', userPaused ? 'تشغيل حركة التقييمات' : 'إيقاف حركة التقييمات');
+					reviews.classList.toggle('is-paused', userPaused);
+					update();
+				});
+			}
+			if ('IntersectionObserver' in window) {
+				new IntersectionObserver(function (entries) { offscreen = !entries[0].isIntersecting; update(); }, { rootMargin: '120px 0px' }).observe(reviews);
+			}
+			document.addEventListener('visibilitychange', update);
+			if (window.ResizeObserver) {
+				var lastWidth = 0;
+				new ResizeObserver(function () {
+					var width = group.getBoundingClientRect().width;
+					if (Math.abs(width - lastWidth) < 1) return;
+					lastWidth = width;
+					if (reviews.classList.contains('is-moving')) build();
+				}).observe(group);
+			} else window.addEventListener('resize', function () { if (anim) build(); });
+			if (reduced.matches) {
+				reviews.classList.remove('is-moving');
+				if (toggle) toggle.hidden = true;
+			} else {
+				reviews.classList.add('is-moving');
+				if (toggle) toggle.hidden = false;
+				build();
+			}
+			onReducedChange(function () {
+				if (reduced.matches) {
+					if (anim) anim.cancel();
+					anim = null;
+					reviews.classList.remove('is-moving');
+					if (toggle) toggle.hidden = true;
+				} else {
+					reviews.classList.add('is-moving');
+					if (toggle) toggle.hidden = false;
+					build();
+				}
+			});
+			if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (anim) build(); });
+		} else {
+			/* CSS/DOM fallback: leave the review track manually swipeable. */
 			reviews.classList.remove('is-moving');
 			if (toggle) toggle.hidden = true;
 		}
-		function wrap(time) { return ((time % CYCLE_MS) + CYCLE_MS) % CYCLE_MS; }
-
-		/* Pause only while the pointer is over an individual review card.
-		 * Hovering the heading, section padding, viewport gaps or empty track space
-		 * must not stop the marquee. Delegation also covers the cloned loop cards. */
-		function cardFromTarget(target) {
-			return target && target.closest ? target.closest('.tq-review') : null;
-		}
-		track.addEventListener('pointerover', function (e) {
-			if (e.pointerType !== 'mouse') return;
-			var card = cardFromTarget(e.target);
-			if (!card || !track.contains(card) || card === hoveredCard) return;
-			hoveredCard = card;
-			update();
-		});
-		track.addEventListener('pointerout', function (e) {
-			if (e.pointerType !== 'mouse') return;
-			var card = cardFromTarget(e.target);
-			if (!card || card !== hoveredCard) return;
-			if (cardFromTarget(e.relatedTarget) === card) return;
-			hoveredCard = null;
-			update();
-		});
-
-		/* Touch drag scrubs the loop horizontally; vertical panning stays native (touch-action: pan-y). */
-		viewport.addEventListener('pointerdown', function (e) {
-			if (!anim || e.pointerType === 'mouse') return;
-			clearTimeout(resumeTimer);
-			drag = { id: e.pointerId, x: e.clientX, y: e.clientY, time: anim.currentTime || 0, active: false };
-		});
-		viewport.addEventListener('pointermove', function (e) {
-			if (!drag || e.pointerId !== drag.id || !anim) return;
-			var dx = e.clientX - drag.x;
-			if (!drag.active) {
-				if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(e.clientY - drag.y)) return;
-				drag.active = true;
-				dragging = true;
-				update();
-				try { viewport.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
-			}
-			anim.currentTime = wrap(drag.time + (dx / setWidth) * CYCLE_MS);
-		});
-		function endDrag(e) {
-			if (!drag || (e && e.pointerId !== drag.id)) return;
-			var wasActive = drag.active;
-			drag = null;
-			if (!wasActive) return;
-			clearTimeout(resumeTimer);
-			resumeTimer = setTimeout(function () { dragging = false; update(); }, 1400);
-		}
-		viewport.addEventListener('pointerup', endDrag);
-		viewport.addEventListener('pointercancel', endDrag);
-		viewport.addEventListener('lostpointercapture', endDrag);
-
-		if (toggle) {
-			toggle.addEventListener('click', function () {
-				userPaused = !userPaused;
-				toggle.setAttribute('aria-pressed', String(userPaused));
-				toggle.setAttribute('aria-label', userPaused ? 'تشغيل حركة التقييمات' : 'إيقاف حركة التقييمات');
-				reviews.classList.toggle('is-paused', userPaused);
-				update();
-			});
-		}
-		if ('IntersectionObserver' in window) {
-			new IntersectionObserver(function (entries) {
-				offscreen = !entries[0].isIntersecting;
-				update();
-			}, { rootMargin: '120px 0px' }).observe(reviews);
-		}
-		document.addEventListener('visibilitychange', update);
-		if (window.ResizeObserver) {
-			var lastWidth = 0;
-			new ResizeObserver(function () {
-				var width = group.getBoundingClientRect().width;
-				if (Math.abs(width - lastWidth) < 1) return;
-				lastWidth = width;
-				if (reviews.classList.contains('is-moving')) build();
-			}).observe(group);
-		} else {
-			window.addEventListener('resize', function () { if (anim) build(); });
-		}
-		onReducedChange(function () { if (reduced.matches) stop(); else start(); });
-		reviews.classList.add('is-ready');
-		if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (anim) build(); });
-		start();
 	}
 
 	/* ---------- FAQ: native <details>, smooth open/close ---------- */
