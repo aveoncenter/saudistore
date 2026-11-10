@@ -35,13 +35,12 @@
 		var toggle = reviews.querySelector('[data-tq-reviews-toggle]');
 		var CYCLE_MS = 60000, anim = null, setWidth = 0;
 		var hoveredCard = null, offscreen = false, userPaused = false;
-		var drag = null, dragging = false, resumeTimer = 0;
 
 		function speed() { return window.innerWidth < 600 ? 32 : 44; }
 		function wrap(time) { return ((time % CYCLE_MS) + CYCLE_MS) % CYCLE_MS; }
 		function update() {
 			if (!anim) return;
-			var shouldRun = !hoveredCard && !dragging && !offscreen && !userPaused && !document.hidden;
+			var shouldRun = !hoveredCard && !offscreen && !userPaused && !document.hidden;
 			if (shouldRun && anim.playState !== 'running') anim.play();
 			else if (!shouldRun && anim.playState === 'running') anim.pause();
 		}
@@ -78,19 +77,8 @@
 				update();
 			});
 
-			/* Native horizontal touch scroll is more predictable on Android/iOS
-			   than capturing a finger and scrubbing a Web Animation timeline. */
-			viewport.addEventListener('pointerdown', function () {
-				if (anim) { userPaused = true; update(); }
-			});
-			viewport.addEventListener('pointerup', function () {
-				clearTimeout(resumeTimer);
-				resumeTimer = setTimeout(function () { userPaused = false; update(); }, 1800);
-			});
-			viewport.addEventListener('pointercancel', function () {
-				clearTimeout(resumeTimer);
-				resumeTimer = setTimeout(function () { userPaused = false; update(); }, 1800);
-			});
+			/* Touch swipes must never pause the automatic review movement.
+			   The viewport remains natively horizontally scrollable on mobile. */
 			if (toggle) {
 				toggle.addEventListener('click', function () {
 					userPaused = !userPaused;
