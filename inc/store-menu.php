@@ -145,27 +145,8 @@ function wordsite_store_menu_cards() {
 	if ( ! $cards ) {
 		return '';
 	}
-	/* Render the actual taxonomy tree on phones; retain the original desktop list. */
-	$mobile_cards = '';
-	$terms = get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false, 'orderby' => 'name' ) );
-	if ( ! is_wp_error( $terms ) ) {
-		$by_parent = array();
-		foreach ( $terms as $term ) { $by_parent[ (int) $term->parent ][] = $term; }
-		$keys_by_id = array_flip( array_map( 'intval', get_option( 'wordsite_store_category_ids', array() ) ) );
-		$append_terms = static function ( $parent, $depth ) use ( &$append_terms, $by_parent, $keys_by_id, &$mobile_cards ) {
-			foreach ( $by_parent[ $parent ] ?? array() as $term ) {
-				$url = get_term_link( $term, 'product_cat' );
-				if ( ! is_wp_error( $url ) ) {
-					$current = is_tax( 'product_cat', $term->term_id );
-					$key = $keys_by_id[ $term->term_id ] ?? $term->slug;
-					$mobile_cards .= sprintf( '<li style="--menu-depth:%1$d"><a class="ws-menu-category%2$s" href="%3$s"%4$s>%5$s<strong>%6$s</strong></a></li>', min( $depth, 3 ), $current ? ' is-current' : '', esc_url( $url ), $current ? ' aria-current="page"' : '', wordsite_store_menu_thumbnail( $term, $key ), esc_html( $term->name ) );
-				}
-				$append_terms( (int) $term->term_id, $depth + 1 );
-			}
-		};
-		$append_terms( 0, 0 );
-	}
-	return '<div class="ws-menu-categories"><div class="ws-menu-heading"><h2>القائمة الرئيسية</h2></div><ul class="ws-menu-category-list' . ( $mobile_cards ? ' ws-menu-desktop-list' : '' ) . '">' . $cards . '</ul>' . ( $mobile_cards ? '<ul class="ws-menu-category-list ws-menu-mobile-list">' . $mobile_cards . '</ul>' : '' ) . '</div>';
+	/* The same configured categories and live WooCommerce links are used on all screen sizes. */
+	return '<div class="ws-menu-categories"><div class="ws-menu-heading"><h2>القائمة الرئيسية</h2></div><ul class="ws-menu-category-list">' . $cards . '</ul></div>';
 }
 
 /**

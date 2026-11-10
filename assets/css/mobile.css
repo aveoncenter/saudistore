@@ -1,8 +1,32 @@
 /* Additive, phone-only layer; desktop theme and its carousels remain unchanged. */
-.ws-mobile-nav, .ws-home-ai-grid, .ws-nav ul.ws-menu-mobile-list { display: none; }
+.ws-mobile-nav, .ws-home-ai-grid { display: none; }
 @media (max-width: 600px) {
  :root { --ws-mobile-nav-height: calc(72px + env(safe-area-inset-bottom, 0px)); }
  body { padding-bottom: var(--ws-mobile-nav-height) !important; }
+ /* Constrain the single-product canvas before clipping root overflow. Nested
+    product tracks remain independent scrollports for natural horizontal swipes. */
+ html { overflow-x: clip; }
+ body.single-product, body.single-product > .wp-site-blocks { width: 100%; max-width: 100%; min-width: 0; }
+ body.single-product .ws-product { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+ body.single-product .ws-product__top,
+ body.single-product .ws-product__media,
+ body.single-product .ws-product__summary,
+ body.single-product .ws-product__details,
+ body.single-product .ws-reviews-summary,
+ body.single-product .ws-carousel,
+ body.single-product .ws-carousel__track { box-sizing: border-box; min-width: 0; max-width: 100%; }
+ body.single-product .ws-product__top { width: 100%; }
+ body.single-product .ws-product__summary,
+ body.single-product .ws-product__media { flex-basis: 100% !important; }
+ body.single-product .ws-product__title,
+ body.single-product .ws-product__details,
+ body.single-product .wp-block-woocommerce-breadcrumbs { overflow-wrap: anywhere; }
+ body.single-product .ws-product__media img { max-width: 100%; height: auto; }
+ body.single-product .ws-product__details table { display: block; max-width: 100%; overflow-x: auto; }
+ body.single-product .ws-buybox { grid-template-columns: minmax(0, 1fr); }
+ body.single-product .ws-buybox > .single_add_to_cart_button,
+ body.single-product .ws-buybox > .ws-buy-now { grid-column: 1 / -1; }
+
  .ws-mobile-nav {
   position: fixed; z-index: 1100; inset: auto 0 0;
   box-sizing: border-box; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -25,15 +49,25 @@
  .ws-mobile-nav__label { font-size: 12px; line-height: 1.35; font-weight: 700; white-space: nowrap; }
  .ws-mobile-nav__badge { position: absolute; top: -6px; right: -11px; min-width: 19px; height: 19px; padding: 0 3px; box-sizing: border-box; display: grid; place-items: center; border-radius: 20px; background: #df1b31; color: #fff; font: 700 11px/1 system-ui,sans-serif; }
  .ws-whatsapp { bottom: calc(var(--ws-mobile-nav-height) + 12px); }
- .ws-nav .wp-block-navigation__responsive-container.is-menu-open { bottom: var(--ws-mobile-nav-height) !important; overflow-y: auto; }
- .ws-nav .is-menu-open .wp-block-navigation__responsive-close { min-height: 100%; }
- .ws-nav .is-menu-open .wp-block-navigation__responsive-dialog { min-height: calc(100dvh - var(--ws-admin-offset, 0px) - var(--ws-mobile-nav-height)); border-radius: 0 0 18px 18px; }
- .ws-nav a.ws-menu-category { min-height: 72px; padding-block: 8px; }
- .ws-menu-category strong { font-size: 16px; }
- .ws-menu-category__image { --ws-menu-thumb: 54px; }
- .ws-nav ul.ws-menu-desktop-list { display: none; }
- .ws-nav ul.ws-menu-mobile-list { display: block; }
- .ws-nav .ws-menu-mobile-list a { padding-inline-start: calc(20px + var(--menu-depth) * 12px); }
+ /* Native WordPress overlay/focus handling, presented as a bottom sheet. */
+ .ws-nav .wp-block-navigation__responsive-container.is-menu-open {
+  inset: var(--ws-admin-offset, 0px) 0 var(--ws-mobile-nav-height) !important;
+  overflow: hidden;
+ }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-close {
+  display: flex; align-items: flex-end; height: 100%; min-height: 0;
+ }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-dialog {
+  position: relative; width: 100%; max-width: none; min-height: 0;
+  max-height: min(70dvh, 620px); overflow-y: auto; overscroll-behavior: contain;
+  margin: 0 !important; border-radius: 22px 22px 0 0;
+  animation: ws-mobile-sheet-in 260ms cubic-bezier(.22,.75,.25,1) both;
+ }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-container-content { padding: 0 !important; }
+ .ws-menu-heading { height: 62px; padding: 0 60px; }
+ .ws-nav a.ws-menu-category { min-height: 76px; padding: 7px 18px; gap: 16px; }
+ .ws-menu-category strong { font-size: clamp(16px, 4.5vw, 20px); line-height: 1.35; overflow-wrap: anywhere; }
+ .ws-menu-categories { --ws-menu-thumb: 60px; }
  .ws-menu-category:not(:has(.ws-menu-category__image)) strong { grid-column: 1 / -1; }
  .ws-home-shelf.is-ready .ws-home-shelf__viewport, .ws-home-categories.is-ready .ws-category-viewport, .ws-carousel__track {
   scroll-snap-type: none; scroll-behavior: auto; touch-action: pan-x pan-y; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
@@ -49,4 +83,12 @@
  .ws-home-shelf--ai .ws-home-ai-grid .ws-card__img img { object-fit: contain; }
  .ws-category-card:active { transform: scale(.98); }
 }
-@media (prefers-reduced-motion: reduce) { .ws-mobile-nav__item { transition: none; } .ws-category-card:active { transform: none; } }
+@keyframes ws-mobile-sheet-in { from { transform: translateY(32px); opacity: .65; } to { transform: translateY(0); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+ .ws-mobile-nav__item { transition: none; }
+ .ws-category-card:active { transform: none; }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-dialog { animation: none; }
+}
+@supports not (overflow: clip) {
+ @media (max-width: 600px) { html { overflow-x: hidden; } }
+}

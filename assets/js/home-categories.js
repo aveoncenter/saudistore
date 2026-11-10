@@ -130,7 +130,7 @@
    function tick(now) {
     if (!visible || document.hidden || reduced.matches || down || focused || now < resumeAt) { schedule(); return; }
     if (last) {
-     remainder += Math.min(now - last, 50) * 0.012; // 12 px/second
+     remainder += Math.min(now - last, 50) * 0.0144; // 14.4 px/second, 20% faster
      if (remainder >= 1) { var delta = Math.floor(remainder); remainder -= delta; jump(viewport.scrollLeft + delta); wrap(); }
     }
     last = now; frame = requestAnimationFrame(tick);

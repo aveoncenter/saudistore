@@ -153,8 +153,12 @@ To change the branch or demo data, edit `playground/demo-setup.txt` and run `pyt
 
 ## Mobile shopping update (0.2.62)
 
-The existing header and WooCommerce routes remain in place. Phones (up to 600px) get a safe-area-aware navigation bar, the existing core category drawer populated from the actual category tree, native product scrolling, and a slow looping category strip that pauses for interaction, visibility, and reduced motion. The homepage AI shelf has a separate mobile-only view queried by publication date descending (six products maximum); its desktop popularity shelf and archive link are unchanged. Cart count follows the theme's existing WooCommerce cart-total integration. No product records or terms are added by this update.
+The existing header and WooCommerce routes remain in place. Phones (up to 600px) get a safe-area-aware navigation bar, the existing core category drawer with the same configured categories as desktop, native product scrolling, and a slow looping category strip that pauses for interaction, visibility, and reduced motion. The homepage AI shelf has a separate mobile-only view queried by publication date descending (six products maximum); its desktop popularity shelf and archive link are unchanged. Cart count follows the theme's existing WooCommerce cart-total integration. No product records or terms are added by this update.
 
 **Before deploying:** back up the active theme and test on a staging copy with the site's actual WooCommerce configuration. Verify logged-in/account routes, cart mutations (including blocks and classic AJAX), category hierarchy, search, checkout, overlays and sticky checkout controls, real devices/safe areas, and the AI archive. The supplied archive includes Taraqqi branding assets rather than the SAUD STORE pixel logo in the reference screenshots; this update intentionally retains the supplied assets and site branding rather than inventing a replacement.
 
 The homepage payment-methods strip has been removed on desktop and mobile; checkout and payment configuration are unchanged.
+
+## Mobile fixes (0.2.63)
+
+The single-product layout is constrained to phone widths while related-product strips remain independently swipeable. The category carousel runs at 14.4 px/s (20% faster). Both category triggers open the same desktop category links in a bottom sheet, with reduced-motion support. Test these changes on a staging site with real products, both theme modes and real devices.
