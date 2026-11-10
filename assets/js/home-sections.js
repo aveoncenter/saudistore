@@ -62,6 +62,40 @@
 		function cardFromTarget(target) { return target && target.closest ? target.closest('.tq-review') : null; }
 
 		if (track && group && viewport && typeof track.animate === 'function') {
+			/* Touch/pen gestures scrub the animation timeline in either direction.
+			   The animation is never paused by a swipe, so auto-motion continues. */
+			var drag = null;
+			viewport.addEventListener('pointerdown', function (e) {
+				if (!anim || e.pointerType === 'mouse') return;
+				drag = {
+					id: e.pointerId,
+					x: e.clientX,
+					y: e.clientY,
+					time: Number(anim.currentTime) || 0,
+					active: false
+				};
+			});
+			viewport.addEventListener('pointermove', function (e) {
+				if (!drag || e.pointerId !== drag.id || !anim) return;
+				var dx = e.clientX - drag.x;
+				var dy = e.clientY - drag.y;
+				if (!drag.active) {
+					if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy)) return;
+					drag.active = true;
+					try { viewport.setPointerCapture(e.pointerId); } catch (err) { /* optional */ }
+				}
+				/* Positive finger movement advances the track to the right;
+				   negative movement moves it back to the left. */
+				anim.currentTime = wrap(drag.time + (dx / setWidth) * CYCLE_MS);
+			});
+			function endReviewSwipe(e) {
+				if (!drag || (e && e.pointerId !== drag.id)) return;
+				drag = null;
+			}
+			viewport.addEventListener('pointerup', endReviewSwipe);
+			viewport.addEventListener('pointercancel', endReviewSwipe);
+			viewport.addEventListener('lostpointercapture', endReviewSwipe);
+
 			track.addEventListener('pointerover', function (e) {
 				if (e.pointerType !== 'mouse') return;
 				var card = cardFromTarget(e.target);
