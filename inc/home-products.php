@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-function wordsite_home_product_ids( $key = '' ) {
+function wordsite_home_product_ids( $key = '', $newest = false ) {
 	$visibility = wc_get_product_visibility_term_ids();
 	$excluded = array_filter( array( $visibility['exclude-from-catalog'] ?? 0 ) );
 	if ( ! $key || 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
@@ -19,12 +19,14 @@ function wordsite_home_product_ids( $key = '' ) {
 		}
 		$tax[] = array( 'taxonomy' => 'product_cat', 'field' => 'term_id', 'terms' => array( $term->term_id ), 'include_children' => true );
 	}
-	$query = new WP_Query( array(
+	$args = array(
 		'post_type' => 'product', 'post_status' => 'publish', 'has_password' => false,
-		'posts_per_page' => 12, 'fields' => 'ids', 'no_found_rows' => true,
+		'posts_per_page' => $newest ? 6 : 12, 'fields' => 'ids', 'no_found_rows' => true,
 		'ignore_sticky_posts' => true, 'tax_query' => $tax,
-		'meta_key' => 'total_sales', 'orderby' => array( 'meta_value_num' => 'DESC', 'ID' => 'DESC' ),
-	) );
+		'orderby' => $newest ? array( 'date' => 'DESC', 'ID' => 'DESC' ) : array( 'meta_value_num' => 'DESC', 'ID' => 'DESC' ),
+	);
+	if ( ! $newest ) { $args['meta_key'] = 'total_sales'; }
+	$query = new WP_Query( $args );
 	return array_map( 'absint', $query->posts );
 }
 
@@ -51,10 +53,14 @@ function wordsite_home_products() {
 		}
 		$cards = wordsite_product_list_html( wordsite_home_product_ids( $section['key'] ), '', true, 'home' );
 		$html .= sprintf(
-			'<section class="ws-home-shelf" data-home-shelf data-autoplay="%1$d" aria-labelledby="ws-home-shelf-%2$d"><div class="ws-home-shelf__head"><h2 id="ws-home-shelf-%2$d">%3$s</h2><div class="ws-home-shelf__tools"><a href="%4$s">عرض الكل%5$s</a><div class="ws-home-shelf__arrows" hidden><button type="button" data-shelf-prev aria-label="السابق في %3$s"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg></button><button type="button" data-shelf-next aria-label="التالي في %3$s"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="m10 6 6 6-6 6" /></svg></button></div></div></div>',
-			0 === $index ? 3000 : 0, $index, esc_html( $section['title'] ), esc_url( $url ), 0 === $index ? '' : ' <span aria-hidden="true">←</span>'
+			'<section class="ws-home-shelf%6$s" data-home-shelf data-autoplay="%1$d" aria-labelledby="ws-home-shelf-%2$d"><div class="ws-home-shelf__head"><h2 id="ws-home-shelf-%2$d">%3$s</h2><div class="ws-home-shelf__tools"><a href="%4$s">عرض الكل%5$s</a><div class="ws-home-shelf__arrows" hidden><button type="button" data-shelf-prev aria-label="السابق في %3$s"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="m14 6-6 6 6 6" /></svg></button><button type="button" data-shelf-next aria-label="التالي في %3$s"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="m10 6 6 6-6 6" /></svg></button></div></div></div>',
+			0 === $index ? 3000 : 0, $index, esc_html( $section['title'] ), esc_url( $url ), 0 === $index ? '' : ' <span aria-hidden="true">←</span>', 'ai-subscriptions' === $section['key'] ? ' ws-home-shelf--ai' : ''
 		);
 		$html .= $cards ? '<div class="ws-home-shelf__viewport" dir="ltr" tabindex="0" aria-label="منتجات القسم، استخدم الأسهم أو اسحب للتنقل"><div class="ws-home-shelf__track">' . $cards . '</div></div>' : '<p class="ws-home-shelf__empty">ستظهر منتجات هذا القسم هنا بعد إضافتها.</p>';
+		if ( 'ai-subscriptions' === $section['key'] ) {
+			$latest = wordsite_product_list_html( wordsite_home_product_ids( $section['key'], true ), '', true, 'home' );
+			$html .= $latest ? '<div class="ws-home-ai-grid" aria-label="أحدث منتجات الذكاء الاصطناعي">' . $latest . '</div>' : '';
+		}
 		$html .= '</section>';
 	}
 	return $html . '</div>';

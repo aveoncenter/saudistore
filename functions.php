@@ -188,4 +188,5 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require_once get_theme_file_path( 'inc/home-products.php' );
 	require_once get_theme_file_path( 'inc/product-motion.php' );
 	require_once get_theme_file_path( 'inc/header-cart-total.php' );
+	require_once get_theme_file_path( 'inc/mobile-navigation.php' );
 }

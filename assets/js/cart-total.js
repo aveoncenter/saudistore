@@ -50,7 +50,7 @@
 				el.classList.add('is-updated');
 			}
 			if (spoken) spoken.textContent = out.spoken + ' ' + (el.getAttribute('data-currency-name') || cart.totals.currency_code || '');
-			el.setAttribute('data-count', String(cart.items_count || 0));
+			if (typeof cart.items_count === 'number') el.setAttribute('data-count', String(cart.items_count));
 		});
 	}
 	function refresh() {

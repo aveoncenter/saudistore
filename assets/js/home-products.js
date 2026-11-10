@@ -11,7 +11,7 @@
   var interval = Number(root.dataset.autoplay), rtl = getComputedStyle(track).direction === 'rtl';
   cards.forEach(function (card, index) { card.dataset.shelfIndex = index; });
   root.classList.add('is-ready');
-  if (touchMode) enableInfiniteTouchScroll(viewport, track, cards);
+  // Mobile shelves use native scrolling; no duplicate product cards.
   function columns(includePartial) {
    var card = track.firstElementChild;
    if (!card) return 1;
@@ -80,50 +80,5 @@
   update();
  });
 
-  /* Duplicate one complete card set on both sides. While the user scrolls
-   * through a duplicate set, shift by exactly one set width so the motion
-   * remains visually continuous and never reaches a hard end. */
-  function enableInfiniteTouchScroll(viewport, track, originals) {
-   if (originals.length < 3) return;
-   function cloneForLoop(node) {
-    var clone = node.cloneNode(true);
-    clone.setAttribute('data-loop-clone', 'true');
-    clone.setAttribute('aria-hidden', 'true');
-    clone.removeAttribute('id');
-    clone.querySelectorAll('[id]').forEach(function (item) { item.removeAttribute('id'); });
-    clone.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach(function (item) { item.setAttribute('tabindex', '-1'); });
-    return clone;
-   }
-   var before = document.createDocumentFragment(), after = document.createDocumentFragment();
-   originals.forEach(function (item) { before.appendChild(cloneForLoop(item)); });
-   originals.forEach(function (item) { after.appendChild(cloneForLoop(item)); });
-   track.insertBefore(before, track.firstChild);
-   track.appendChild(after);
-   function setWidth() {
-    var item = track.children[originals.length];
-    if (!item) return 0;
-    var gap = parseFloat(getComputedStyle(track).gap) || 0;
-    return originals.length * (item.getBoundingClientRect().width + gap);
-   }
-   function placeAtRealSet() {
-    var width = setWidth();
-    if (width > 0) viewport.scrollLeft = width;
-   }
-   placeAtRealSet();
-   viewport.addEventListener('scroll', function () {
-    var width = setWidth();
-    if (!width) return;
-    var position = viewport.scrollLeft;
-    if (position < width - 1) {
-     viewport.scrollLeft = position + width;
-    } else if (position >= (2 * width) - 1) {
-     viewport.scrollLeft = position - width;
-    }
-   }, { passive: true });
-   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(placeAtRealSet);
-   }
-   window.addEventListener('resize', placeAtRealSet, { passive: true });
-  }
 
 })();

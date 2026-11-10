@@ -1,0 +1,52 @@
+/* Additive, phone-only layer; desktop theme and its carousels remain unchanged. */
+.ws-mobile-nav, .ws-home-ai-grid, .ws-nav ul.ws-menu-mobile-list { display: none; }
+@media (max-width: 600px) {
+ :root { --ws-mobile-nav-height: calc(72px + env(safe-area-inset-bottom, 0px)); }
+ body { padding-bottom: var(--ws-mobile-nav-height) !important; }
+ .ws-mobile-nav {
+  position: fixed; z-index: 1100; inset: auto 0 0;
+  box-sizing: border-box; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  height: var(--ws-mobile-nav-height); padding: 5px 8px env(safe-area-inset-bottom, 0px);
+  background: linear-gradient(105deg, #47bce9 0%, #3b83c7 56%, #35589e 100%);
+  border: 1px solid #8fdcff66; border-bottom: 0; border-radius: 22px 22px 0 0;
+  box-shadow: 0 -8px 24px #0006;
+ }
+ .ws-mobile-nav__item {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  gap: 2px; min-width: 0; min-height: 60px; padding: 3px 2px; border: 0;
+  border-radius: 14px; background: transparent; color: #fff; text-decoration: none;
+  font: inherit; cursor: pointer; transition: background 160ms ease, transform 160ms ease;
+ }
+ .ws-mobile-nav__item:hover, .ws-mobile-nav__item.is-active, .ws-mobile-nav__item.is-open { color: #fff; background: #041b4c38; }
+ .ws-mobile-nav__item:active { transform: scale(.96); }
+ .ws-mobile-nav__item:focus-visible { outline: 2px solid #fff; outline-offset: -3px; }
+ .ws-mobile-nav__icon { position: relative; display: flex; }
+ .ws-mobile-nav__icon svg { display: block; width: 24px; height: 24px; }
+ .ws-mobile-nav__label { font-size: 12px; line-height: 1.35; font-weight: 700; white-space: nowrap; }
+ .ws-mobile-nav__badge { position: absolute; top: -6px; right: -11px; min-width: 19px; height: 19px; padding: 0 3px; box-sizing: border-box; display: grid; place-items: center; border-radius: 20px; background: #df1b31; color: #fff; font: 700 11px/1 system-ui,sans-serif; }
+ .ws-whatsapp { bottom: calc(var(--ws-mobile-nav-height) + 12px); }
+ .ws-nav .wp-block-navigation__responsive-container.is-menu-open { bottom: var(--ws-mobile-nav-height) !important; overflow-y: auto; }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-close { min-height: 100%; }
+ .ws-nav .is-menu-open .wp-block-navigation__responsive-dialog { min-height: calc(100dvh - var(--ws-admin-offset, 0px) - var(--ws-mobile-nav-height)); border-radius: 0 0 18px 18px; }
+ .ws-nav a.ws-menu-category { min-height: 72px; padding-block: 8px; }
+ .ws-menu-category strong { font-size: 16px; }
+ .ws-menu-category__image { --ws-menu-thumb: 54px; }
+ .ws-nav ul.ws-menu-desktop-list { display: none; }
+ .ws-nav ul.ws-menu-mobile-list { display: block; }
+ .ws-nav .ws-menu-mobile-list a { padding-inline-start: calc(20px + var(--menu-depth) * 12px); }
+ .ws-menu-category:not(:has(.ws-menu-category__image)) strong { grid-column: 1 / -1; }
+ .ws-home-shelf.is-ready .ws-home-shelf__viewport, .ws-home-categories.is-ready .ws-category-viewport, .ws-carousel__track {
+  scroll-snap-type: none; scroll-behavior: auto; touch-action: pan-x pan-y; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+ }
+ .ws-home-shelf.is-ready .ws-home-shelf__viewport, .ws-home-categories.is-ready .ws-category-viewport { overflow-x: auto !important; }
+ .ws-home-shelf__arrows { display: none !important; }
+ .ws-home-products .ws-card__btn { min-height: 44px; height: auto; padding: 6px 4px; color: #052a40; font-size: 13px; white-space: normal; }
+ .ws-home-products .ws-card__btn--quick { color: #fff; }
+ .ws-home-products .ws-card__price { height: auto; min-height: 24px; white-space: normal; }
+ .ws-home-shelf--ai .ws-home-shelf__viewport { display: none; }
+ .ws-home-shelf--ai .ws-home-ai-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; direction: rtl; }
+ .ws-home-shelf--ai .ws-home-ai-grid .ws-card { width: 100%; min-width: 0; }
+ .ws-home-shelf--ai .ws-home-ai-grid .ws-card__img img { object-fit: contain; }
+ .ws-category-card:active { transform: scale(.98); }
+}
+@media (prefers-reduced-motion: reduce) { .ws-mobile-nav__item { transition: none; } .ws-category-card:active { transform: none; } }

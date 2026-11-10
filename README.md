@@ -150,3 +150,9 @@ https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.co
 
 It always loads the latest code pushed to the `product-page` branch. Changes made inside the preview are temporary.
 To change the branch or demo data, edit `playground/demo-setup.txt` and run `python3 playground/build.py <branch>`.
+
+## Mobile shopping update (0.2.62)
+
+The existing header and WooCommerce routes remain in place. Phones (up to 600px) get a safe-area-aware navigation bar, the existing core category drawer populated from the actual category tree, native product scrolling, and a slow looping category strip that pauses for interaction, visibility, and reduced motion. The homepage AI shelf has a separate mobile-only view queried by publication date descending (six products maximum); its desktop popularity shelf and archive link are unchanged. Cart count follows the theme's existing WooCommerce cart-total integration. No product records or terms are added by this update.
+
+**Before deploying:** back up the active theme and test on a staging copy with the site's actual WooCommerce configuration. Verify logged-in/account routes, cart mutations (including blocks and classic AJAX), category hierarchy, search, checkout, overlays and sticky checkout controls, real devices/safe areas, and the AI archive. The supplied archive includes Taraqqi branding assets rather than the SAUD STORE pixel logo in the reference screenshots; this update intentionally retains the supplied assets and site branding rather than inventing a replacement.

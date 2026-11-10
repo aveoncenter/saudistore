@@ -6,6 +6,7 @@
   var slides = Array.from(track.children), total = slides.length;
   var mobileMode = window.matchMedia('(max-width: 600px)').matches;
   if (total < 2) return;
+  if (mobileMode) { enableMobileLoop(viewport, track, slides); return; }
   slides.forEach(function (slide, i) { slide.dataset.categoryIndex = i; });
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)'), touchMode = mobileMode;
   var timer, finishTimer, moving = false, finishMove, hovered = false, focused = false, visible = false, stopped = reduced.matches, startX = null, swiped = false;
@@ -71,60 +72,72 @@
   update();
  });
 
-  /* Duplicate one complete card set on both sides. While the user scrolls
-   * through a duplicate set, shift by exactly one set width so the motion
-   * remains visually continuous and never reaches a hard end. */
-  function enableInfiniteTouchScroll(viewport, track, originals) {
-   if (originals.length < 3) return;
-   function cloneForLoop(node) {
-    var clone = node.cloneNode(true);
-    clone.setAttribute('data-loop-clone', 'true');
-    clone.setAttribute('aria-hidden', 'true');
-    clone.removeAttribute('id');
-    clone.querySelectorAll('[id]').forEach(function (item) { item.removeAttribute('id'); });
-    clone.querySelectorAll('a, button, input, select, textarea, [tabindex]').forEach(function (item) { item.setAttribute('tabindex', '-1'); });
-    return clone;
+  /* A native scrollport with visually identical buffer sets. The motion clock
+   * stops for interaction, focus, reduced motion, hidden tabs and offscreen content. */
+  function enableMobileLoop(viewport, track, originals) {
+   var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+   var visible = false, down = false, focused = false, resumeAt = 0, last = 0, remainder = 0, auto = false, frame = 0, wake = 0;
+   var startX = 0, startScroll = 0, dragging = false, suppressClick = false, autoUntil = 0;
+   rootFor(viewport).classList.add('is-ready');
+   function clone(node) {
+    var copy = node.cloneNode(true);
+    copy.setAttribute('aria-hidden', 'true');
+    copy.querySelectorAll('[id]').forEach(function (el) { el.removeAttribute('id'); });
+    copy.querySelectorAll('a,button,[tabindex]').forEach(function (el) { el.tabIndex = -1; });
+    return copy;
    }
    var before = document.createDocumentFragment(), after = document.createDocumentFragment();
-   originals.forEach(function (item) { before.appendChild(cloneForLoop(item)); });
-   originals.forEach(function (item) { after.appendChild(cloneForLoop(item)); });
-   track.insertBefore(before, track.firstChild);
-   track.appendChild(after);
-   function setWidth() {
-    var item = track.children[originals.length];
-    if (!item) return 0;
-    var gap = parseFloat(getComputedStyle(track).gap) || 0;
-    return originals.length * (item.getBoundingClientRect().width + gap);
+   originals.forEach(function (node) { before.appendChild(clone(node)); after.appendChild(clone(node)); });
+   track.prepend(before); track.append(after);
+   function width() { return originals.length * (originals[0].getBoundingClientRect().width + (parseFloat(getComputedStyle(track).gap) || 0)); }
+   function jump(value) { auto = true; autoUntil = performance.now() + 60; viewport.scrollLeft = value; auto = false; }
+   function wrap() {
+    var w = width(), x = viewport.scrollLeft;
+    if (w && x < w) { jump(x + w); if (dragging) startScroll += w; }
+    else if (w && x >= 2 * w) { jump(x - w); if (dragging) startScroll -= w; }
    }
-   /* Reposition without smooth scrolling, and ignore the scroll events the jump
-    * itself emits, otherwise the handler below keeps adding a set width and the
-    * strip lands in the middle of the loop instead of on the first card. */
-   var jumpUntil = 0;
-   function placeAtRealSet() {
-    var width = setWidth();
-    if (width <= 0) return;
-    var previous = viewport.style.scrollBehavior;
-    jumpUntil = Date.now() + 150;
-    viewport.style.scrollBehavior = 'auto';
-    viewport.scrollLeft = width;
-    viewport.style.scrollBehavior = previous;
+   function place() { jump(width()); }
+   place();
+   if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+   window.addEventListener('resize', place, { passive: true });
+   viewport.addEventListener('scroll', function () { wrap(); if (!auto && !down && performance.now() > autoUntil) resumeAt = performance.now() + 2200; }, { passive: true });
+   viewport.addEventListener('pointerdown', function (e) {
+    down = true; resumeAt = performance.now() + 2200;
+    if (e.pointerType === 'mouse' && e.button === 0) { startX = e.clientX; startScroll = viewport.scrollLeft; dragging = false; }
+   });
+   viewport.addEventListener('pointermove', function (e) {
+    if (!down || e.pointerType !== 'mouse') return;
+    if (Math.abs(e.clientX - startX) > 5) dragging = true;
+    if (dragging) { viewport.scrollLeft = startScroll - (e.clientX - startX); wrap(); e.preventDefault(); }
+   });
+   function release() { if (dragging) { suppressClick = true; setTimeout(function () { suppressClick = false; }, 500); } down = false; dragging = false; resumeAt = performance.now() + 2200; schedule(); }
+   window.addEventListener('pointerup', release); window.addEventListener('pointercancel', release);
+   viewport.addEventListener('wheel', function () { resumeAt = performance.now() + 2200; schedule(); }, { passive: true });
+   viewport.addEventListener('keydown', function () { resumeAt = performance.now() + 2200; schedule(); });
+   viewport.addEventListener('dragstart', function (e) { e.preventDefault(); });
+   viewport.addEventListener('click', function (e) { if (suppressClick) { e.preventDefault(); e.stopPropagation(); suppressClick = false; } }, true);
+   viewport.addEventListener('focusin', function (e) { focused = e.target.matches(':focus-visible'); if (focused) schedule(); });
+   viewport.addEventListener('focusout', function () { focused = false; resumeAt = performance.now() + 2200; schedule(); });
+   if ('IntersectionObserver' in window) new IntersectionObserver(function (entries) { visible = entries[0].isIntersecting; schedule(); }, { threshold: 0.1 }).observe(viewport);
+   else visible = true;
+   function schedule() {
+    cancelAnimationFrame(frame); clearTimeout(wake); frame = 0; last = 0;
+    if (!visible || document.hidden || reduced.matches || down || focused) return;
+    var wait = resumeAt - performance.now();
+    if (wait > 0) wake = setTimeout(schedule, wait);
+    else frame = requestAnimationFrame(tick);
    }
-   placeAtRealSet();
-   viewport.addEventListener('scroll', function () {
-    if (Date.now() < jumpUntil) return;
-    var width = setWidth();
-    if (!width) return;
-    var position = viewport.scrollLeft;
-    if (position < width - 1) {
-     viewport.scrollLeft = position + width;
-    } else if (position >= (2 * width) - 1) {
-     viewport.scrollLeft = position - width;
+   function tick(now) {
+    if (!visible || document.hidden || reduced.matches || down || focused || now < resumeAt) { schedule(); return; }
+    if (last) {
+     remainder += Math.min(now - last, 50) * 0.012; // 12 px/second
+     if (remainder >= 1) { var delta = Math.floor(remainder); remainder -= delta; jump(viewport.scrollLeft + delta); wrap(); }
     }
-   }, { passive: true });
-   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(placeAtRealSet);
+    last = now; frame = requestAnimationFrame(tick);
    }
-   window.addEventListener('resize', placeAtRealSet, { passive: true });
+   document.addEventListener('visibilitychange', schedule);
+   reduced.addEventListener('change', schedule);
+   schedule();
   }
-
+  function rootFor(viewport) { return viewport.closest('[data-category-carousel]'); }
 })();
