@@ -571,3 +571,28 @@
 	.tq-faq__a p { font-size: 10.5px; }
 }
 
+
+
+/* Keep reviews directly swipeable on touchscreens, including when auto-motion is active. */
+.tq-reviews__viewport { scroll-behavior: smooth; }
+.tq-reviews.is-moving .tq-reviews__viewport {
+ overflow-x: auto;
+ overscroll-behavior-x: contain;
+ -webkit-overflow-scrolling: touch;
+ scrollbar-width: none;
+}
+.tq-reviews.is-moving .tq-reviews__track { width: max-content; }
+@media (max-width: 600px) {
+ .tq-reviews__viewport {
+  overflow-x: auto !important;
+  scroll-snap-type: x mandatory;
+  touch-action: pan-x pan-y !important;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 11vw;
+  cursor: grab;
+ }
+ .tq-reviews__viewport:active { cursor: grabbing; }
+ .tq-reviews.is-moving .tq-reviews__viewport { overflow-x: auto !important; }
+ .tq-reviews__group { scroll-snap-align: start; }
+ .tq-review { scroll-snap-align: center; }
+}
