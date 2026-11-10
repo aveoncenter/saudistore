@@ -5,10 +5,24 @@
  var categories = nav.querySelector('[data-ws-mobile-categories]');
  var open = document.querySelector('.ws-nav .wp-block-navigation__responsive-container-open');
  var panel = document.querySelector('.ws-nav .wp-block-navigation__responsive-container');
- if (categories && open && panel) {
-  categories.addEventListener('click', function () {
+ if (categories && panel) {
+  /* Do not depend on the tiny/hidden core hamburger button: the bottom-nav
+     Categories control opens and closes the native WordPress overlay directly. */
+  function setMenu(isOpen) {
    var close = panel.querySelector('.wp-block-navigation__responsive-container-close');
-   if (panel.classList.contains('is-menu-open') && close) close.click(); else open.click();
+   if (isOpen && !panel.classList.contains('is-menu-open')) {
+    if (open) open.click();
+    else panel.classList.add('is-menu-open');
+   } else if (!isOpen && panel.classList.contains('is-menu-open')) {
+    if (close) close.click();
+    else panel.classList.remove('is-menu-open');
+   }
+  }
+  categories.addEventListener('click', function () {
+   setMenu(!panel.classList.contains('is-menu-open'));
+  });
+  document.addEventListener('keydown', function (e) {
+   if (e.key === 'Escape' && panel.classList.contains('is-menu-open')) setMenu(false);
   });
   function syncMenu() {
    var active = panel.classList.contains('is-menu-open');
