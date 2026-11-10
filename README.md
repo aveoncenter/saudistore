@@ -115,7 +115,7 @@ The existing benefits and contact panels remain below the new shelves.
 
 ## Homepage categories (v0.2.14)
 
-A six-card category carousel sits between the payment strip and the product shelves.
+A category carousel sits between the homepage hero and the product shelves.
 The heading reads **تصفح أقسامنا بكل سهولة**. Full illustrated cards preserve the supplied reference styling, including the service-icon rows, without extra text or call-to-action rows.
 It uses artwork cropped from the supplied references and the six reference categories:
 AI, learning/skills, design/creativity, work/professional development, gift cards, and apps/subscriptions.
@@ -156,3 +156,5 @@ To change the branch or demo data, edit `playground/demo-setup.txt` and run `pyt
 The existing header and WooCommerce routes remain in place. Phones (up to 600px) get a safe-area-aware navigation bar, the existing core category drawer populated from the actual category tree, native product scrolling, and a slow looping category strip that pauses for interaction, visibility, and reduced motion. The homepage AI shelf has a separate mobile-only view queried by publication date descending (six products maximum); its desktop popularity shelf and archive link are unchanged. Cart count follows the theme's existing WooCommerce cart-total integration. No product records or terms are added by this update.
 
 **Before deploying:** back up the active theme and test on a staging copy with the site's actual WooCommerce configuration. Verify logged-in/account routes, cart mutations (including blocks and classic AJAX), category hierarchy, search, checkout, overlays and sticky checkout controls, real devices/safe areas, and the AI archive. The supplied archive includes Taraqqi branding assets rather than the SAUD STORE pixel logo in the reference screenshots; this update intentionally retains the supplied assets and site branding rather than inventing a replacement.
+
+The homepage payment-methods strip has been removed on desktop and mobile; checkout and payment configuration are unchanged.
