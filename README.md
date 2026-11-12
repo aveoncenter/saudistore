@@ -162,3 +162,11 @@ The homepage payment-methods strip has been removed on desktop and mobile; check
 ## Mobile fixes (0.2.63)
 
 The single-product layout is constrained to phone widths while related-product strips remain independently swipeable. The category carousel runs at 14.4 px/s (20% faster). Both category triggers open the same desktop category links in a bottom sheet, with reduced-motion support. Test these changes on a staging site with real products, both theme modes and real devices.
+
+## Mobile categories button (0.2.64)
+
+The bottom Categories link now opens an accessible bottom sheet, independently of the header navigation block. Both use the same category renderer, real WooCommerce archive links, labels, and thumbnails. The sheet closes with its close control, the backdrop, or Escape. Without JavaScript or native dialog support the Categories link opens the existing shop instead. The header drawer is unchanged. Test on a staging copy before deploying.
+
+## Category carousel motion (0.2.65)
+
+The homepage category strip moves continuously at 18 px/s on phones (25% faster than 14.4 px/s); desktop uses a continuous speed 25% faster than the previous average step. Motion pauses for pointer hover, touch, keyboard focus, reduced-motion preference, hidden tabs or offscreen content. It resumes when the interaction ends and touch momentum settles. Category links and native swiping remain in place.

@@ -1,36 +1,27 @@
 (function () {
  'use strict';
+ function init() {
  var nav = document.querySelector('.ws-mobile-nav');
  if (!nav) return;
  var categories = nav.querySelector('[data-ws-mobile-categories]');
- var open = document.querySelector('.ws-nav .wp-block-navigation__responsive-container-open');
- var panel = document.querySelector('.ws-nav .wp-block-navigation__responsive-container');
- if (categories && panel) {
-  /* Do not depend on the tiny/hidden core hamburger button: the bottom-nav
-     Categories control opens and closes the native WordPress overlay directly. */
-  function setMenu(isOpen) {
-   var close = panel.querySelector('.wp-block-navigation__responsive-container-close');
-   if (isOpen && !panel.classList.contains('is-menu-open')) {
-    if (open) open.click();
-    else panel.classList.add('is-menu-open');
-   } else if (!isOpen && panel.classList.contains('is-menu-open')) {
-    if (close) close.click();
-    else panel.classList.remove('is-menu-open');
-   }
-  }
-  categories.addEventListener('click', function () {
-   setMenu(!panel.classList.contains('is-menu-open'));
+ var dialog = document.getElementById('ws-mobile-category-dialog');
+ if (categories && dialog && typeof dialog.showModal === 'function') {
+  categories.addEventListener('click', function (event) {
+   event.preventDefault();
+   if (dialog.open) { dialog.close(); return; }
+   dialog.showModal();
+   categories.setAttribute('aria-expanded', 'true');
+   categories.classList.add('is-open');
+   var close = dialog.querySelector('[data-ws-category-close]');
+   if (close) close.focus();
   });
-  document.addEventListener('keydown', function (e) {
-   if (e.key === 'Escape' && panel.classList.contains('is-menu-open')) setMenu(false);
+  dialog.addEventListener('click', function (event) {
+   if (event.target === dialog || event.target.closest('[data-ws-category-close]')) dialog.close();
   });
-  function syncMenu() {
-   var active = panel.classList.contains('is-menu-open');
-   categories.setAttribute('aria-expanded', String(active));
-   categories.classList.toggle('is-open', active);
-  }
-  new MutationObserver(syncMenu).observe(panel, { attributes: true, attributeFilter: ['class'] });
-  syncMenu();
+  dialog.addEventListener('close', function () {
+   categories.setAttribute('aria-expanded', 'false');
+   categories.classList.remove('is-open');
+  });
  }
  var badge = nav.querySelector('[data-ws-mobile-cart-count]');
  function update() {
@@ -47,4 +38,7 @@
  var header = document.querySelector('.ws-header');
  if (header) new MutationObserver(update).observe(header, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-count'] });
  update();
+ }
+ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+ else init();
 })();
