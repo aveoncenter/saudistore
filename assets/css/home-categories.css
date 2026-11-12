@@ -79,3 +79,11 @@
 }
 .ws-home-categories.is-ready .ws-category-viewport::-webkit-scrollbar { display: none; }
 .ws-home-categories.is-ready .ws-category-track { transform: none !important; transition: none !important; }
+
+/* JS-driven subpixel loop: horizontal gestures are handled without scroll jumps. */
+.ws-home-categories.is-ready.ws-smooth-active .ws-category-viewport {
+ overflow: hidden !important; touch-action: pan-y !important; scroll-snap-type: none;
+ cursor: grab; overscroll-behavior-x: contain;
+}
+.ws-home-categories.ws-smooth-active .ws-category-viewport.is-dragging { cursor: grabbing; user-select: none; }
+.ws-home-categories.ws-smooth-active .ws-category-track { will-change: transform; }

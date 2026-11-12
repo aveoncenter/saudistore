@@ -596,3 +596,10 @@
  .tq-reviews__group { scroll-snap-align: start; }
  .tq-review { scroll-snap-align: center; }
 }
+
+/* Keep the review loop and its gesture position on the same transform. */
+.tq-reviews.is-moving.ws-smooth-active .tq-reviews__viewport {
+ overflow: hidden !important; touch-action: pan-y !important; scroll-snap-type: none;
+ scroll-behavior: auto; cursor: grab;
+}
+.tq-reviews.ws-smooth-active .tq-reviews__viewport.is-dragging { cursor: grabbing; user-select: none; }

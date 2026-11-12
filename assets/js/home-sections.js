@@ -26,106 +26,34 @@
 		}
 	}
 
-	/* ---------- Reviews: continuously moving, with native touch swiping ---------- */
+	/* ---------- Reviews: one smooth loop, with manual movement both ways ---------- */
 	var reviews = document.querySelector('[data-tq-reviews]');
-	if (reviews) {
+	if (reviews && window.WordsiteSmoothCarousel) {
 		var viewport = reviews.querySelector('[data-tq-reviews-viewport]');
 		var track = reviews.querySelector('[data-tq-reviews-track]');
 		var group = track && track.querySelector('.tq-reviews__group');
 		var toggle = reviews.querySelector('[data-tq-reviews-toggle]');
-		var CYCLE_MS = 60000, anim = null, setWidth = 0;
-		var hoveredCard = null, offscreen = false, userPaused = false;
-
-		function speed() { return window.innerWidth < 600 ? 32 : 44; }
-		function wrap(time) { return ((time % CYCLE_MS) + CYCLE_MS) % CYCLE_MS; }
-		function update() {
-			if (!anim) return;
-			var shouldRun = !hoveredCard && !offscreen && !userPaused && !document.hidden;
-			if (shouldRun && anim.playState !== 'running') anim.play();
-			else if (!shouldRun && anim.playState === 'running') anim.pause();
-		}
-		function build() {
-			if (!group || !track || typeof track.animate !== 'function') return false;
-			setWidth = group.getBoundingClientRect().width;
-			if (!setWidth) return false;
-			var progress = anim && anim.currentTime != null ? (anim.currentTime % CYCLE_MS) / CYCLE_MS : 0;
-			if (anim) anim.cancel();
-			CYCLE_MS = Math.max(20000, Math.round(setWidth / speed() * 1000));
-			anim = track.animate(
-				[{ transform: 'translate3d(' + (-setWidth) + 'px,0,0)' }, { transform: 'translate3d(0,0,0)' }],
-				{ duration: CYCLE_MS, iterations: Infinity, easing: 'linear' }
-			);
-			anim.currentTime = progress * CYCLE_MS;
-			update();
-			return true;
-		}
-		function cardFromTarget(target) { return target && target.closest ? target.closest('.tq-review') : null; }
-
-		if (track && group && viewport && typeof track.animate === 'function') {
-			track.addEventListener('pointerover', function (e) {
-				if (e.pointerType !== 'mouse') return;
-				var card = cardFromTarget(e.target);
-				if (!card || !track.contains(card)) return;
-				hoveredCard = card;
-				update();
+		if (viewport && track && group && group.children.length > 1) {
+			var oldCopy = track.querySelector('.tq-reviews__group--clone');
+			if (oldCopy) oldCopy.remove();
+			reviews.classList.add('is-moving');
+			viewport.tabIndex = 0;
+			viewport.setAttribute('aria-label', 'تجارب العملاء: اسحب أو استخدم مفاتيح الأسهم للتنقل');
+			var carousel = window.WordsiteSmoothCarousel({ root: reviews, viewport: viewport, track: track,
+				items: [group], direction: -1, speed: function () { return window.innerWidth < 600 ? 32 : 44; }
 			});
-			track.addEventListener('pointerout', function (e) {
-				if (e.pointerType !== 'mouse') return;
-				var card = cardFromTarget(e.target);
-				if (!card || card !== hoveredCard || cardFromTarget(e.relatedTarget) === card) return;
-				hoveredCard = null;
-				update();
-			});
-
-			/* Touch swipes must never pause the automatic review movement.
-			   The viewport remains natively horizontally scrollable on mobile. */
-			if (toggle) {
+			if (toggle && carousel) {
+				toggle.hidden = reduced.matches;
+				var userPaused = false;
 				toggle.addEventListener('click', function () {
 					userPaused = !userPaused;
 					toggle.setAttribute('aria-pressed', String(userPaused));
 					toggle.setAttribute('aria-label', userPaused ? 'تشغيل حركة التقييمات' : 'إيقاف حركة التقييمات');
 					reviews.classList.toggle('is-paused', userPaused);
-					update();
+					carousel.setPaused(userPaused);
 				});
+				onReducedChange(function () { toggle.hidden = reduced.matches; });
 			}
-			if ('IntersectionObserver' in window) {
-				new IntersectionObserver(function (entries) { offscreen = !entries[0].isIntersecting; update(); }, { rootMargin: '120px 0px' }).observe(reviews);
-			}
-			document.addEventListener('visibilitychange', update);
-			if (window.ResizeObserver) {
-				var lastWidth = 0;
-				new ResizeObserver(function () {
-					var width = group.getBoundingClientRect().width;
-					if (Math.abs(width - lastWidth) < 1) return;
-					lastWidth = width;
-					if (reviews.classList.contains('is-moving')) build();
-				}).observe(group);
-			} else window.addEventListener('resize', function () { if (anim) build(); });
-			if (reduced.matches) {
-				reviews.classList.remove('is-moving');
-				if (toggle) toggle.hidden = true;
-			} else {
-				reviews.classList.add('is-moving');
-				if (toggle) toggle.hidden = false;
-				build();
-			}
-			onReducedChange(function () {
-				if (reduced.matches) {
-					if (anim) anim.cancel();
-					anim = null;
-					reviews.classList.remove('is-moving');
-					if (toggle) toggle.hidden = true;
-				} else {
-					reviews.classList.add('is-moving');
-					if (toggle) toggle.hidden = false;
-					build();
-				}
-			});
-			if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (anim) build(); });
-		} else {
-			/* CSS/DOM fallback: leave the review track manually swipeable. */
-			reviews.classList.remove('is-moving');
-			if (toggle) toggle.hidden = true;
 		}
 	}
 

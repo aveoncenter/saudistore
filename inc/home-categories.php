@@ -94,5 +94,6 @@ add_action( 'wp_enqueue_scripts', static function () {
 	}
 	$ver = wp_get_theme()->get( 'Version' );
 	wp_enqueue_style( 'wordsite-home-categories', get_theme_file_uri( 'assets/css/home-categories.css' ), array( 'wordsite-style' ), $ver );
-	wp_enqueue_script( 'wordsite-home-categories', get_theme_file_uri( 'assets/js/home-categories.js' ), array(), $ver, true );
+	wp_enqueue_script( 'wordsite-smooth-carousel', get_theme_file_uri( 'assets/js/smooth-carousel.js' ), array(), $ver, true );
+	wp_enqueue_script( 'wordsite-home-categories', get_theme_file_uri( 'assets/js/home-categories.js' ), array( 'wordsite-smooth-carousel' ), $ver, true );
 } );

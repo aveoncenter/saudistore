@@ -356,6 +356,7 @@ add_action(
 		}
 		$ver = wp_get_theme()->get( 'Version' );
 		wp_enqueue_style( 'wordsite-home-sections', get_theme_file_uri( 'assets/css/home-sections.css' ), array( 'wordsite-style' ), $ver );
-		wp_enqueue_script( 'wordsite-home-sections', get_theme_file_uri( 'assets/js/home-sections.js' ), array(), $ver, true );
+		wp_enqueue_script( 'wordsite-smooth-carousel', get_theme_file_uri( 'assets/js/smooth-carousel.js' ), array(), $ver, true );
+		wp_enqueue_script( 'wordsite-home-sections', get_theme_file_uri( 'assets/js/home-sections.js' ), array( 'wordsite-smooth-carousel' ), $ver, true );
 	}
 );
