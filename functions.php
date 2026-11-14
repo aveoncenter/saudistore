@@ -192,3 +192,5 @@ if ( class_exists( 'WooCommerce' ) ) {
 }
 
 require_once get_theme_file_path( 'inc/checkout.php' );
+
+require_once get_theme_file_path( 'inc/account-navigation.php' );

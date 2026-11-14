@@ -9,7 +9,7 @@ function wordsite_mobile_navigation() {
   array( 'home', home_url( '/' ), 'الرئيسية', '<path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/>', is_front_page() ),
   array( 'categories', '', 'التصنيفات', '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>', is_product_category() || is_shop() ),
   array( 'cart', wc_get_cart_url(), 'السلة', '<path d="M3 4h2l2 11h11l3-8H6"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>', is_cart() ),
-  array( 'account', wc_get_page_permalink( 'myaccount' ), is_user_logged_in() ? 'حسابي' : 'تسجيل الدخول', '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/>', is_account_page() ),
+  array( 'account', home_url( '/' ), 'حسابي', '<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/>', false ),
  );
  echo '<nav class="ws-mobile-nav" aria-label="التنقل الرئيسي" dir="rtl">';
  foreach ( $items as $item ) {
