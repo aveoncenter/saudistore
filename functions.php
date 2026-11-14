@@ -190,3 +190,5 @@ if ( class_exists( 'WooCommerce' ) ) {
 	require_once get_theme_file_path( 'inc/header-cart-total.php' );
 	require_once get_theme_file_path( 'inc/mobile-navigation.php' );
 }
+
+require_once get_theme_file_path( 'inc/checkout.php' );

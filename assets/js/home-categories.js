@@ -10,8 +10,8 @@
   track.querySelectorAll('img[loading="lazy"]').forEach(function (img) { img.loading = 'eager'; });
   window.WordsiteSmoothCarousel({ root: root, viewport: viewport, track: track,
    items: Array.from(track.children), direction: 1,
-   /* Maintain the requested 25% increase over the former speed. */
-   speed: function (cycle, count) { return window.innerWidth <= 600 ? 18 : cycle / count / 1.6; }
+   /* Move 10% slower than the previous version on all screen sizes. */
+   speed: function (cycle, count) { return (window.innerWidth <= 600 ? 18 : cycle / count / 1.6) * 0.9; }
   });
  });
 })();
