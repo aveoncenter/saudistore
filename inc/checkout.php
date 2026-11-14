@@ -126,3 +126,11 @@ add_filter( 'body_class', static function ( $classes ) {
 	}
 	return $classes;
 } );
+
+/** Replace the checkout template's site title with the store logo. */
+add_filter( 'render_block_core/site-title', static function ( $html ) {
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() || is_admin() ) {
+		return $html;
+	}
+	return str_replace( 'class="ws-brand-logo"', 'class="ws-brand-logo ws-checkout-brand"', wordsite_taraqqi_logo_shortcode() );
+}, 10, 1 );
