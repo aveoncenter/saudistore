@@ -9,6 +9,8 @@
 	var queued = false;
 	var hiddenAt = 0;
 	var confirmTimer = 0;
+	var cartRevision = 0;
+	var lastFragmentUpdate = 0;
 
 	function nodes() { return document.querySelectorAll('[data-ws-cart-total]'); }
 	function endpoint() {
@@ -52,12 +54,63 @@
 			if (spoken) spoken.textContent = out.spoken + ' ' + (el.getAttribute('data-currency-name') || cart.totals.currency_code || '');
 			if (typeof cart.items_count === 'number') el.setAttribute('data-count', String(cart.items_count));
 		});
+		if (typeof cart.items_count === 'number') setMiniCartBadge(cart.items_count);
 	}
+
+	/* Update the Mini-Cart badge from the same server response as the total. */
+	function setMiniCartBadge(count) {
+		count = Math.max(0, parseInt(count, 10) || 0);
+		document.querySelectorAll('.wc-block-mini-cart__button').forEach(function (button) {
+			var badge = button.querySelector('.wc-block-mini-cart__badge');
+			if (!count) {
+				if (badge) badge.remove();
+				return;
+			}
+			if (!badge) {
+				badge = document.createElement('span');
+				badge.className = 'wc-block-mini-cart__badge';
+				badge.setAttribute('aria-hidden', 'true');
+				button.appendChild(badge);
+			}
+			badge.hidden = false;
+			badge.textContent = String(count);
+		});
+	}
+
+	/* The add-to-cart response already contains the exact, server-calculated total
+	 * and item count. Apply it immediately instead of waiting for another REST GET. */
+	function applyCartFragments(fragments) {
+		var html = fragments && fragments['span.ws-cart-total'];
+		if (!html) return false;
+		var wrapper = document.createElement('div');
+		wrapper.innerHTML = html;
+		var fresh = wrapper.querySelector('[data-ws-cart-total]');
+		if (!fresh) return false;
+
+		cartRevision++;
+		queued = false;
+		var count = parseInt(fresh.getAttribute('data-count'), 10);
+		nodes().forEach(function (current) {
+			var replacement = fresh.cloneNode(true);
+			replacement.classList.remove('is-updated');
+			current.replaceWith(replacement);
+			void replacement.offsetWidth;
+			replacement.classList.add('is-updated');
+		});
+		if (!isNaN(count)) setMiniCartBadge(count);
+		lastFragmentUpdate = Date.now();
+		return true;
+	}
+
 	function refresh() {
 		if (inflight) { queued = true; return; }
+		var requestRevision = cartRevision;
 		inflight = fetch(endpoint(), { credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store' })
 			.then(function (response) { return response.ok ? response.json() : null; })
-			.then(render)
+			.then(function (cart) {
+				/* Never let an older in-flight response overwrite newer AJAX fragments. */
+				if (requestRevision === cartRevision) render(cart);
+			})
 			.catch(function () { /* keep the last known total */ })
 			.then(function () {
 				inflight = null;
@@ -75,15 +128,28 @@
 	function bindJQuery() {
 		if (jqBound || !window.jQuery) return;
 		jqBound = true;
-		window.jQuery(document.body).on('added_to_cart removed_from_cart wc_fragments_refreshed wc_fragments_loaded updated_cart_totals updated_wc_div updated_checkout wc_cart_emptied', function () { schedule(); });
+		var $body = window.jQuery(document.body);
+		$body.on('added_to_cart', function (event, fragments) {
+			if (!applyCartFragments(fragments)) schedule(0);
+		});
+		$body.on('removed_from_cart wc_fragments_refreshed wc_fragments_loaded updated_cart_totals updated_wc_div updated_checkout wc_cart_emptied', function (event, fragments) {
+			if (!applyCartFragments(fragments)) schedule(0);
+		});
 	}
 	bindJQuery();
 	document.addEventListener('DOMContentLoaded', bindJQuery);
 	window.addEventListener('load', bindJQuery);
 	/* Block / Interactivity API cart events. */
 	['wc-blocks_added_to_cart', 'wc-blocks_removed_from_cart', 'wc-blocks_store_sync_required'].forEach(function (name) {
-		document.addEventListener(name, function () { schedule(); });
-		window.addEventListener(name, function () { schedule(); });
+		var handler = function (event) {
+			/* Classic added_to_cart is bridged to this event by WooCommerce Blocks.
+			 * Its matching server fragment has already updated the total and badge. */
+			if (name === 'wc-blocks_added_to_cart' && Date.now() - lastFragmentUpdate < 1800) return;
+			if (name === 'wc-blocks_added_to_cart' && event.detail && event.detail.preserveCartData) return;
+			schedule(0);
+		};
+		document.addEventListener(name, handler);
+		window.addEventListener(name, handler);
 	});
 	/* Mini-cart drawer quantity/remove edits (Interactivity API) only change the
 	 * badge, button label and drawer subtotal. The block may re-render its button,
@@ -105,9 +171,10 @@
 			if (next !== signature) {
 				var first = !signature;
 				signature = next;
-				if (!first) {
-					/* The badge can change optimistically before the server commits the
-					 * edit, so confirm once more after the request has settled. */
+				if (!first && Date.now() - lastFragmentUpdate >= 1800) {
+					/* Mini-Cart quantity/removal edits are block-owned; confirm those
+					 * changes with the Store API. Ignore the re-render after an add whose
+					 * exact count was already supplied by WooCommerce's AJAX fragment. */
 					schedule(250);
 					clearTimeout(confirmTimer);
 					confirmTimer = setTimeout(refresh, 1400);
